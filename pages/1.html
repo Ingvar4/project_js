@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- <link rel="shortcut icon" href="images/image.jpg" type="image/x-icon"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project_js</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="#">Просмотр</a></li>
+      <li><a href="#">Галерея</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Введение в JS</h1>
+    <hr>
+    <h2>1. Объявление переменных: <code>var</code>, <code>let</code>, <code>const</code>.</h2>
+    <h3>Историческая справка</h3>
+    <ul>
+      <li><code>var</code> — устаревший способ (ES5 и ранее), имеет проблемы с областью видимости.</li>
+      <li><code>let</code> и <code>const</code> — современные способы (ES6+), рекомендуются к использованию.</li>
+    </ul>
+    <h3>Отличия</h3>
+    <div class="table">
+      <table>
+        <tr>
+          <td>Ключевое слово</td>
+          <td>Переопределение</td>
+          <td>Область видимости</td>
+          <td>Инициализация при объявлении</td>
+          <td>Hoisting</td>
+        </tr>
+        <tr>
+          <td><code>var</code></td>
+          <td>Да</td>
+          <td>Функциональная/Глобальная</td>
+          <td>Не требуется</td>
+          <td>Да (со значением <code>undefined</code>)</td>
+        </tr>
+        <tr>
+          <td><code>let</code></td>
+          <td>Да</td>
+          <td>Блочная (<code>{}</code>)</td>
+          <td>Не требуется</td>
+          <td>Да (но в TDZ*)</td>
+        </tr>
+        <tr>
+          <td><code>const</code></td>
+          <td>Нет**</td>
+          <td>Блочная (<code>{}</code>)</td>
+          <td>Обязательна</td>
+          <td>Да (но в TDZ*)</td>
+        </tr>
+      </table>
+    </div>
+    <p><strong>*TDZ (Temporal Dead Zone)</strong> — переменная недоступна до объявления.</p>
+    <p>**<code>const</code> запрещает переприсваивание, но позволяет изменять содержимое объектов/массивов.</p>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    var x = 10;
+    let y = 20;
+    const z = 30;
+
+    // Переопределение:
+    x = 100; // OK
+    y = 200; // OK
+    z = 300; // Ошибка: Assignment to constant variable.
+
+    // Объекты с const:
+    const user = { name: "Alex" };
+    user.name = "John"; // OK (изменение свойства разрешено).
+    user = {}; // Ошибка (переопределение переменной запрещено).
+  </code>
+</pre>
+
+    <h2>2. Типы данных</h2>
+    <p>JavaScript — язык с <strong>динамической типизацией</strong> (тип переменной определяется в момент присваивания значения).</p>
+    <h3>Примитивные типы (immutable)</h3>
+    <ol>
+      <li><code>string</code> — строки (<code>"Hello"</code>, <code>'Hello'</code>, <code>`Hello ${name}`</code>).</li>
+      <li><code>number</code> — числа (целые, дробные, <code>Infinity</code>, <code>NaN</code>).</li>
+      <li><code>boolean</code> — <code>true</code>/<code>false</code>.</li>
+      <li><code>null</code> — явное отсутствие значения.</li>
+      <li><code>undefined</code> — значение не присвоено.</li>
+      <li><code>symbol</code> (ES6+) — уникальные идентификаторы.</li>
+      <li><code>bigint</code> (ES2020+) — для очень больших чисел.</li>
+    </ol>
+    <h3>Объекты (mutable)</h3>
+    <ol>
+      <li><code>object</code> — коллекции ключ-значение.</li>
+      <li><code>array</code> — частный случай объекта.</li>
+      <li><code>function</code> — объект, который можно вызывать.</li>
+    </ol>
+    <h3>Пример определения типов:</h3>
+<pre>
+  <code class="lang-js">
+    let name = "Alex"; // string
+    let age = 25; // number
+    let isStudent = true; // boolean
+    let empty = null; // null
+    let unknown; // undefined (значение по умолчанию)
+    let id = Symbol("id"); // symbol
+    let bigNumber = 9007199254740991n; // bigint
+  </code>
+</pre>
+
+    <h2>3. Область видимости (Scope)</h2>
+    <h3>Глобальная область</h3>
+    <ul>
+      <li>Переменные объявлены вне функций/блоков.</li>
+      <li>Доступны везде в коде.</li>
+    </ul>
+    <h3>Функциональная область (<code>var</code>)</h3>
+    <ul>
+      <li>Переменная <code>var</code> видна только внутри функции.</li>
+    </ul>
+    <h3>Блочная область (<code>let</code>, <code>const</code>)</h3>
+    <ul>
+      <li>Переменные видны только внутри блока <code>{}</code> (например, в <code>if</code>, <code>for</code>, <code>while</code>).</li>
+    </ul>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    // var vs let в блоке if
+    if (true) {
+      var a = 10; // Глобальная переменная
+      let b = 20; // Видна только внутри блока
+    }
+    console.log(a); // 10
+    console.log(b); // Ошибка: b is not defined
+  </code>
+</pre>
+
+    <h2>4. Hoisting (Поднятие)</h2>
+    <ul>
+      <li><code>var</code>: объявление поднимается вверх области видимости, инициализируется как <code>undefined</code>.</li>
+      <li><code>let</code>/<code>const</code>: объявление поднимается, но остается в TDZ до момента объявления.</li>
+    </ul>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    console.log(a); // undefined (var)
+    var a = 5;
+
+    console.log(b); // Ошибка: Cannot access 'b' before initialization
+    let b = 10;
+  </code>
+</pre>
+
+    <h2>5. Синтаксис объявления</h2>
+    <h3>Правила именования:</h3>
+    <ul>
+      <li>Могут содержать буквы, цифры, <code>$</code>, <code>_</code>.</li>
+      <li>Не могут начинаться с цифры.</li>
+      <li>Регистрозависимы (<code>user</code> ≠ <code>User</code>).</li>
+      <li>Нельзя использовать зарезервированные слова (<code>class</code>, <code>function</code>, <code>if</code> и т.д.).</li>
+    </ul>
+    <h3>Примеры допустимых имен:</h3>
+<pre>
+  <code class="lang-js">
+    let userName;
+    let _temp;
+    let $element;
+    let user2;
+  </code>
+</pre>
+
+    <h2>6. Строгий режим (<code>use strict</code>)</h2>
+    <ul>
+      <li>Включается директивой <code>"use strict"</code>; в начале файла/функции.</li>
+      <li>Запрещает неявное создание глобальных переменных.</li>
+      <li>Устраняет некоторые "неочевидные" поведения JS.</li>
+    </ul>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    "use strict";
+    x = 10; // Ошибка: переменная x не объявлена.
+  </code>
+</pre>
+
+    <h3>7. Особенности работы с переменными</h3>
+    <ul>
+      <li>Неявное приведение типов:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    console.log(5 + "5"); // "55" (число преобразуется в строку).
+  </code>
+</pre>
+    <ul>
+      <li>Запятая при объявлении:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    let a = 1, b = 2, c = 3; // Короткая запись.
+  </code>
+</pre>
+
+    <h3>8. Лучшие практики</h3>
+    <ol>
+      <li>Всегда используйте <code>const</code>, если переменная не должна переопределяться.</li>
+      <li>Избегайте <code>var</code> (кроме legacy-кода).</li>
+      <li>Именуйте переменные осмысленно (<code>userAge</code> вместо <code>a</code>).</li>
+      <li>Объявляйте переменные как можно ближе к месту их использования.</li>
+      <li>Инициализируйте переменные при объявлении (особенно <code>const</code>).</li>
+    </ol>
+  </article>
+</body>
+</html>
