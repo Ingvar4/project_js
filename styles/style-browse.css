@@ -304,4 +304,9 @@ td {
   .content {
     height: 80vh;
   }
+
+  .content a:hover {
+    font-size: calc(var(--index) * 0.69);
+    transition: 0.2s ease-in-out;
+  }
 }

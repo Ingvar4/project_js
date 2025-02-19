@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project_js</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="#">Галерея</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Операторы</h1>
+    <hr>
+    <h2>1. Арифметические операторы</h2>
+    <p>Используются для математических операций.</p>
+    <div class="table">
+    <table>
+      <tr>
+        <td><strong>Оператор</strong></td>
+        <td><strong>Действие</strong></td>
+        <td><strong>Пример</strong></td>
+        <td><strong>Результат</strong></td>
+      </tr>
+      <tr>
+        <td><code>+</code></td>
+        <td>Сложение</td>
+        <td><code>5 + 2</code></td>
+        <td><code>7</code></td>
+      </tr>
+      <tr>
+        <td><code>-</code></td>
+        <td>Вычитание</td>
+        <td><code>5 - 2</code></td>
+        <td><code>3</code></td>
+      </tr>
+      <tr>
+        <td><code>*</code></td>
+        <td>Умножение</td>
+        <td><code>5 * 2</code></td>
+        <td><code>10</code></td>
+      </tr>
+      <tr>
+        <td><code>/</code></td>
+        <td>Деление</td>
+        <td><code>10 / 2</code></td>
+        <td><code>5</code></td>
+      </tr>
+      <tr>
+        <td><code>%</code></td>
+        <td>Остаток от деления</td>
+        <td><code>10 % 3</code></td>
+        <td><code>1</code></td>
+      </tr>
+      <tr>
+        <td><code>**</code></td>
+        <td>Возведение в степень (ES7)</td>
+        <td><code>2 ** 3</code></td>
+        <td><code>8</code></td>
+      </tr>
+      <tr>
+        <td><code>++</code></td>
+        <td>Инкремент (увеличение на 1)</td>
+        <td><code>let x=5; x++</code></td>
+        <td><code>6</code></td>
+      </tr>
+      <tr>
+        <td><code>--</code></td>
+        <td>Декремент (уменьшение на 1)</td>
+        <td><code>let x=5; x--</code></td>
+        <td><code>4</code></td>
+      </tr>
+    </table>
+    </div>
+    <h3>Особенности:</h3>
+    <p>Инкремент/декремент:
+      <ul>
+        <li>Префиксная форма (++x): сначала изменяет, потом возвращает значение.</li>
+        <li>Постфиксная форма (x++): сначала возвращает значение, потом изменяет.</li>
+      </ul>
+    </p>
+<pre>
+  <code class="lang-js">
+    let a = 5;
+    console.log(a++); // 5 (постфиксный: выводит, затем увеличивает)
+    console.log(a);   // 6
+
+    let b = 5;
+    console.log(++b); // 6 (префиксный: увеличивает, затем выводит)
+  </code>
+</pre>
+
+    <h2>2. Операторы сравнения</h2>
+    <p>Сравнивают значения и возвращают <code>boolean</code> (<code>true</code>/<code>false</code>).</p>
+    <div class="table">
+      <table>
+        <tr>
+          <td><strong>Оператор</strong></td>
+          <td><strong>Действие</strong></td>
+          <td><strong>Пример</strong></td>
+          <td><strong>Результат</strong></td>
+        </tr>
+        <tr>
+          <td><code>==</code></td>
+          <td>Нестрогое равенство (с приведением типов)</td>
+          <td><code>5 == '5'</code></td>
+          <td><code>true</code></td>
+        </tr>
+        <tr>
+          <td><code>===</code></td>
+          <td>Строгое равенство (без приведения типов)</td>
+          <td><code>5 === '5'</code></td>
+          <td><code>false</code></td>
+        </tr>
+        <tr>
+          <td><code>!=</code></td>
+          <td>Нестрогое неравенство</td>
+          <td><code>5 != '5'</code></td>
+          <td><code>false</code></td>
+        </tr>
+        <tr>
+          <td><code>!==</code></td>
+          <td>Строгое неравенство</td>
+          <td><code>5 !== '5'</code></td>
+          <td><code>true</code></td>
+        </tr>
+        <tr>
+          <td><code>></code></td>
+          <td>Больше</td>
+          <td><code>10 > 5</code></td>
+          <td><code>true</code></td>
+        </tr>
+        <tr>
+          <td><code><</code></td>
+          <td>Меньше</td>
+          <td><code>10 < 5</code></td>
+          <td><code>false</code></td>
+        </tr>
+        <tr>
+          <td><code>>=</code></td>
+          <td>Больше или равно</td>
+          <td><code>10 >= 10</code></td>
+          <td><code>true</code></td>
+        </tr>
+        <tr>
+          <td><code><=</code></td>
+          <td>Меньше или равно</td>
+          <td><code>10 <= 5</code></td>
+          <td><code>false</code></td>
+        </tr>
+      </table>
+    </div>
+    <h3>Важно:</h3>
+    <ul>
+      <li>Всегда используйте <code>===</code> и <code>!==</code> — они избегают неявного приведения типов, которое может привести к ошибкам.</li>
+      <li>Пример "странного" поведения <code>==</code>:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    console.log(0 == false);   // true (0 → false)
+    console.log('' == false);   // true ('' → false)
+    console.log(null == undefined); // true (специальное правило)
+  </code>
+</pre>
+
+    <h2>3. Логические операторы</h2>
+    <p>Работают с булевыми значениями, но могут возвращать любое значение (см. "короткое замыкание").</p>
+    <div class="table">
+      <table>
+        <tr>
+          <td><strong>Оператор</strong></td>
+          <td><strong>Действие</strong></td>
+          <td><strong>Пример</strong></td>
+          <td><strong>Результат</strong></td>
+        </tr>
+        <tr>
+          <td><code>&&</code></td>
+          <td>И (AND)</td>
+          <td><code>true && false</code></td>
+          <td><code>false</code></td>
+        </tr>
+        <tr>
+          <td><code>||</code></td>
+          <td>ИЛИ (OR)</td>
+          <td><code>true || false</code></td>
+          <td><code>true</code></td>
+        </tr>
+        <tr>
+          <td><code>!</code></td>
+          <td>НЕ (NOT)</td>
+          <td><code>!true</code></td>
+          <td><code>false</code></td>
+        </tr>
+      </table>
+    </div>
+    <h3>Особенности:</h3>
+    <p>Короткое замыкание (Short-Circuit Evaluation):</p>
+    <ul>
+      <li><code>&&</code> возвращает первое ложное значение или последнее, если все истинны.</li>
+      <li><code>||</code> возвращает первое истинное значение или последнее, если все ложны.</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    console.log(0 && 2); // 0 (первое ложное)
+    console.log(3 || null); // 3 (первое истинное)
+  </code>
+</pre>
+    <ul>
+      <li>Использование для присваивания:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    let name = userName || "Гость"; // Если userName ложный, вернется "Гость".
+  </code>
+</pre>
+
+    <h2>4. Операторы присваивания</h2>
+    <p>Присваивают значения переменным. Могут комбинироваться с другими операторами.</p>
+    <div class="table">
+      <table>
+        <tr>
+          <td><strong>Оператор</strong></td>
+          <td><strong>Пример</strong></td>
+          <td><strong>Эквивалент</strong></td>
+        </tr>
+        <tr>
+          <td><code>=</code></td>
+          <td><code>x = 5</code></td>
+          <td><code>x = 5</code></td>
+        </tr>
+        <tr>
+          <td><code>+=</code></td>
+          <td><code>x += 2</code></td>
+          <td><code>x = x + 2</code></td>
+        </tr>
+        <tr>
+          <td><code>-=</code></td>
+          <td><code>x -= 2</code></td>
+          <td><code>x = x - 2</code></td>
+        </tr>
+        <tr>
+          <td><code>*=</code></td>
+          <td><code>x *= 2</code></td>
+          <td><code>x = x * 2</code></td>
+        </tr>
+        <tr>
+          <td><code>/=</code></td>
+          <td><code>x /= 2</code></td>
+          <td><code>x = x / 2</code></td>
+        </tr>
+        <tr>
+          <td><code>%=</code></td>
+          <td><code>x %= 2</code></td>
+          <td><code>x = x % 2</code></td>
+        </tr>
+        <tr>
+          <td><code>**=</code></td>
+          <td><code>x **= 2	</code></td>
+          <td><code>x = x ** 2</code></td>
+        </tr>
+      </table>
+    </div>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let x = 10;
+    x += 5; // x = 15
+    x **= 2; // x = 225
+  </code>
+</pre>
+
+    <h2>5. Условный (тернарный) оператор</h2>
+    <p>Единственный оператор, принимающий три операнда: <code>условие ? выражение1 : выражение2</code>.</p>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let age = 18;
+    let status = age >= 18 ? "Взрослый" : "Ребенок"; // "Взрослый"
+  </code>
+</pre>
+
+    <h2>6. Операторы работы с типами</h2>
+    <ul>
+      <li>typeof: Возвращает тип данных в виде строки.</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    console.log(typeof 42); // "number"
+    console.log(typeof "Hello"); // "string"
+    console.log(typeof null); // "object" (историческая ошибка JS).
+  </code>
+</pre>
+    <ul>
+      <li>instanceof: Проверяет, принадлежит ли объект к определенному классу.</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    console.log([] instanceof Array); // true
+  </code>
+</pre>
+
+    <h2>7. Побитовые операторы</h2>
+    <p>Работают с 32-битными числами.</p>
+    <div class="table">
+      <table>
+        <tr>
+          <td><strong>Оператор</strong></td>
+          <td><strong>Действие</strong></td>
+          <td><strong>Пример</strong></td>
+        </tr>
+        <tr>
+          <td><code>&</code></td>
+          <td>Побитовое И</td>
+          <td><code>5 & 1</code>→<code>1</code></td>
+        </tr>
+        <tr>
+          <td><code>|</code></td>
+          <td>Побитовое ИЛИ</td>
+          <td><code>5 | 1</code>→<code>5</code></td>
+        </tr>
+        <tr>
+          <td><code>~</code></td>
+          <td>Побитовое НЕ</td>
+          <td><code>~5</code>→<code>-6</code></td>
+        </tr>
+        <tr>
+          <td><code>^</code></td>
+          <td>Побитовое XOR</td>
+          <td><code>5 ^ 1</code>→<code>4</code></td>
+        </tr>
+        <tr>
+          <td><code><<</code></td>
+          <td>Сдвиг влево</td>
+          <td><code>5 << 1</code>→<code>10</code></td>
+        </tr>
+        <tr>
+          <td><code>>></code></td>
+          <td>Сдвиг вправо</td>
+          <td><code>5 >> 1</code>→<code>2</code></td>
+        </tr>
+      </table>
+    </div>
+
+    <h2>8. Операторы для работы со строками</h2>
+    <ul>
+      <li><code>+</code> для конкатенации:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    let greeting = "Привет, " + "Мир!"; // "Привет, Мир!"
+  </code>
+</pre>
+    <ul>
+      <li>Шаблонные строки (ES6) с обратными кавычками <code>`...`</code>:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    let name = "Анна";
+    console.log(`Привет, ${name}!`); // "Привет, Анна!"
+  </code>
+</pre>
+
+    <h2>9. Оператор запятая</h2>
+    <p>Вычисляет несколько выражений и возвращает последнее.</p>
+<pre>
+  <code class="lang-js">
+    let a = (1, 2, 3); // a = 3
+  </code>
+</pre>
+
+    <h2>10. Приоритет операторов</h2>
+    <p>Определяет порядок выполнения операций. Например:</p>
+    <ul>
+      <li><code>1 + 2 * 3</code> → <code>7</code> (умножение выполняется раньше).</li>
+      <li>Полный список приоритетов: <a href="https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Operators/Operator_precedence">MDM</a></li>
+    </ul>
+
+    <h2>Советы:</h2>
+    <ol>
+      <li>Избегайте <code>==</code> — используйте <code>===</code> для предсказуемости.</li>
+      <li>Помните о коротком замыкании — это удобно для проверок.</li>
+      <li>Не злоупотребляйте тернарным оператором — сложные условия лучше оформлять через <code>if/else</code>.</li>
+      <li>Используйте шаблонные строки вместо конкатенации.</li>
+    </ol>
+  </article>
+</body>
+</html>
