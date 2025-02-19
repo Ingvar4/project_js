@@ -164,6 +164,7 @@ code {
 .table {
   overflow-x: auto;
 }
+
 table {
   border: 1px solid gray;
   border-collapse: collapse;
@@ -228,7 +229,7 @@ td {
   
   color: #fff0d0;
   /* font-size: 26px; */
-/* text-align: center; */
+  /* text-align: center; */
  
   
   /* white-space: inherit; */
@@ -259,6 +260,11 @@ td {
   .content {
     height: 70vh;
     overflow-y: auto;
+  }
+
+  .content a{
+    font-size: calc(var(--index) * 0.9);
+    padding: 20px 20px 20px 40px;
   }
 }
 

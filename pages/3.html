@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="#">Галерея</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Управляющие конструкции.</h1>
+    <hr>
+    <p>Управляющие конструкции определяют порядок выполнения кода. Они позволяют реализовать ветвление, циклы, обработку ошибок и многое другое. Рассмотрим их все, начиная с базовых и заканчивая продвинутыми сценариями.</p>
+    <h2>1. Условные операторы</h2>
+    <h3>1.1. <code>if/else</code></h3>
+    <p>Используется для выполнения кода при выполнении определенного условия.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    if (условие) {
+      // код, если условие истинно (true)
+    } else if (другое_условие) {
+      // код, если другое_условие истинно
+    } else {
+      // код, если все условия ложны (false)
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let age = 18;
+    if (age < 13) {
+      console.log("Ребенок");
+    } else if (age < 18) {
+      console.log("Подросток");
+    } else {
+      console.log("Взрослый");
+    }
+  </code>
+</pre>
+    <h3>Особенности:</h3>
+    <ul>
+      <li>Условие всегда преобразуется в <code>boolean</code> (ложные значения: <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>, <code>false</code>).</li>
+      <li>Можно использовать без <code>else</code> или <code>else if</code>.</li>
+    </ul>
+
+    <h3>1.2. Тернарный оператор (<code>? :</code>)</h3>
+    <p>Сокращенная запись <code>if/else</code> для простых условий.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    условие ? выражение_если_истина : выражение_если_ложь;
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let isAdmin = true;
+    let access = isAdmin ? "Full Access" : "Read Only";
+  </code>
+</pre>
+
+    <h3>1.3. <code>switch</code></h3>
+    <p>Используется для выбора одного из многих вариантов.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    switch (выражение) {
+      case значение1:
+        // код для значение1
+        break;
+      case значение2:
+        // код для значение2
+        break;
+      default:
+        // код, если нет совпадений
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let day = 3;
+    switch (day) {
+      case 1:
+        console.log("Понедельник");
+        break;
+      case 2:
+        console.log("Вторник");
+        break;
+      default:
+        console.log("Другой день");
+    }
+  </code>
+</pre>
+    <h3>Важно:</h3>
+    <ul>
+      <li><code>switch</code> использует строгое сравнение (<code>===</code>).</li>
+      <li><code>break</code> останавливает выполнение. Без него код "проваливается" в следующий <code>case</code>.</li>
+      <li><code>default</code> выполняется, если нет совпадений.</li>
+    </ul>
+
+    <h2>2. Циклы</h2>
+    <h3>2.1. <code>for</code></h3>
+    <p>Используется для выполнения блока кода определенное количество раз.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    for (инициализация; условие; пост-действие) {
+      // тело цикла
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    for (let i = 0; i < 5; i++) {
+      console.log(i); // 0, 1, 2, 3, 4
+    }
+  </code>
+</pre>
+    <h3>Особенности:</h3>
+    <ul>
+      <li>Все части (<code>инициализация</code>, <code>условие</code>, <code>пост-действие</code>) необязательны. <br>
+        Пример бесконечного цикла: <code>for (;;) { ... }</code>.</li>
+    </ul>
+
+    <h3>2.2. <code>while</code></h3>
+    <p>Выполняет блок кода пока условие истинно.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    while (условие) {
+      // тело цикла
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let i = 0;
+    while (i < 5) {
+      console.log(i); // 0, 1, 2, 3, 4
+      i++;
+    }
+  </code>
+</pre>
+
+    <h3>2.3. <code>do...while</code></h3>
+    <p>Выполняет блок кода минимум один раз, затем проверяет условие.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    do {
+      // тело цикла
+    } while (условие);
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    let i = 0;
+    do {
+      console.log(i); // 0
+    } while (i > 0);
+  </code>
+</pre>
+
+    <h3>2.4. <code>for...of</code></h3>
+    <p>Итерируется по значениям итерируемых объектов (массивы, строки, Map, Set).</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    for (const элемент of итерируемый_объект) {
+      // тело цикла
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    const fruits = ["apple", "banana", "orange"];
+    for (const fruit of fruits) {
+      console.log(fruit); // "apple", "banana", "orange"
+    }
+  </code>
+</pre>
+
+    <h3>2.5. <code>for...in</code></h3>
+    <p>Итерируется по перечисляемым свойствам объекта.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    for (const ключ in объект) {
+      // тело цикла
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    const user = { name: "Alex", age: 25 };
+    for (const key in user) {
+      console.log(`${key}: ${user[key]}`); // "name: Alex", "age: 25"
+    }
+  </code>
+</pre>
+    <h3>Важно:</h3>
+    <ul>
+      <li>Не используйте <code>for...in</code> для массивов (лучше <code>for...of</code> или <code>forEach</code>).</li>
+      <li>Проверяйте принадлежность свойства объекту через <code>hasOwnProperty</code>.</li>
+    </ul>
+
+    <h2>3. Управление выполнением</h2>
+    <h3>3.1. <code>break</code></h3>
+    <p>Прерывает выполнение цикла или <code>switch</code>.</p>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    for (let i = 0; i < 10; i++) {
+      if (i === 5) break;
+      console.log(i); // 0, 1, 2, 3, 4
+    }
+  </code>
+</pre>
+    <h3>3.2. <code>continue</code></h3>
+    <p>Пропускает текущую итерацию цикла.</p>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    for (let i = 0; i < 5; i++) {
+      if (i === 2) continue;
+      console.log(i); // 0, 1, 3, 4
+    }
+  </code>
+</pre>
+    <h3>3.3. Метки (<code>label</code>)</h3>
+    <p>Позволяют управлять вложенными циклами.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    метка: цикл {
+      break метка; // или continue
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    outerLoop: for (let i = 0; i < 3; i++) {
+      innerLoop: for (let j = 0; j < 3; j++) {
+        if (i === 1 && j === 1) break outerLoop;
+        console.log(i, j); // (0,0), (0,1), (0,2), (1,0)
+      }
+    }
+  </code>
+</pre>
+
+    <h2>4. Обработка ошибок (<code>try/catch/finally</code>)</h2>
+    <p>Позволяет перехватывать и обрабатывать исключения.</p>
+    <h3>Синтаксис:</h3>
+<pre>
+  <code class="lang-js">
+    try {
+      // код, который может вызвать ошибку
+    } catch (error) {
+      // обработка ошибки
+    } finally {
+      // выполнится в любом случае
+    }
+  </code>
+</pre>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    try {
+      JSON.parse("{ некорректный JSON }");
+    } catch (error) {
+      console.error("Ошибка парсинга:", error.message);
+    } finally {
+      console.log("Завершено");
+    }
+  </code>
+</pre>
+
+    <h2>5. Современные альтернативы циклам</h2>
+    <h3>5.1. <code>Array.forEach()</code></h3>
+    <p>Выполняет функцию для каждого элемента массива.</p>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    [1, 2, 3].forEach((num) => console.log(num * 2)); // 2, 4, 6
+  </code>
+</pre>
+    <h3>5.2. <code>Array.map()</code></h3>
+    <p>Создает новый массив, преобразуя элементы.</p>
+    <h3>Пример:</h3>
+<pre>
+  <code class="lang-js">
+    const doubled = [1, 2, 3].map((num) => num * 2); // [2, 4, 6]
+  </code>
+</pre>
+
+    <h2>6. Лучшие практики</h2>
+    <p>1. Избегайте глубокой вложенности — используйте ранний возврат (<code>return</code>), <code>break</code> или разбивайте код на функции.</p>
+    <p>2. Выбирайте правильный цикл:</p>
+    <ul>
+      <li><code>for</code> — для точного контроля итераций.</li>
+      <li><code>for...of</code> — для массивов и итерируемых объектов.</li>
+      <li><code>for...in</code> — только для объектов (с проверкой <code>hasOwnProperty</code>).</li>
+    </ul>
+    <p>3. Всегда ставьте <code>break</code> в <code>switch</code>, если не нужен "провал".</p>
+    <p>4. Используйте <code>try/catch</code> для обработки непредсказуемых ошибок (например, парсинг JSON, работа с API).</p>
+
+    <h2>7. Типичные ошибки</h2>
+    <h3>7.1. Бесконечные циклы</h3>
+<pre>
+  <code class="lang-js">
+    // Ошибка: условие никогда не станет false
+    let i = 0;
+    while (i < 5) {
+      console.log(i);
+      // Забыли i++
+    }
+  </code>
+</pre>
+    <h3>7.2. Сравнение vs присваивание</h3>
+<pre>
+  <code class="lang-js">
+    if (x = 5) { ... } // Ошибка: присваивание вместо сравнения (x === 5)
+  </code>
+</pre>
+  </article>
+</body>
+</html>

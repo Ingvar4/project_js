@@ -179,7 +179,11 @@ td {
 
 /* МЕДИА ЗАПРОСЫ */
 
-@media (min-width: 768px) {}
+@media (max-width: 768px) {
+  h1 {
+    font-size: 45px;
+  }
+}
 
 @media (min-width: 820px) {}
 
