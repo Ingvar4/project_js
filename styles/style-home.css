@@ -6,8 +6,11 @@
 }
 
 :root {
+  color-scheme: only light;
+}
+
+:root {
 	--index: calc(1vw + 1vh);
-  color-scheme: light only;
 }
 
 body {

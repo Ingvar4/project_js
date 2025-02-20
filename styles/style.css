@@ -7,7 +7,7 @@
 
 :root {
 	--index: calc(1vw + 1vh);
-  color-scheme: light only;
+  color-scheme: light;
 }
 
 body {
