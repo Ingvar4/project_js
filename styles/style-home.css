@@ -229,6 +229,30 @@ article {
 
 /* МЕДИА ЗАПРОСЫ */
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #ffffff !important;
+    --text-color: #fff4da !important;
+  }
+  
+  body {
+    background: linear-gradient(0deg, #544e68, #0d2b45) 0 0 /100% 100% repeat !important;
+    color: var(--text-color) !important;
+  }
+  
+  header {
+    background: linear-gradient(170deg, #d08159, #ffd4a3) 0 0 /100% 100% repeat !important;
+  }
+
+  .header a {
+    color: #fff0d0 !important;
+  }
+
+  article {
+    color: #fff4da !important;
+  }
+}
+
 @media (max-width: 768px) {
   body {
     height: 100%;

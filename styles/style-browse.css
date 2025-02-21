@@ -258,6 +258,10 @@ td {
 /* МЕДИА ЗАПРОСЫ */
 
 @media (max-width: 768px) {
+  body {
+    height: 100%;
+  }
+
   .content {
     height: 70vh;
     overflow-y: auto;
