@@ -258,12 +258,11 @@ td {
 /* МЕДИА ЗАПРОСЫ */
 
 @media (max-width: 768px) {
-  body {
-    height: 100%;
+  article {
+    padding-bottom: 0px;
   }
-
   .content {
-    height: 70vh;
+    height: 65vh;
     overflow-y: auto;
   }
 
