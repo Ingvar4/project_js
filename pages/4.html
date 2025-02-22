@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="#">Галерея</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Стрелочные функции.</h1>
+    <hr>
+    <h3>Синтаксис</h3>
+    <p>Стрелочные функции — это более краткий способ записи функций, введённый в ES6. Они имеют следующий формат:</p>
+<pre>
+  <code class="lang-js">
+    const myFunction = (param1, param2) => {
+      return param1 + param2;
+    };
+  </code>
+</pre>
+    <p>Если тело функции состоит из одного выражения, можно опустить return и {}:</p>
+<pre>
+  <code class="lang-js">
+    const sum = (a, b) => a + b;
+  </code>
+</pre>
+    <p>Если у функции один параметр, можно опустить скобки:</p>
+<pre>
+  <code class="lang-js">
+    const square = x => x * x;
+  </code>
+</pre>
+    <p>А если нет параметров, ставим пустые скобки:</p>
+<pre>
+  <code class="lang-js">
+    const sayHello = () => console.log("Hello, world!");
+  </code>
+</pre>
+    <h2>Отличия от обычных функций</h2>
+    <h3>Не имеет собственного <code>this</code></h3>
+    <p>Обычные функции в JavaScript имеют своё <code>this</code>, зависящее от контекста вызова. Стрелочные функции не создают свой <code>this</code>, а берут его из окружения, в котором были объявлены.</p>
+    <p>Пример с обычной функцией:</p>
+<pre>
+  <code class="lang-js">
+    function traditionalFunction() {
+      console.log(this);
+    }
+    traditionalFunction(); // В глобальном контексте - объект `window` (или `global` в Node.js)
+    
+    const obj = {
+      method: function () {
+        console.log(this);
+      }
+    };
+    obj.method(); // `this` ссылается на `obj`
+  </code>
+</pre>
+    <p>А теперь стрелочная функция:</p>
+<pre>
+  <code class="lang-js">
+    const obj = {
+      method: () => {
+        console.log(this);
+      }
+    };
+    obj.method(); // `this` не будет указывать на `obj`, а возьмёт из глобального окружения
+  </code>
+</pre>
+    <p>Вот реальный случай, где это полезно:</p>
+<pre>
+  <code class="lang-js">
+    const user = {
+      name: "Игорь",
+      greet: function() {
+        setTimeout(() => {
+          console.log(`Привет, ${this.name}!`);
+        }, 1000);
+      }
+    };
+    user.greet();
+  </code>
+</pre>
+    <p>Здесь <code>this.name</code> внутри стрелочной функции возьмётся из объекта <code>user</code>, а не из глобального контекста.</p>
+    <h3>Нельзя использовать <code>new</code></h3>
+    <p>Стрелочные функции нельзя использовать как конструкторы.</p>
+<pre>
+  <code class="lang-js">
+    const Person = (name) => {
+      this.name = name;
+    }; 
+    const user = new Person("Игорь"); // Ошибка!
+  </code>
+</pre>
+    <h3>Нет объекта <code>arguments</code></h3>
+    <p>У обычных функций есть arguments – псевдомассив всех переданных аргументов:</p>
+<pre>
+  <code class="lang-js">
+    function showArgs() {
+      console.log(arguments);
+    }
+    showArgs(1, 2, 3); // [1, 2, 3]
+  </code>
+</pre>
+    <p>У стрелочных функций arguments не существует:</p>
+<pre>
+  <code class="lang-js">
+    const showArgs = () => {
+      console.log(arguments);
+    };
+    showArgs(1, 2, 3); // Ошибка!
+  </code>
+</pre>
+    <p>Если нужен аналог, можно использовать rest-параметры:</p>
+<pre>
+  <code class="lang-js">
+    const showArgs = (...args) => {
+      console.log(args);
+    };
+    showArgs(1, 2, 3); // [1, 2, 3]
+  </code>
+</pre>
+    <h2>Параметры по умолчанию</h2>
+    <p>В ES6 появилась возможность задавать параметры по умолчанию:</p>
+<pre>
+  <code class="lang-js">
+    function greet(name = "Гость") {
+      console.log(`Привет, ${name}!`);
+    }
+  
+    greet("Игорь"); // Привет, Игорь!
+    greet(); // Привет, Гость!
+  </code>
+</pre>
+    <p>Параметры по умолчанию можно делать динамическими:</p>
+<pre>
+  <code class="lang-js">
+    const defaultValue = () => "Неизвестно";
+
+    function getUser(name = defaultValue()) {
+      console.log(`Пользователь: ${name}`);
+    }
+
+    getUser(); // Пользователь: Неизвестно
+  </code>
+</pre>
+    <p>Можно использовать другие аргументы как значения по умолчанию:</p>
+<pre>
+  <code class="lang-js">
+    function multiply(a, b = a * 2) {
+      return a * b;
+    }
+  
+    console.log(multiply(3)); // 3 * 6 = 18
+    console.log(multiply(3, 4)); // 3 * 4 = 12
+  </code>
+</pre>
+    <p>Но порядок важен — нельзя ссылаться на параметр, который объявлен после.</p>
+<pre>
+  <code class="lang-js">
+    function example(a = b, b = 5) {
+      console.log(a, b);
+    }
+  
+    example(); // Ошибка! b ещё не определён
+  </code>
+</pre>
+  </article>
+</body>
+</html>
