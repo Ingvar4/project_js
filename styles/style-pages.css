@@ -176,6 +176,12 @@ td {
 	padding: 10px;
 	border-top: 1px solid gray;
 }
+
+details {
+  background-color: #153a59;
+  padding: 5px 5px 10px 5px;
+  width: 100%;
+}
  
 
 /* МЕДИА ЗАПРОСЫ */
@@ -201,7 +207,8 @@ td {
   }
   article ul {
     width: 70%;
-    margin-left: 350px;
+    margin: 0 auto;
+    /* margin-left: 350px; */
   }
 
   h1,h2,h3,p,ol,table {
