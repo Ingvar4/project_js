@@ -59,6 +59,73 @@
       <li>Условие всегда преобразуется в <code>boolean</code> (ложные значения: <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>, <code>false</code>).</li>
       <li>Можно использовать без <code>else</code> или <code>else if</code>.</li>
     </ul>
+    <ul>
+    <details>
+      <summary>Дополнительно</summary>
+      <h3>Преобразование к логическому типу</h3>
+      <p>Инструкция <code>if (…)</code> вычисляет выражение в скобках и преобразует результат к логическому типу.</p>
+      <ul>
+        <li>Число <code>0</code>, пустая строка <code>""</code>, <code>null</code>, <code>undefined</code> и <code>NaN</code> становятся <code>false</code>. Из-за этого их называют «ложными» («falsy») значениями.</li>
+        <li>Остальные значения становятся <code>true</code>, поэтому их называют «правдивыми» («truthy»).</li>
+      </ul>
+      <p>Таким образом, код при таком условии никогда не выполнится:</p>
+<pre>
+  <code class="lang-js">
+    if (0) { // 0 is falsy
+      ...
+    }
+  </code>
+</pre>
+      <p>…а при таком – выполнится всегда:</p>
+<pre>
+  <code class="lang-js">
+    if (1) { // 1 is truthy
+      ...
+    }
+  </code>
+</pre>
+      <p>Мы также можем передать заранее вычисленное в переменной логическое значение в <code>if</code>, например так:</p>
+<pre>
+  <code class="lang-js">
+    let condition = (year == 2015); // преобразуется к true или false
+
+    if (condition) {
+      ...
+    }
+  </code>
+</pre>
+      <h3>Блок <code>else</code></h3>
+      <p>Инструкция <code>if</code> может содержать необязательный блок <code>else</code> («иначе»). Он выполняется, когда условие ложно.</p>
+<pre>
+  <code class="lang-js">
+    let year = prompt('В каком году была опубликована спецификация ECMAScript-2015?', '');
+
+    if (year == 2015) {
+      alert( 'Да вы знаток!' );
+    } else {
+      alert( 'А вот и неправильно!' ); // любое значение, кроме 2015
+    }
+  </code>
+</pre>
+      <p>Несколько условий: <code>else if</code></p>
+      <p>Иногда нужно проверить несколько вариантов условия. Для этого используется блок <code>else if</code>.</p>
+      <p>Например:</p>
+<pre>
+  <code class="lang-js">
+    let year = prompt('В каком году была опубликована спецификация ECMAScript-2015?', '');
+
+    if (year < 2015) {
+      alert( 'Это слишком рано...' );
+    } else if (year > 2015) {
+      alert( 'Это поздновато' );
+    } else {
+      alert( 'Верно!' );
+    }
+  </code>
+</pre>
+      <p>В приведённом выше коде JavaScript сначала проверит <code>year < 2015</code>. Если это неверно, он переходит к следующему условию <code>year > 2015</code>. Если оно тоже ложно, тогда сработает последний <code>alert</code>.</p>
+    </details>
+    </ul>
 
     <h3>1.2. Тернарный оператор (<code>? :</code>)</h3>
     <p>Сокращенная запись <code>if/else</code> для простых условий.</p>
