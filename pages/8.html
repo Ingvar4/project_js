@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Конструктор, оператор "<code>new</code>"</h1>
+    <hr>
+    <p>Обычный синтаксис <code>{...}</code> позволяет создать только один объект. Но зачастую нам нужно создать множество похожих, однотипных объектов, таких как пользователи, элементы меню и так далее.</p>
+    <p>Это можно сделать при помощи функции-конструктора и оператора <code>new</code>.</p>
+    
+    <h3>Функция-конструктор</h3>
+    <p>Функции-конструкторы технически являются обычными функциями. Но есть два соглашения:</p>
+    <ul>
+      <li>Имя функции-конструктора должно начинаться с большой буквы.</li>
+      <li>Функция-конструктор должна выполняться только с помощью оператора <code>new</code>.</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    function User(name) {
+      this.name = name;
+      this.isAdmin = false;
+    }
+    
+    let user = new User("Jack");
+    
+    alert(user.name); // Jack
+    alert(user.isAdmin); // false
+  </code>
+</pre>
+    <p>Когда функция вызывается как <code>new User(...)</code>, происходит следующее:</p>
+    <ul>
+      <li>Создаётся новый пустой объект, и он присваивается <code>this</code>.</li>
+      <li>Выполняется тело функции. Обычно оно модифицирует <code>this</code>, добавляя туда новые свойства.</li>
+      <li>Возвращается значение <code>this</code>.</li>
+    </ul>
+    <p>Другими словами, <code>new User(...)</code> делает что-то вроде:</p>
+<pre>
+  <code class="lang-js">
+    function User(name) {
+      // this = {};  (неявно)
+    
+      // добавляет свойства к this
+      this.name = name;
+      this.isAdmin = false;
+    
+      // return this;  (неявно)
+    }
+  </code>
+</pre>
+    <p>Таким образом, <code>let user = new User("Jack")</code> возвращает тот же результат, что и:</p>
+<pre>
+  <code class="lang-js">
+    let user = {
+      name: "Jack",
+      isAdmin: false
+    };
+  </code>
+</pre>
+    <p>Теперь, если нам будет необходимо создать других пользователей, мы можем просто вызвать <code>new User("Ann")</code>, <code>new User("Alice")</code> и так далее. Данная конструкция гораздо удобнее и читабельнее, чем многократное создание литерала объекта.</p>
+    <p>Это и является основной целью конструкторов – реализовать код для многократного создания однотипных объектов.</p>
+    <p>Давайте ещё раз отметим – технически любая функция (кроме стрелочных функций, поскольку у них нет <code>this</code>) может использоваться в качестве конструктора. Его можно запустить с помощью <code>new</code>, и он выполнит выше указанный алгоритм. Подобные функции должны начинаться с заглавной буквы – это общепринятое соглашение, чтобы было ясно, что функция должна вызываться с помощью <code>new</code>.</p>
+    <hr>
+    <p><i><code>new function() { … }</code></i></p>
+    <p><i>Если в нашем коде присутствует большое количество строк, создающих один сложный объект, то мы можем обернуть их в функцию-конструктор, которая будет немедленно вызвана, вот так:</i></p>
+<pre>
+  <code class="lang-js">
+    // создаём функцию и сразу же вызываем её с помощью new
+    let user = new function() {
+      this.name = "John";
+      this.isAdmin = false;
+
+      // ...другой код для создания пользователя
+      // возможна любая сложная логика и инструкции
+      // локальные переменные и так далее
+    };
+  </code>
+</pre>
+    <p><i>Такой конструктор не может быть вызван снова, так как он нигде не сохраняется, просто создаётся и тут же вызывается. Таким образом, этот трюк направлен на инкапсуляцию кода, который создаёт отдельный объект, без возможности повторного использования в будущем.</i></p>
+    <hr>
+
+    <h3>Проверка на вызов в режиме конструктора: <code>new.target</code></h3>
+    
+  </article>
+</body>
+</html>
