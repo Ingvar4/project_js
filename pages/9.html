@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Массивы.</h1>
+    <hr>
+    <p>Для хранения упорядоченных коллекций существует особая структура данных, которая называется массив, <code>Array</code>.</p>
+    <h3>Объявление</h3>
+    <p>Существует два варианта синтаксиса для создания пустого массива:</p>
+<pre>
+  <code class="lang-js">
+    let arr = new Array();
+    let arr = [];
+  </code>
+</pre>
+    <p>Практически всегда используется второй вариант синтаксиса. В скобках мы можем указать начальные значения элементов:</p>
+<pre>
+  <code class="lang-js">
+    let fruits = ["Яблоко", "Апельсин", "Слива"];
+  </code>
+</pre>
+    <p>Элементы массива нумеруются, начиная с нуля.</p>
+    <p>Мы можем получить элемент, указав его номер в квадратных скобках:</p>
+<pre>
+  <code class="lang-js">
+    let fruits = ["Яблоко", "Апельсин", "Слива"];
+
+    alert( fruits[0] ); // Яблоко
+    alert( fruits[1] ); // Апельсин
+    alert( fruits[2] ); // Слива
+  </code>
+</pre>
+    <p>Мы можем заменить элемент:</p>
+<pre>
+  <code class="lang-js">
+    fruits[2] = 'Груша'; // теперь ["Яблоко", "Апельсин", "Груша"]
+  </code>
+</pre>
+    <p>…Или добавить новый к существующему массиву:</p>
+<pre>
+  <code class="lang-js">
+    fruits[3] = 'Лимон'; // теперь ["Яблоко", "Апельсин", "Груша", "Лимон"]
+  </code>
+</pre>
+    <p>Общее число элементов массива содержится в его свойстве <code>length</code>:</p>
+<pre>
+  <code class="lang-js">
+    let fruits = ["Яблоко", "Апельсин", "Слива"];
+
+    alert( fruits.length ); // 3
+  </code>
+</pre>
+    <p>Вывести массив целиком можно при помощи <code>alert</code>.</p>
+<pre>
+  <code class="lang-js">
+    let fruits = ["Яблоко", "Апельсин", "Слива"];
+
+    alert( fruits ); // Яблоко, Апельсин, Слива
+  </code>
+</pre>
+    <p>В массиве могут храниться элементы любого типа.</p>
+<pre>
+  <code class="lang-js">
+    // разные типы значений
+    let arr = [ 'Яблоко', { name: 'Джон' }, true, function() { alert('привет'); } ];
+
+    // получить элемент с индексом 1 (объект) и затем показать его свойство
+    alert( arr[1].name ); // Джон
+
+    // получить элемент с индексом 3 (функция) и выполнить её
+    arr[3](); // привет
+  </code>
+</pre>
+    
+    <h3>Получение последних элементов при помощи «at»</h3>
+    
+
+
+
+    
+  </article>
+</body>
+</html>
