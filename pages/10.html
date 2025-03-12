@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Преобразование типов.</h1>
+    <hr>
+    <p>JavaScript — язык с динамической типизацией, что означает, что переменные не имеют фиксированного типа. Тип данных может автоматически преобразовываться в другой, что приводит как к удобству, так и к возможным неожиданностям.</p>
+    <p>Существует два вида преобразований:</p>
+    <ol>
+      <li><strong>Явное</strong> (explicit, type casting) – когда разработчик явно указывает, в какой тип преобразовать значение.</li>
+      <li><strong>Неявное</strong> (implicit, type coercion) – когда движок JavaScript автоматически приводит один тип к другому.</li>
+    </ol>
+    <h2>Явное преобразование типов</h2>
+    <p>Явное преобразование выполняется с помощью встроенных функций и операторов.</p>
+    <h3>Преобразование в строку <code>String(value)</code></h3>
+    <p>Любое значение можно преобразовать в строку с помощью <code>String(value)</code> или <code>value.toString()</code>.</p>
+<pre>
+  <code class="lang-js">
+    String(123);    // "123"
+    String(true);   // "true"
+    String(null);   // "null"
+    String(undefined); // "undefined"
+    String([1, 2, 3]); // "1,2,3"
+  </code>
+</pre>
+    <p><strong>Особенности:</strong></p>
+    <ul>
+      <li><code>null</code> и <code>undefined</code> превращаются в <code>"null"</code> и <code>"undefined"</code>.</li>
+      <li><code>toString()</code> работает не для <code>null</code> и <code>undefined</code>, вызывая ошибку.</li>
+      <li>У массивов вызывается <code>.join(',')</code>, поэтому <code>String([1, 2, 3]) === "1,2,3"</code>.</li>
+    </ul>
+
+    <h3>Преобразование в число <code>Number(value)</code></h3>
+    <p>Используется для приведения строк, логических значений и других типов к числу.</p>
+<pre>
+  <code class="lang-js">
+    Number("123");    // 123
+    Number("  123  "); // 123 (пробелы обрезаются)
+    Number("123abc"); // NaN (не число)
+    Number(true);     // 1
+    Number(false);    // 0
+    Number(null);     // 0
+    Number(undefined); // NaN
+    Number("");       // 0
+    Number(" ");      // 0
+  </code>
+</pre>
+    <p><strong>Особенности:</strong></p>
+    <ul>
+      <li>Пустая строка (<code>""</code> и <code>" "</code>) становится <code>0</code>.</li>
+      <li><code>null</code> превращается в <code>0</code>, но <code>undefined</code> — в <code>NaN</code>.</li>
+      <li><code>Boolean</code> → <code>true</code> становится <code>1</code>, а <code>false</code> — <code>0</code>.</li>
+      <li>Если строка содержит не только цифры, результат <code>NaN</code>.</li>
+    </ul>
+    <p><strong>Полезный трюк:</strong></p>
+<pre>
+  <code class="lang-js">
+    +"123"; // 123
+    +"123abc"; // NaN
+    +true; // 1
+    +false; // 0
+  </code>
+</pre>
+    <p>Оператор <code>+</code> перед значением выполняет преобразование в число.</p>
+
+    <h3>Преобразование в логическое значение <code>Boolean(value)</code></h3>
+    <p>Любое значение может быть преобразовано в <code>true</code> или <code>false</code>.</p>
+<pre>
+  <code class="lang-js">
+    Boolean(0);        // false
+    Boolean("");       // false
+    Boolean(null);     // false
+    Boolean(undefined); // false
+    Boolean(NaN);      // false
+    Boolean(false);    // false
+
+    Boolean(1);        // true
+    Boolean("hello");  // true
+    Boolean([]);       // true
+    Boolean({});       // true
+    Boolean(function(){}); // true
+  </code>
+</pre>
+    <p><strong>Falsy (ложные) значения:</strong></p>
+    <ul>
+      <li><code>0</code>, <code>-0</code>, <code>""</code> (пустая строка)</li>
+      <li><code>null</code>, <code>undefined</code>, <code>NaN</code></li>
+      <li><code>false</code></li>
+    </ul>
+    <p>Все остальные значения считаются <strong>truthy</strong>.</p>
+    <p><strong>Особенность</strong>: Пустой массив (<code>[]</code>) и пустой объект (<code>{}</code>) всегда <code>true</code>, что иногда сбивает с толку.</p>
+<pre>
+  <code class="lang-js">
+    Boolean([]); // true
+    Boolean({}); // true
+  </code>
+</pre>
+
+    <h2>Неявное преобразование типов (Type Coercion)</h2>
+    <p>JavaScript автоматически приводит типы в разных контекстах.</p>
+    <h3>Конкатенация со строками</h3>
+    <p>Если одно из значений — строка, то все приводится к строке:</p>
+<pre>
+  <code class="lang-js">
+    "5" + 3; // "53"
+    "5" + true; // "5true"
+    "5" + null; // "5null"
+  </code>
+</pre>
+    <p>Так как <code>+</code> используется и для сложения, и для конкатенации строк, он отдает приоритет строковому объединению.</p>
+    <p><strong>Как избежать?</strong> Явно указывать тип, например <code>Number("5") + 3</code> даст <code>8</code>.</p>
+
+    <h3>Арифметические операции</h3>
+    <p>При <code>-</code>, <code>*</code>, <code>/</code> JavaScript приводит операнды к числу:</p>
+<pre>
+  <code class="lang-js">
+    "10" - 5; // 5 (строка "10" становится числом)
+    "10" * "2"; // 20 (оба операнда стали числами)
+    "10" / "2"; // 5 (аналогично)
+    "5px" - 3; // NaN (некорректное число)
+  </code>
+</pre>  
+
+    <h3>Логическое приведение</h3>
+    <p>При использовании логических операторов (<code>&&</code>, <code>||</code>, <code>!</code>) применяются правила <strong>truthy</strong> и <strong>falsy</strong>.</p>
+<pre>
+  <code class="lang-js">
+    null || "hello"; // "hello" (берется первое truthy)
+    0 || "default"; // "default" (0 - falsy)
+    "hi" && "bye"; // "bye" (оба truthy, берется последний)
+    false && "error"; // false (первый falsy)
+  </code>
+</pre>  
+    <p><strong>Лайфхак</strong>: Использование <code>||</code> для значений по умолчанию:</p>
+<pre>
+  <code class="lang-js">
+    let username = userInput || "Гость";
+  </code>
+</pre>  
+
+    <h2><code>==</code> vs. <code>===</code> (строгое и нестрогое сравнение)</h2>
+    <p>Оператор <code>==</code> выполняет приведение типов, а <code>===</code> сравнивает без приведения.</p>
+<pre>
+  <code class="lang-js">
+    5 == "5"; // true  (число и строка преобразуются)
+    5 === "5"; // false (разные типы)
+    null == undefined; // true (специальное правило)
+    null === undefined; // false (разные типы)
+  </code>
+</pre>  
+    <p>Правила приведения в <code>==</code>:</p>
+    <ul>
+      <li><code>null == undefined</code> → <code>true</code></li>
+      <li><code>true == 1</code>, <code>false == 0</code></li>
+      <li><code>"5" == 5</code> → <code>true</code> (строка приводится к числу)</li>
+    </ul>
+    <p>Рекомендация: Всегда использовать <code>===</code>, чтобы избежать скрытых багов.</p>
+
+    <h3>Подводные камни и edge-cases</h3>
+    <ul>
+      <li><code>null</code> и <code>undefined</code> не приводятся к числу, но <code>null</code> странно ведёт себя с <code>>=</code></li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    null == 0; // false
+    null >= 0; // true (приводится к 0)
+  </code>
+</pre>
+    <ul>
+      <li>Массивы приводятся к строке при неявном приведении:</li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    [1,2] + [3,4]; // "1,23,4"
+  </code>
+</pre>
+    <ul>
+      <li>Объекты при приведении используют <code>valueOf</code> или <code>toString</code></li>
+    </ul>
+<pre>
+  <code class="lang-js">
+    ({} + {}); // "[object Object][object Object]"
+  </code>
+</pre>
+
+    <h2>Выводы</h2>
+    <ul>
+      <li>Используй <code>===</code> вместо <code>==</code>.</li>
+      <li>Для преобразования явно указывай типы (<code>String()</code>, <code>Number()</code>, <code>Boolean()</code>).</li>
+      <li>Будь осторожен с "<code>+</code>" — он объединяет строки.</li>
+      <li><code>null</code>, <code>undefined</code>, <code>0</code>, <code>""</code>, <code>false</code>, <code>NaN</code> — <strong>falsy</strong>.</li>
+      <li>Используй <code>||</code> для значений по умолчанию.</li>
+    </ul>
+  </article>
+</body>
+</html>
