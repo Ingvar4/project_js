@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    body {height: 100vh;}
+    article {height: 90%;}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Примеры</h1>
+    <hr>
+
+    <ul>
+      <details>
+        <summary>Пример рекурсии в функциях и проброс переменной в другую функцию.</summary>
+<pre>
+  <code class="lang-js">
+    function question() {
+      let age = +prompt('Введите ваш возраст');
+    
+      if (isNaN(age)) {
+        alert('Вы ввели не число. Пожалуйста введите число');
+        question();
+      } else {
+        message(age);
+      }
+    }
+    
+    question();
+    
+    function message(age) {
+      if (age >= 16) {
+        alert('Доступ разрешен');
+      } else {
+        alert('Доступ ограничен');
+      }
+    }
+  </code>
+</pre>
+        <p>У нас есть 2 функции. Одна принимает числовое значение, другая его проверяет. Смысл в проверке возраста и получения доступа.</p>
+        <p>Внутри функции <code>question</code> создаётся переменная <code>age</code>, <code>+</code> перед <code>prompt</code> преобразует введённые данные к типу Number.</p>
+        <p>Далее идёт проверка. Если введенные данные не число, то вывод сообщения и перезапуск функции через повторный её вызов <code>question();</code>. (рекурсия, функция вызывает сама себя).</p>
+        <p>Иначе вызывается выполнение 2й функции <code>message(age);</code> у которой параметр это переменная <code>(age)</code></p>
+        <p>Далее 2я функция принимает параметр <code>(age)</code> что и является пробросом переменной <code>age</code> в функцию <code>message()</code></p>
+        <p>в 12 строке question(); осуществляется запуск самой функции, а проброс переменной позволяет перескочить эту строку, чтобы избежать зацикливания.</p>
+      </details>
+    </ul>
+
+
+
+
+
+  </article>
+</body>
+</html>
