@@ -29,6 +29,7 @@
     <h1>Примеры</h1>
     <hr>
 
+<!-- РЕКУРСИЯ -->
     <ul>
       <details>
         <summary>Пример рекурсии в функциях и проброс переменной в другую функцию.</summary>
@@ -65,7 +66,72 @@
       </details>
     </ul>
 
+<!-- SWITCH CASE ПРИМЕР -->
+     <ul>
+      <details>
+        <summary>Пример простого <code>switch</code> <code>case</code> <code>break</code> <code>default</code> + DOM</summary>
+<pre>
+  <code class="lang-html">
+    &#60;!-- HTML -->
 
+    &#60;h1>Назовите столицу Турции&#60;/h1>
+    &#60;input
+      type="text"
+      class="capitalInput"
+      placeholder="Введите название столицы"
+    />
+    &#60;button class="checkButton">Проверить&#60;/button>
+    &#60;div class="result" id="resultBlock">&#60;/div>
+  </code>
+</pre>
+<pre>
+  <code class="lang-js">
+    //JS
+    
+    const capitalInput = document.getElementsByClassName('capitalInput')[0];
+    const checkButton = document.getElementsByClassName('checkButton')[0];
+    const showResult = document.getElementById('resultBlock');
+
+    checkButton.addEventListener('click', function() {
+      let capital = capitalInput.value.toLowerCase().trim();
+      switch (capital) {
+        case 'стамбул':
+          showResult.innerHTML = 'Крупный город но не столица';
+          showResult.style.backgroundColor = 'red';
+          break;
+        case "анталия":
+          showResult.innerHTML = "Это туристический центр, но не столица";
+          showResult.style.backgroundColor = "red";
+          break;
+        case "памуккале":
+          showResult.innerHTML = "Это памятник природы, а не город";
+          showResult.style.backgroundColor = "red";
+          break;
+        case "анкара":
+          showResult.innerHTML = "Верно";
+          showResult.style.backgroundColor = "#078507";
+          break;
+        default:
+          showResult.innerHTML = "Ну, это вряд ли!";
+          showResult.style.backgroundColor = "red";
+          break;
+      }
+    });
+  </code>
+</pre>
+        <p>Создаём переменные <code>capitalInput</code>, <code>checkButton</code>, <code>showResult</code> и привязываем их к вводу (по названию класса), кнопке (по названию класса) и блоку результата (по ID) в HTML соответственно.</p>
+        <p><code>[0]</code> - это порядковый номер конкретного элемента (нумерация с 0), если его не указать, то <code>document.getElementsByClassName</code> выберет всё элементы с одинаковым названием класса.</p>
+        <p>далее на <code>checkButton</code> вешаем обработчик события на клик (<code>'click'</code>) и добавляем функцию, в коротой создаём переменную <code>capital</code></p>
+        <p><code>let capital = capitalInput.value.toLowerCase().trim();</code>
+          <ul>
+            <li><code>capitalInput</code> переменная с привязкой к полю ввода в HTML</li>
+            <li><code>.value</code> метод для получения значения текстового поля ввода</li>
+            <li><code>.toLowerCase()</code> преобразование к строчным буквам</li>
+            <li><code>.trim()</code> - данный метод удаляет пробельные символы с начала и конца строки (в случае если при вводе ответа будет поставлен пробел в начале или конце)</li>
+          </ul>
+        </p>
+      </details>
+     </ul>
 
 
 
