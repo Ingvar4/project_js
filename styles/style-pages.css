@@ -192,6 +192,14 @@ details {
   h1 {
     font-size: 45px;
   }
+
+  pre {
+    font-size: 10px;
+  }
+
+  img {
+    width: 100%;
+  }
 }
 
 @media (min-width: 820px) {}

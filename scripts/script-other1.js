@@ -19,3 +19,26 @@
 //   }
 //   i++;
 // }
+
+// const childRolesEl = document.getElementById('roles-children');
+// const input = document.getElementById('oneMoreChild');
+// const button = document.getElementById('addChildButton');
+// let numberChildren = childRolesEl.children.length;
+
+// input.addEventListener('keypress' (event) => {
+//   if (event.key === 'Enter' {})
+// });
+
+// button.addEventListener('click', () => {
+//   const oneMoreChildInputText = input.value.trim();
+//   if(oneMoreChildInputText !== '') {
+//     childRolesEl.innerHTML += `<li class="item">${oneMoreChildInputText}</li>`;
+//   }
+
+//   input.value = '';
+
+//   numberChildren++;
+
+//   if (numberChildren === 5) button.disabled = true;
+// });
+
