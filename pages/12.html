@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Методы массивов.</h1>
+    <hr>
+
+    <h2>Добавление/удаление элементов</h2>
+    <p>Мы уже знаем методы, которые добавляют и удаляют элементы из начала или конца:</p>
+    <ul>
+      <li><code>arr.push(...items)</code> – добавляет элементы в конец,</li>
+      <li><code>arr.pop()</code> – извлекает элемент из конца,</li>
+      <li><code>arr.shift()</code> – извлекает элемент из начала,</li>
+      <li><code>arr.unshift(...items)</code> – добавляет элементы в начало.</li>
+    </ul>
+    <p>Есть и другие.</p>
+
+    <h3>splice</h3>
+    <p>Как удалить элемент из массива?</p>
+    <p>Так как массивы – это объекты, то можно попробовать <code>delete</code>:</p>
+<pre>
+  <code class="lang-js">
+    let arr = ["I", "go", "home"];
+
+    delete arr[1]; // удалить "go"
+
+    alert( arr[1] ); // undefined
+
+    // теперь arr = ["I",  , "home"];
+    alert( arr.length ); // 3
+  </code>
+</pre>
+    <p>Элемент был удалён, но в массиве всё ещё три элемента, мы можем увидеть, что <code>arr.length == 3</code>.</p>
+    <p>Это естественно, потому что <code>delete obj.key</code> удаляет значение по ключу <code>key</code>. Это всё, что он делает. Хорошо для объектов. Но для массивов мы обычно хотим, чтобы оставшиеся элементы сдвинулись и заняли освободившееся место. Мы ждём, что массив станет короче.</p>
+    <p>Поэтому нужно использовать специальные методы.</p>
+    <p>Метод <code>arr.splice</code> – это универсальный «швейцарский нож» для работы с массивами. Умеет всё: добавлять, удалять и заменять элементы.</p>
+    <p>Синтаксис:</p>
+<pre>
+  <code class="lang-js">
+    arr.splice(start[, deleteCount, elem1, ..., elemN])
+  </code>
+</pre>
+    <p>Он изменяет <code>arr</code> начиная с индекса <code>start:</code> удаляет <code>deleteCount</code> элементов и затем вставляет <code>elem1, ..., elemN</code> на их место. Возвращает массив из удалённых элементов.</p>
+    <p>Этот метод легко понять, рассмотрев примеры.</p>
+    <p>Начнём с удаления:</p>
+<pre>
+  <code class="lang-js">
+    let arr = ["Я", "изучаю", "JavaScript"];
+
+    arr.splice(1, 1); // начиная с индекса 1, удалить 1 элемент
+
+    alert( arr ); // осталось ["Я", "JavaScript"]
+  </code>
+</pre>
+    <p>Легко, правда? Начиная с индекса <code>1</code>, он убрал <code>1</code> элемент.</p>
+    <p>В следующем примере мы удалим 3 элемента и заменим их двумя другими.</p>
+<pre>
+  <code class="lang-js">
+    let arr = ["Я", "изучаю", "JavaScript", "прямо", "сейчас"];
+
+    // удалить 3 первых элемента и заменить их другими
+    arr.splice(0, 3, "Давай", "танцевать");
+
+    alert( arr ) // теперь ["Давай", "танцевать", "прямо", "сейчас"]
+  </code>
+</pre>
+    <p>Здесь видно, что <code>splice</code> возвращает массив из удалённых элементов:</p>
+<pre>
+  <code class="lang-js">
+    let arr = ["Я", "изучаю", "JavaScript", "прямо", "сейчас"];
+
+    // удалить 2 первых элемента
+    let removed = arr.splice(0, 2);
+
+    alert( removed ); // "Я", "изучаю" <-- массив из удалённых элементов
+  </code>
+</pre>
+    <p>Метод <code>splice</code> также может вставлять элементы без удаления, для этого достаточно установить <code>deleteCount</code> в <code>0</code>:</p>
+<pre>
+  <code class="lang-js">
+    let arr = ["Я", "изучаю", "JavaScript"];
+
+    // с индекса 2
+    // удалить 0 элементов
+    // вставить "сложный", "язык"
+    arr.splice(2, 0, "сложный", "язык");
+
+    alert( arr ); // "Я", "изучаю", "сложный", "язык", "JavaScript"
+  </code>
+</pre>
+
+  </article>
+</body>
+</html>
