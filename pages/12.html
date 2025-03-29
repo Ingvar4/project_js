@@ -110,6 +110,29 @@
   </code>
 </pre>
 
+    <h3>slice</h3>
+    <p>Метод <code>arr.slice</code> намного проще, чем похожий на него <code>arr.splice</code>.</p>
+    <p>Синтаксис:</p>
+<pre>
+  <code class="lang-js">
+    arr.slice([start], [end])
+  </code>
+</pre>
+    <p>Он возвращает новый массив, в который копирует все элементы с индекса <code>start</code> до <code>end</code> (не включая <code>end</code>). <code>start</code> и <code>end</code> могут быть отрицательными, в этом случае отсчёт позиции будет вестись с конца массива.</p>
+    <p>Это похоже на строковый метод <code>str.slice</code>, но вместо подстрок возвращает подмассивы.</p>
+<pre>
+  <code class="lang-js">
+    let arr = ["t", "e", "s", "t"];
+
+    alert( arr.slice(1, 3) ); // e,s (копирует с 1 до 3)
+
+    alert( arr.slice(-2) ); // s,t (копирует с -2 до конца)
+  </code>
+</pre>
+    <p>Можно вызвать <code>slice</code> без аргументов: <code>arr.slice()</code> создаёт копию <code>arr</code>. Это часто используют, чтобы создать копию массива для дальнейших преобразований, которые не должны менять исходный массив.</p>
+
+    <h3>concat</h3>
+
   </article>
 </body>
 </html>
