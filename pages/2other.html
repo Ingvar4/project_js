@@ -133,6 +133,87 @@
       </details>
      </ul>
 
+<!-- РЕНДЕР ОБЪЕКТА С ПОМОЩЬЮ DOM и ШАБЛОННЫХ СТРОК -->
+     <ul>
+      <details>
+        <summary>Рендер объекта с помощью DOM и шаблонных строк</summary>
+<pre>
+  <code class="lang-html">
+    &#60;!-- HTML -->
+    &#60;div id="student-info">&#60;/div>
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-js">
+    //JS
+    
+    const student = {
+      name: 'Alex',
+      surname: 'Ivanov',
+      course: 3,
+      age: 21,
+      isMarried: false,
+      skills: ['HTML', 'CSS', 'JS'],
+      adress: {
+        city: 'Rostov',
+        street: 'Pushkinskaya',
+        house: 22,
+        'building / letter': null,
+        apartment: 12,
+      },
+    };
+    
+    function renderStudentInfo() {
+      const studentInfoDiv = document.getElementById('student-info');
+    
+      studentInfoDiv.innerHTML = `
+      &#60;h2>${student.name} ${student.surname}&#60;/h2>
+      &#60;p>Курс: ${student.course}&#60;/p>
+      &#60;p>Возраст: ${student.age}&#60;/p>
+      &#60;p>Женат: ${student.isMarried ? 'Да' : 'Нет'}&#60;/p>
+      &#60;p>Навыки: ${student.skills.join(', ')}&#60;/p>
+      &#60;h3>Адрес&#60;/h3>
+      &#60;p>Город: ${student.adress.city}&#60;/p>
+      &#60;p>Улица: ${student.adress.street}&#60;/p>
+      &#60;p>Дом: ${student.adress.house}&#60;/p>
+      &#60;p>Корпус/Литера: ${
+        student.adress['building / letter'] === null
+          ? 'Не указано' : student.adress['building / letter']
+      }&#60;/p>
+      &#60;p>Квартира: ${student.adress.apartment}&#60;/p>
+      `;
+    };
+    
+    renderStudentInfo(student);
+  </code>
+</pre>
+      </details>
+     </ul>
+
+<!-- ПРИМЕР С МЕТОДОМ ОБЪЕКТА -->
+     <ul>
+      <details>
+        <summary>Пример метода объекта</summary>
+<pre>
+  <code class="lang-js">
+    const user = {
+      name: 'John',
+      age: 35,
+      city: 'London',
+    
+      getInfo() {
+        return `Пользователь ${user.name}, в возрасте ${user.age} лет, проживает в г.${user.city}`;
+      },
+    };
+    
+    console.log(user.getInfo());
+  </code>
+</pre>
+        <p>Внутри объекта <code>user</code> с помощью краткой записи создаём функцию <code>getInfo()</code>. Внутри неё с помощью <code>return</code> и шаблонных строк возвращаем нужную информацию. Затем вызываем в консоль выполнение функции. Функция внутри объекта является его методом.</p>
+      </details>
+     </ul>
+
 
 
   </article>
