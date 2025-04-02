@@ -213,6 +213,49 @@
     <p>Результат функции (если она что-то возвращает) отбрасывается и игнорируется.</p>
 
     <h2>Поиск в массиве</h2>
+    <h3>indexOf/lastIndexOf и includes</h3>
+    <p>У методов <code>arr.indexOf</code> и <code>arr.includes</code> одинаковый синтаксис и они делают по сути то же самое, что и их строковые аналоги, но работают с элементами вместо символов:</p>
+    <ul>
+      <li><code>arr.indexOf(item, from)</code> ищет <code>item</code> начиная с индекса <code>from</code> и возвращает номер индекса, на котором был найден искомый элемент, в противном случае <code>-1</code>.</li>
+      <li><code>arr.includes(item, from)</code> ищет <code>item</code> начиная с индекса <code>from</code> и возвращает <code>true</code>, если поиск успешен.</li>
+    </ul>
+    <p>Обычно эти методы используются только с одним аргументом: искомым <code>item</code>. По умолчанию поиск ведется с начала.</p>
+<pre>
+  <code class="lang-js">
+    let arr = [1, 0, false];
+
+    alert( arr.indexOf(0) ); // 1
+    alert( arr.indexOf(false) ); // 2
+    alert( arr.indexOf(null) ); // -1
+
+    alert( arr.includes(1) ); // true
+  </code>
+</pre>
+    <p>Пожалуйста, обратите внимание, что методы используют строгое сравнение <code>===</code>. Таким образом, если мы ищем <code>false</code>, он находит именно <code>false</code>, а не ноль.</p>
+    <p>Если мы хотим проверить наличие элемента в массиве и нет необходимости знать его индекс, предпочтительно использовать <code>arr.includes</code>.</p>
+    <p>Метод <code>arr.lastIndexOf</code> похож на <code>indexOf</code>, но ищет справа налево.</p>
+<pre>
+  <code class="lang-js">
+    let fruits = ['Яблоко', 'Апельсин', 'Яблоко']
+
+    alert( fruits.indexOf('Яблоко') ); // 0 (первый 'Яблоко')
+    alert( fruits.lastIndexOf('Яблоко') ); // 2 (последний 'Яблоко')
+  </code>
+</pre>
+    <hr>
+    <h3>Метод <code>includes</code> правильно обрабатывает <code>NaN</code></h3>
+    <p>Незначительная, но заслуживающая внимания особенность <code>includes</code> – он правильно обрабатывает <code>NaN</code>, в отличие от <code>indexOf</code>:</p>
+<pre>
+  <code class="lang-js">
+    const arr = [NaN];
+    lert( arr.indexOf(NaN) ); // -1 (неверно, должен быть 0)
+    alert( arr.includes(NaN) );// true (верно)
+  </code>
+</pre>
+    <p>Это связано с тем, что <code>includes</code> был добавлен в JavaScript гораздо позже и использует более современный алгоритм сравнения.</p>
+    <hr>
+
+    <h3>find и findIndex/findLastIndex</h3>
 
   </article>
 </body>
