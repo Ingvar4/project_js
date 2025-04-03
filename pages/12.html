@@ -256,6 +256,58 @@
     <hr>
 
     <h3>find и findIndex/findLastIndex</h3>
+    <p>Представьте, что у нас есть массив объектов. Как нам найти объект с определённым условием?</p>
+    <p>Здесь пригодится метод <code>arr.find</code>.</p>
+<pre>
+  <code class="lang-js">
+    let result = arr.find(function(item, index, array) {
+      // если true - возвращается текущий элемент и перебор прерывается
+      // если все итерации оказались ложными, возвращается undefined
+    });
+  </code>
+</pre>
+    <p>Функция вызывается по очереди для каждого элемента массива:</p>
+    <ul>
+      <li>item – очередной элемент.</li>
+      <li>index – его индекс.</li>
+      <li>array – сам массив.</li>
+    </ul>
+    <p>Если функция возвращает <code>true</code>, поиск прерывается и возвращается <code>item</code>. Если ничего не найдено, возвращается <code>undefined</code>.</p>
+    <p>Например, у нас есть массив пользователей, каждый из которых имеет поля <code>id</code> и <code>name</code>. Найдем пользователя с <code>id == 1</code>:</p>
+<pre>
+  <code class="lang-js">
+    let users = [
+      {id: 1, name: "Вася"},
+      {id: 2, name: "Петя"},
+      {id: 3, name: "Маша"}
+    ];
+
+    let user = users.find(item => item.id == 1);
+
+    alert(user.name); // Вася
+  </code>
+</pre>
+    <p>В реальной жизни массивы объектов – обычное дело, поэтому метод <code>find</code> крайне полезен.</p>
+    <p>Обратите внимание, что в данном примере мы передаём <code>find</code> функцию <code>item => item.id == 1</code> с одним аргументом. Это типично, другие аргументы этой функции используются редко.</p>
+    <p>У метода <code>arr.findIndex</code> такой же синтаксис, но он возвращает индекс, на котором был найден элемент, а не сам элемент. Значение <code>-1</code> возвращается, если ничего не найдено.</p>
+    <p>Метод <code>arr.findLastIndex</code> похож на <code>findIndex</code>, но ищет справа налево, наподобие <code>lastIndexOf</code>.</p>
+<pre>
+  <code class="lang-js">
+    let users = [
+      {id: 1, name: "Вася"},
+      {id: 2, name: "Петя"},
+      {id: 3, name: "Маша"},
+      {id: 4, name: "Вася"}
+    ];
+
+    // Найти индекс первого Васи
+    alert(users.findIndex(user => user.name == 'Вася')); // 0
+
+    // Найти индекс последнего Васи
+    alert(users.findLastIndex(user => user.name == 'Вася')); // 3
+  </code>
+</pre>
+    <h3>filter</h3>
 
   </article>
 </body>
