@@ -308,6 +308,34 @@
   </code>
 </pre>
     <h3>filter</h3>
+    <p>Метод <code>find</code> ищет один (первый) элемент, который заставит функцию вернуть <code>true</code>.</p>
+    <p>Если найденных элементов может быть много, можно использовать <code>arr.filter(fn)</code>.</p>
+    <p>Синтаксис схож с <code>find</code>, но <code>filter</code> возвращает массив из всех подходящих элементов:</p>
+<pre>
+  <code class="lang-js">
+    let results = arr.filter(function(item, index, array) {
+      // если `true` -- элемент добавляется к results и перебор продолжается
+      // возвращается пустой массив в случае, если ничего не найдено
+    });
+  </code>
+</pre>
+    <p>Например:</p>
+<pre>
+  <code class="lang-js">
+    let users = [
+      {id: 1, name: "Вася"},
+      {id: 2, name: "Петя"},
+      {id: 3, name: "Маша"}
+    ];
+
+    // возвращает массив, состоящий из двух первых пользователей
+    let someUsers = users.filter(item => item.id < 3);
+
+    alert(someUsers.length); // 2
+  </code>
+</pre>
+
+    <h3>Преобразование массива</h3>
 
   </article>
 </body>
