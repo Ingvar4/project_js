@@ -214,7 +214,174 @@
       </details>
      </ul>
 
+<!-- ПРИМЕР С РЕНДЕРОМ ДАННЫХ ИЗ МАССИВА (ЧАТ) -->
+      <ul>
+        <details>
+          <summary>Пример с рендером данных из массива с помощью DOM (ЧАТ)</summary>
+<pre>
+  <code class="lang-css">
+    /* CSS */
 
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 40px;
+    }
+    
+    .friends {
+      list-style-type: none;
+    }
+    
+    .form-row {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .input {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+    textarea.input {
+      width: 400px;
+      height: 100px;
+    }
+    
+    .friends {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    
+    .friend {
+      width: 400px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      background-color: #ddd;
+    }
+    
+    .comments {
+      margin-top: 10px;
+    }
+    .comment {
+      margin-bottom: 5px;
+      padding: 15px 10px;
+      border: 1px solid #fff;
+      border-radius: 5px;
+      background-color: #eee;
+    }
+    
+    .button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    
+    .button:hover {
+      background-color: #ddd;
+    }
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-html">
+    &#60;!-- HTML -->
+
+    &#60;h1>Чатик для друзей&#60;/h1>
+    &#60;ul class="friends" id="list">&#60;/ul>
+
+    &#60;div class="form">
+      &#60;h2>Оставьте комментарий&#60;/h2>
+      &#60;div class="form-row">
+        &#60;input
+          type="text"
+          id="name-input"
+          class="input"
+          placeholder="Введите имя"
+        />
+      &#60;/div>
+      &#60;div class="form-row">
+        &#60;textarea
+          id="comment-input"
+          class="input"
+          placeholder="Введите ваш комментарий"
+        >&#60;/textarea>
+        &#60;br />&#60;br/>
+        &#60;button class="button" id="add-comment-button">
+          Добавить комментарий
+        &#60;/button>
+      &#60;/div>
+    &#60;/div>
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-js">
+    //JS
+
+    const friends = [
+      {
+        name: "Сережа",
+        comment: "Поболтаем?",
+      },
+      {
+        name: "Петр",
+        comment: "Давайте?",
+      },
+      {
+        name: "Ольга",
+        comment: "Ребята, как сходили в кино?",
+      },
+    ];
+
+    const listElements = document.getElementById('list');
+    const nameInputElement = document.getElementById('name-input');
+    const commentInput = document.getElementById('comment-input');
+    const addCommentButton = document.getElementById('add-comment-button');
+
+    function renderFriends() {
+      let friendsHtml = '';
+
+      friends.forEach((friend) => {
+        friendsHtml += `&#60;li class="friend">
+            &#60;p>${friend.name}&#60;/p>
+            &#60;div class="comments">
+              &#60;p class="comment">${friend.comment}&#60;/p>
+            &#60;/div>
+          &#60;/li>`;
+      });
+
+      listElements.innerHTML = friendsHtml;
+    }
+
+    renderFriends();
+
+    addCommentButton.addEventListener('click', () => {
+      const name = nameInputElement.value.trim();
+      const comment = commentInput.value.trim();
+
+      if (name && comment) {
+        friends.push({
+          name: name,
+          comment: comment,
+        });
+      
+        renderFriends();
+      
+        nameInputElement.value = '';
+        commentInput.value = '';
+      } else {
+          alert('Введите имя и комент');
+      }
+    });
+  </code>
+</pre>
+        </details>
+      </ul>      
 
   </article>
 </body>
