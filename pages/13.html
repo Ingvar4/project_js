@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Встроенные методы строки.</h1>
+    <hr>
+
+    <h3><code>.toUpperCase()</code></h3>
+    <p>К верхнему регистру.</p>
+<pre>
+  <code class="lang-js">
+    let str = 'Строка';
+
+    console.log(str.toUpperCase()); //СТРОКА
+  </code>
+</pre>
+
+    <h3><code>.toLowerCase()</code></h3>
+    <p>К нижнему регистру.</p>
+<pre>
+  <code class="lang-js">
+    let str = 'Строка';
+
+    console.log(str.toLowerCase()); //строка
+  </code>
+</pre>
+
+    <h3><code>.length</code></h3>
+    <p>Длинна строки</p>
+<pre>
+  <code class="lang-js">
+    let str = 'text';
+
+    console.log(str.length); //4
+  </code>
+</pre>
+
+    <h3><code>.indexOf()</code></h3>
+    <p>Поиск по символу или сочетанию (без учёта регистра). Выдаёт порядковый индекс. Если вывод <code>-1</code>, значит символ отсутствует.</p>
+<pre>
+  <code class="lang-js">
+    let str = 'text';
+
+    console.log(str.indexOf('x')); //2
+  </code>
+</pre>
+
+    <h3><code>.includes()</code></h3>
+    <p>Поиск по символу или сочетанию (без учёта регистра). Выдаёт <code>true/false</code>.</p>
+<pre>
+  <code class="lang-js">
+    let str = 'text';
+
+    console.log(str.includes('x')); //true
+  </code>
+</pre>
+    <p>Пример с поиском по товарам.</p>
+<pre>
+  <code class="lang-js">
+    const products = [
+      'Яйцо столовое',
+      'Молоко Молочник',
+      'Коровка Молоко',
+      'Виноград Изабелла',
+    ];
+
+    let search = 'молоко';
+
+    products.forEach((product) => {
+      if (product.toLowerCase().includes(search.toLowerCase())) {
+        console.log(product);
+      }
+    });
+
+    //Молоко Молочник
+    //Коровка Молоко
+  </code>
+</pre>
+
+    <h3><code>.slice()</code></h3>
+    <p>Извлечение части строки в виде новой, без изменения изначальной строки.</p>
+<pre>
+  <code class="lang-js">
+    let str = 'London is a capital of Great Britan';
+
+    console.log(str.slice(1)); //ondon is a capital of Great Britan
+  </code>
+</pre>
+    <p>Cрезает всё до индекса в скобках</p>
+<pre>
+  <code class="lang-js">
+    let str = 'London is a capital of Great Britan';
+
+    console.log(str.slice(5)); //n is a capital of Great Britan
+  </code>
+</pre>
+    <p>1й параметр - первый включённый порядковый номер символа. 2й параметр - это первый не включённый порядковый номер символа.</p>
+<pre>
+  <code class="lang-js">
+    let str = 'London is a capital of Great Britan';
+
+    console.log(str.slice(0, 6)); //London
+  </code>
+</pre>
+    <p>Пример с форматированием даты</p>
+<pre>
+  <code class="lang-js">
+    let dateStr = '2023-10-05';
+    let year = dateStr.slice(0, 4); // Извлекаем год
+    let month = dateStr.slice(5, 7); // Извлекаем месяц
+    let day = dateStr.slice(8, 10); // Извлекаем день
+    console.log(year, month, day); // 2023 10 05
+  </code>
+</pre>
+    <p>Можно так же срезать последний символ (или несколько, если использовать -2, -3 итд).</p>
+<pre>
+  <code class="lang-js">
+    let str = 'Hello World!';
+    let newStr = str.slice(0, -1); //Удаляем последний символ
+    console.log(newStr); //Hello World
+  </code>
+</pre>
+
+    <h3><code>.split()</code></h3>
+    <p>Разбивает строки на массив</p>
+<pre>
+  <code class="lang-js">
+    let str = 'London is a capital of Great Britan';
+
+    console.log(str.split(' ')); // ['London', 'is', 'a', 'capital', 'of', 'Great', 'Britan']
+  </code>
+</pre>
+
+    <h3><code>.join()</code></h3>
+    <p>Объединяет все элементы массива или массивоподобных объектов в строку</p>
+<pre>
+  <code class="lang-js">
+    let str = 'London is a capital of Great Britan';
+
+    console.log(str.split(' ').join(' ')); // London is a capital of Great Britan
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-js">
+    let str = 'London is a capital of Great Britan';
+
+    console.log(str.split(' ').join('|')); // London|is|a|capital|of|Great|Britan
+  </code>
+</pre>
+
+    <h3><code>.trim()</code></h3>
+    <p>Убирает все пробелы в начале и конце строки (полезен для работы с формами к примеру)</p>
+<pre>
+  <code class="lang-js">
+    let str = '  London is a capital of Great Britan ';
+
+    console.log(str.trim()); //London is a capital of Great Britan
+  </code>
+</pre>
+
+    <h3><code>startsWith / endsWith</code></h3>
+    <p></p>
+<pre>
+  <code class="lang-js">
+    const products = [
+      'Яйцо столовое',
+      'Молоко Молочник',
+      'Коровка Молоко',
+      'Виноград Изабелла',
+    ];
+
+    let search = 'молоко';
+
+    products.forEach((product) => {
+      if (product.toLowerCase().startsWith(search.toLowerCase())) {
+        console.log(product);
+      }
+    });
+
+    //Молоко Молочник
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-js">
+    const products = [
+      'Яйцо столовое',
+      'Молоко Молочник',
+      'Коровка Молоко',
+      'Виноград Изабелла',
+    ];
+
+    let search = 'молоко';
+
+    products.forEach((product) => {
+      if (product.toLowerCase().startsWith(search.toLowerCase())) {
+        console.log(product);
+      }
+    });
+
+    //Коровка Молоко
+  </code>
+</pre>
+    <p><a href="https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/String">Больше методов строк на MDN</a></p>
+  </article>
+</body>
+</html>
