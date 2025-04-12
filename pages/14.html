@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Регулярные выражения.</h1>
+    <hr>
+
+    <p>Регулярные выражения это шаблоны, которые используются для сопоставления последовотельностей символов в строках.</p>
+    <p>Синтаксис:</p>
+<pre>
+  <code class="lang-js">
+    regexp = new RegExp("шаблон", "флаги");
+    //Объявление регулярного выражения через new RegExp
+    let regexp1 = new RegExp('^[а-яА-Я]*$'); //без флагов
+    let regexpFlag1 = new RegExp('^[а-яА-Я]*$', 'gmi'); //с флагами gmi
+    //или 
+    regexp = /шаблон/; // без флагов
+    regexp = /шаблон/gmi; // с флагами gmi
+    //Объявление регулярного выражения c использованием слешей:
+    let regexp2 = /^[а-яА-Я]*$/; //без флагов
+    let regexpFlag2 = /^[а-яА-Я]*$/gmi; //с флагами gmi
+  </code>
+</pre>
+    
+  </article>
+</body>
+</html>
