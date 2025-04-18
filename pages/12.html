@@ -487,7 +487,66 @@
   </code>
 </pre>
 
-    <h3>reduce/reduceRight</h3>
+    <h3>Array.isArray</h3>
+    <p>Массивы не образуют отдельный тип данных. Они основаны на объектах.</p>
+    <p>Поэтому typeof не может отличить простой объект от массива:</p>
+<pre>
+  <code class="lang-js">
+    alert(typeof {}); // object
+    alert(typeof []); // тоже object
+  </code>
+</pre>
+    <p>…Но массивы используются настолько часто, что для этого придумали специальный метод: <code>Array.isArray(value)</code>. Он возвращает <code>true</code>, если <code>value</code> массив, и <code>false</code>, если нет.</p>
+<pre>
+  <code class="lang-js">
+    alert(Array.isArray({})); // false
+
+    alert(Array.isArray([])); // true
+  </code>
+</pre>
+
+    <h3>Большинство методов поддерживают «thisArg»</h3>
+    <p>Почти все методы массива, которые вызывают функции – такие как <code>find</code>, <code>filter</code>, <code>map</code>, за исключением метода <code>sort</code>, принимают необязательный параметр <code>thisArg</code>.</p>
+    <p>Этот параметр не объяснялся выше, так как очень редко используется, но для наиболее полного понимания темы мы обязаны его рассмотреть.</p>
+    <p>Вот полный синтаксис этих методов:</p>
+<pre>
+  <code class="lang-js">
+    arr.find(func, thisArg);
+    arr.filter(func, thisArg);
+    arr.map(func, thisArg);
+    // ...
+    // thisArg -- необязательный последний аргумент
+  </code>
+</pre>
+    <p>Значение параметра <code>thisArg</code> становится <code>this</code> для <code>func</code>.</p>
+    <p>Например, тут мы используем метод объекта <code>army</code> как фильтр, и <code>thisArg</code> передаёт ему контекст:</p>
+<pre>
+  <code class="lang-js">
+    let army = {
+      minAge: 18,
+      maxAge: 27,
+      canJoin(user) {
+        return user.age >= this.minAge && user.age < this.maxAge;
+      }
+    };
+    
+    let users = [
+      {age: 16},
+      {age: 20},
+      {age: 23},
+      {age: 30}
+    ];
+    
+    // найти пользователей, для которых army.canJoin возвращает true
+    let soldiers = users.filter(army.canJoin, army);
+    
+    alert(soldiers.length); // 2
+    alert(soldiers[0].age); // 20
+    alert(soldiers[1].age); // 23
+  </code>
+</pre>
+    <p>Если бы мы в примере выше использовали просто <code>users.filter(army.canJoin)</code>, то вызов <code>army.canJoin</code> был бы в режиме отдельной функции, с <code>this=undefined</code>. Это тут же привело бы к ошибке.</p>
+    <p>Вызов <code>users.filter(army.canJoin, army)</code> можно заменить на <code>users.filter(user => army.canJoin(user))</code>, который делает то же самое. Последняя запись используется даже чаще, так как функция-стрелка более наглядна.</p>
 
   </article>
 </body>
