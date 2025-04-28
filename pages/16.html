@@ -155,6 +155,71 @@
     <hr>
 
     <h3>Остаточные параметры «…»</h3>
+    <p>Обычно, если массив длиннее, чем список слева, «лишние» элементы опускаются.</p>
+    <p>Например, здесь берутся только первые два элемента, а остальные просто игнорируются:</p>
+<pre>
+  <code class="lang-js">
+    let [name1, name2] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+
+    alert(name1); // Julius
+    alert(name2); // Caesar
+    // Дальнейшие элементы нигде не присваиваются
+  </code>
+</pre>
+    <p>Если мы хотим не просто получить первые значения, но и собрать все остальные, то мы можем добавить ещё один параметр, который получает остальные значения, используя оператор «остаточные параметры» – троеточие ("..."):</p>
+<pre>
+  <code class="lang-js">
+    let [name1, name2, ...rest] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+
+    // rest это массив элементов, начиная с 3-го
+    alert(rest[0]); // Consul
+    alert(rest[1]); // of the Roman Republic
+    alert(rest.length); // 2
+  </code>
+</pre>
+    <p>Переменная <code>rest</code> является массивом из оставшихся элементов.</p>
+    <p>Вместо <code>rest</code> можно использовать любое другое название переменной, просто убедитесь, что перед переменной есть три точки и она стоит на последнем месте в деструктурирующем присваивании.</p>
+<pre>
+  <code class="lang-js">
+    let [name1, name2, ...titles] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+    // теперь titles = ["Consul", "of the Roman Republic"]
+  </code>
+</pre>
+
+    <h3>Значения по умолчанию</h3>
+    <p>Если в массиве меньше значений, чем в присваивании, то ошибки не будет. Отсутствующие значения считаются неопределёнными:</p>
+<pre>
+  <code class="lang-js">
+    let [firstName, surname] = [];
+
+    alert(firstName); // undefined
+    alert(surname); // undefined
+  </code>
+</pre>
+    <p>Если мы хотим, чтобы значение «по умолчанию» заменило отсутствующее, мы можем указать его с помощью <code>=</code>:</p>
+<pre>
+  <code class="lang-js">
+    // значения по умолчанию
+    let [name = "Guest", surname = "Anonymous"] = ["Julius"];
+
+    alert(name);    // Julius (из массива)
+    alert(surname); // Anonymous (значение по умолчанию)
+  </code>
+</pre>
+    <p>Значения по умолчанию могут быть гораздо более сложными выражениями или даже функциями. Они выполняются, только если значения отсутствуют.</p>
+    <p>Например, здесь мы используем функцию <code>prompt</code> для указания двух значений по умолчанию.</p>
+<pre>
+  <code class="lang-js">
+    // prompt запустится только для surname
+    let [name = prompt('name?'), surname = prompt('surname?')] = ["Julius"];
+
+    alert(name);    // Julius (из массива)
+    alert(surname); // результат prompt
+  </code>
+</pre>
+    <p>Обратите внимание, <code>prompt</code> будет запущен только для пропущенного значения (<code>surname</code>).</p>
+
+    <h2>Деструктуризация объекта</h2>
 
 
 
