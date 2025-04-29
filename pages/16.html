@@ -220,6 +220,119 @@
     <p>Обратите внимание, <code>prompt</code> будет запущен только для пропущенного значения (<code>surname</code>).</p>
 
     <h2>Деструктуризация объекта</h2>
+    <p>Деструктурирующее присваивание также работает с объектами.</p>
+    <p>Синтаксис:</p>
+<pre>
+  <code class="lang-js">
+    let {var1, var2} = {var1:…, var2:…}
+  </code>
+</pre>
+    <p>У нас есть существующий объект с правой стороны, который мы хотим разделить на переменные. Левая сторона содержит «шаблон» для соответствующих свойств. В простом случае это список названий переменных в {...}.</p>
+<pre>
+  <code class="lang-js">
+    let options = {
+      title: "Menu",
+      width: 100,
+      height: 200
+    };
+    
+    let {title, width, height} = options;
+    
+    alert(title);  // Menu
+    alert(width);  // 100
+    alert(height); // 200
+  </code>
+</pre>
+    <p>Свойства <code>options.title</code>, <code>options.width</code> и <code>options.height</code> присваиваются соответствующим переменным.</p>
+    <p>Порядок не имеет значения. Вот так – тоже работает:</p>
+<pre>
+  <code class="lang-js">
+    // изменён порядок в let {...}
+    let {height, width, title} = { title: "Menu", height: 200, width: 100 }
+  </code>
+</pre>
+    <p>Шаблон с левой стороны может быть более сложным и определять соответствие между свойствами и переменными.</p>
+    <p>Если мы хотим присвоить свойство объекта переменной с другим названием, например, свойство <code>options.width</code> присвоить переменной <code>w</code>, то мы можем использовать двоеточие:</p>
+<pre>
+  <code class="lang-js">
+    let options = {
+      title: "Menu",
+      width: 100,
+      height: 200
+    };
+    
+    // { sourceProperty: targetVariable }
+    let {width: w, height: h, title} = options;
+    
+    // width -> w
+    // height -> h
+    // title -> title
+    
+    alert(title);  // Menu
+    alert(w);      // 100
+    alert(h);      // 200
+  </code>
+</pre>
+    <p>Двоеточие показывает «что : куда идёт». В примере выше свойство <code>width</code> сохраняется в переменную <code>w</code>, свойство <code>height</code> сохраняется в <code>h</code>, а <code>title</code> присваивается одноимённой переменной.</p>
+    <p>Для потенциально отсутствующих свойств мы можем установить значения по умолчанию, используя "<code>=</code>", как здесь:</p>
+<pre>
+  <code class="lang-js">
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width = 100, height = 200, title} = options;
+    
+    alert(title);  // Menu
+    alert(width);  // 100
+    alert(height); // 200
+  </code>
+</pre>
+    <p>Как и в случае с массивами, значениями по умолчанию могут быть любые выражения или даже функции. Они выполнятся, если значения отсутствуют.</p>
+    <p>В коде ниже prompt запросит <code>width</code>, но не <code>title</code>:</p>
+<pre>
+  <code class="lang-js">
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width = prompt("width?"), title = prompt("title?")} = options;
+    
+    alert(title);  // Menu
+    alert(width);  // (результат prompt)
+  </code>
+</pre>
+    <p>Мы также можем совмещать <code>:</code> и <code>=</code>:</p>
+<pre>
+  <code class="lang-js">
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width: w = 100, height: h = 200, title} = options;
+    
+    alert(title);  // Menu
+    alert(w);      // 100
+    alert(h);      // 200
+  </code>
+</pre>
+    <p>Если у нас есть большой объект с множеством свойств, можно взять только то, что нужно:</p>
+<pre>
+  <code class="lang-js">
+    let options = {
+      title: "Menu",
+      width: 100,
+      height: 200
+    };
+    
+    // взять только title, игнорировать остальное
+    let { title } = options;
+    
+    alert(title); // Menu
+  </code>
+</pre>
+
+    <h3>Остаток объекта «…»</h3>
 
 
 

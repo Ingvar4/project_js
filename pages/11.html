@@ -25,7 +25,27 @@
   <article>
     <h1>Dom.</h1>
     <hr>
+    <p>Навешивание слушателя событий на элемент с идентификатором 'myId' (к примеру).</p>
+<pre>
+  <code class="lang-js">
+    document.getElementById('myId').addEventListener('click', () => {
+      console.log('Привет');
+    });
+  </code>
+</pre>
+    <p>Пример, если нужно навесить слушатель событий на все элементы коллекции с классом '.myClass' (к примеру).</p>
+<pre>
+  <code class="lang-js">
+    document.querySelectorAll('.myClass').forEach((el) => {
+      el.addEventListener('click', () => {
+        console.log('Hello');
+      });
+    });
+  </code>
+</pre>
 
+
+    <hr>
 <pre>
   <code class="lang-html">
     &#60;!-- HTML -->
