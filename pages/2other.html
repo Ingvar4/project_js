@@ -13,6 +13,25 @@
   <style>
     body {height: 100vh;}
     article {height: 90%;}
+    #list-block,#to-buy {
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid black;
+    }
+    .item {
+      font-size: 24px;
+    }
+    .btn {
+      margin-left: 15px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+    }
+    .btn:hover {
+      background-color: red;
+      color: aliceblue;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -383,6 +402,7 @@
         </details>
       </ul>
 
+<!-- Трансформирование объекта 'газета' (Object.keys(), endsWith(), slice(), Object.entries(), forEach()) -->
       <ul>
         <details>
           <summary>Трансформирование объекта 'газета' (Object.keys(), endsWith(), slice(), Object.entries(), forEach())</summary>
@@ -429,6 +449,125 @@
         </details>
       </ul>
 
+<!-- Рендер в html содержимого массива (пример ненумерованного списка) с помощью map() -->
+      <ul>
+        <details>
+          <summary>Рендер в html содержимого массива (пример ненумерованного списка) с помощью <code>map()</code></summary>
+<pre>
+  <code class="lang-html">
+    &#60;!-- HTML -->
+
+    &#60;ul id="list">&#60;/ul>
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-js">
+    //JS
+
+    const listItems = document.getElementById('list');
+
+    const items = ['Пункт 1', 'Пункт 2', 'Пункт 3', 'Пункт 4', 'Пункт 5'];
+
+    const htmlContent = items.map((item) => `&#60;li>${item}&#60;/li>`).join('');
+
+    listItems.innerHTML = htmlContent;
+  </code>
+</pre>
+        </details>
+      </ul>
+
+<!-- Динамическое создание, добавление и удаление элементов + DOM -->
+      <ul>
+        <details>
+          <summary>Динамическое создание, добавление и удаление элементов + DOM</summary>
+<pre>
+  <code class="lang-html">
+    &#60;!-- HTML -->
+
+    &#60;div id="list-block">
+      &#60;h1>Список покупок&#60;/h1>
+      &#60;input type="text" placeholder="Купить" />
+      &#60;button>Добавить в список&#60;/button>
+      &#60;ul id="to-buy">&#60;/ul>
+    &#60;/div>
+  </code>
+</pre>
+
+<pre>
+  <code class="lang-js">
+    //JS
+
+    const listToBuy = document.getElementById('to-buy');
+
+    document.querySelector('button').addEventListener('click', handleClick);
+
+    function handleClick() {
+      const newPurchase = this.previousElementSibling.value.trim();
+      
+      if (newPurchase) {
+        this.previousElementSibling.value = '';
+        createToBuy(newPurchase);
+      } else {
+        alert('Добавьте покупку');
+      }
+    }
+
+    function createToBuy(text) {
+      const liEl = document.createElement('li');
+      liEl.textContent = text;
+      liEl.classList.add('item');
+      listToBuy.append(liEl);  //если .prepend то добавление в обратном порядке
+      //создание кнопки 'удалить'
+      const liBtn = document.createElement('button');
+      liBtn.textContent = 'Удалить';
+      liBtn.classList.add('btn');
+      liEl.append(liBtn);
+      //удаление элемента
+      liBtn.addEventListener('click', () => {
+        liEl.remove();
+      });
+    }
+  </code>
+</pre>
+          <ul>
+            <div id="list-block">
+              <h1>Список покупок</h1>
+              <input type="text" placeholder="Купить" />
+              <button>Добавить в список</button>
+              <ul id="to-buy"></ul>
+            </div>
+          </ul>
+        </details>
+      </ul>
+
   </article>
+
+  <script>
+    const listToBuy = document.getElementById('to-buy');
+    document.querySelector('button').addEventListener('click', handleClick);
+    function handleClick() {
+      const newPurchase = this.previousElementSibling.value.trim();
+      if (newPurchase) {
+        this.previousElementSibling.value = '';
+        createToBuy(newPurchase);
+      } else {
+        alert('Добавьте покупку');
+      }
+    }
+    function createToBuy(text) {
+      const liEl = document.createElement('li');
+      liEl.textContent = text;
+      liEl.classList.add('item');
+      listToBuy.append(liEl);  
+      const liBtn = document.createElement('button');
+      liBtn.textContent = 'Удалить';
+      liBtn.classList.add('btn');
+      liEl.append(liBtn);
+      liBtn.addEventListener('click', () => {
+        liEl.remove();
+      });
+    }
+  </script>
 </body>
 </html>
