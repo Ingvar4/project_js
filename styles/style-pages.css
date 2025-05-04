@@ -183,7 +183,19 @@ details {
   width: 100%;
 }
 
-
+#scrollToTopButton {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  background-color: rgba(24, 24, 131, 0.457);
+  color: aliceblue;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 10px;
+  display: none;
+}
  
 
 /* МЕДИА ЗАПРОСЫ */
