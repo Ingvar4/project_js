@@ -26,6 +26,8 @@
     <h1>Работа с формами.</h1>
     <hr>
 
+    <p>Если заключить все поля ввода формы в тег <code>&#60;form>&#60;/form></code>, то <code>submit</code> будет действовать на все элементы внутри тега.</p> <hr>
+
     <form id="myForm">
     <h3>Текстовое поле</h3>
     <input type="text" id="username" placeholder="Имя" required/><br />
@@ -206,9 +208,87 @@
 </pre>
     </form>
 
+    <h3>Вывод:</h3>
     <div id="result"></div>
     
   </article>
   <button id="scrollToTopButton">&#8593;</button>
+
+  <script>
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+      // Получение значений всех элементов формы
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const search = document.getElementById("search").value;
+      const number = document.getElementById("number").value;
+      const date = document.getElementById("date").value;
+      const remember = document.getElementById("remember").checked;
+      const gender = document.querySelector('input[name="gender"]:checked')
+        ? document.querySelector('input[name="gender"]:checked').value
+        : null; // Этот код ищет первый элемент <input> с атрибутом name="gender" и состоянием :checked (то есть выбранный элемент). Если такой элемент найден, он возвращается; если нет, возвращается null.
+      const volume = document.getElementById("volume").value;
+      const color = document.getElementById("color").value;
+      const comment = document.getElementById("comment").value;
+      const country = document.getElementById("country").value;
+      const file = document.getElementById("file").files;
+
+      // Создание массива для хранения имен файлов
+      const fileNames = [];
+      if (file.length > 0) {
+        for (let i = 0; i < file.length; i++) {
+          fileNames.push(file[i]);
+        }
+      }
+
+      // Создание объекта для хранения всех значений
+      const formData = {
+        username,
+        password,
+        email,
+        phone,
+        search,
+        number,
+        date,
+        remember,
+        gender,
+        volume,
+        color,
+        comment,
+        country,
+        files: fileNames,
+      };
+
+      // Очистка формы
+
+      document.getElementById("myForm").reset();
+
+      console.log(formData);
+
+      function renederData() {
+        const resultData = document.getElementById('result');
+        resultData.innerText = `
+          Имя: ${username} 
+          Пароль: ${password} 
+          Email: ${email} 
+          Тел.: ${phone} 
+          Поиск: ${search} 
+          Номер: ${number} 
+          Дата: ${date} 
+          Чекбокс: ${remember} 
+          Пол: ${gender} 
+          Громкость: ${volume} 
+          Цвет: ${color} 
+          Коммент: ${comment} 
+          Страна: ${country}
+        `;
+      };
+
+      renederData();
+    });
+  </script>
 </body>
 </html>

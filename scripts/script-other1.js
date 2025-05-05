@@ -50,4 +50,25 @@ document.getElementById("myForm").addEventListener("submit", function (event) {
   document.getElementById("myForm").reset();
 
   console.log(formData);
+
+  function renederData() {
+    const resultData = document.getElementById('result');
+    resultData.innerText = `
+      Имя: ${username} 
+      Пароль: ${password} 
+      Email: ${email} 
+      Тел.: ${phone} 
+      Поиск: ${search} 
+      Номер: ${number} 
+      Дата: ${date} 
+      Чекбокс: ${remember} 
+      Пол: ${gender} 
+      Громкость: ${volume} 
+      Цвет: ${color} 
+      Коммент: ${comment} 
+      Страна: ${country}
+    `;
+  };
+
+  renederData();
 });
