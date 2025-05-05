@@ -226,36 +226,37 @@ details {
   article {
     font-size: calc(var(--index) * 0.6);
     background: linear-gradient(0deg, #544e6850, #0d2b45) 0 0 /100% 100% repeat;
+    width: 50%;
   }
-  article ul {
+  /* article ul {
     width: 70%;
     margin: 0 auto;
-    /* margin-left: 350px; */
-  }
+  } */
 
-  h1,h2,h3,p,ol,table {
+  /* h1,h2,h3,p,ol,table {
     width: 70%;
     margin: 0 auto;
-  }
+  } */
 
-  ol {
+  /* ol {
     margin-left: 350px;
-  }
+  } */
 
   pre {
-    width: 42%;
+    width: 60%;
+    /* width: 42%;
     top: -50%;
     left: -50%;
-    transform: translate(37%, 0%);
+    transform: translate(37%, 0%); */
     font-size: calc(var(--index) * 0.44);
   }
 
-  hr {
+  /* hr {
     width: 70%;
     margin: 0 auto;
-  }
+  } */
 
-  img {
+  /* img {
     padding: 14px;
-  }
+  } */
 }

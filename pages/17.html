@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Работа с формами.</h1>
+    <hr>
+
+    <form id="myForm">
+    <h3>Текстовое поле</h3>
+    <input type="text" id="username" placeholder="Имя" required/><br />
+<pre>
+  <code class="lang-html">
+    &#60;input type="text" id="username" placeholder="Имя" required/>&#60;br />
+  </code>
+</pre>
+    
+    <h3>Пароль</h3>
+    <input
+        type="password"
+        id="password"
+        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+        title="Пароль должен содержать как минимум одну цифру, одну строчную и одну заглавную букву, и быть не менее 8 символов длиной"
+        placeholder="Пароль"
+        required
+      /><br />
+<pre>
+  <code class="lang-html">
+    &#60;input
+        type="password"
+        id="password"
+        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+        title="Пароль должен содержать как минимум одну цифру, одну строчную и одну заглавную букву, и быть не менее 8 символов длиной"
+        placeholder="Пароль"
+        required
+      />&#60;br />
+  </code>
+</pre>
+    
+    <h3>Email</h3>
+    <input type="email" id="email" placeholder="email" required/><br />
+<pre>
+  <code class="lang-html">
+    &#60;input type="email" id="email" placeholder="email" required/>&#60;br />
+  </code>
+</pre>
+    
+    <h3>Телефон</h3>
+    <input
+        type="tel"
+        id="phone"
+        placeholder="Телефон"
+        title="Пожалуйста, введите номер в формате +7XXXXXXXXXX"
+        pattern="\+7\d{10}"
+      /><br />
+<pre>
+  <code class="lang-html">
+    &#60;input
+        type="tel"
+        id="phone"
+        placeholder="Телефон"
+        title="Пожалуйста, введите номер в формате +7XXXXXXXXXX"
+        pattern="\+7\d{10}"
+      />&#60;br />
+  </code>
+</pre>
+    
+    <h3>Поиск</h3>
+    <input type="search" id="search" placeholder="Найти" /><br />
+<pre>
+  <code class="lang-html">
+    &#60;input type="search" id="search" placeholder="Найти" />&#60;br />
+  </code>
+</pre>
+
+    <h3>Число</h3>
+    <input type="number" id="number" placeholder="Возраст" /><br />
+<pre>
+  <code class="lang-html">
+    &#60;input type="number" id="number" placeholder="Возраст" />&#60;br />
+  </code>
+</pre>
+
+    <h3>Дата</h3>
+    <label for="date">Дата:</label>
+    <input type="date" id="date" name="date" required/><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="date">Дата:&#60;/label>
+    &#60;input type="date" id="date" name="date" required/>&#60;br />
+  </code>
+</pre>
+
+    <h3>Чекбокс</h3>
+    <label for="remember">Запомнить меня:</label>
+    <input type="checkbox" id="remember" /><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="remember">Запомнить меня:&#60;/label>
+    &#60;input type="checkbox" id="remember" />&#60;br />
+  </code>
+</pre>
+
+    <h3>Радиокнопки</h3>
+    <label>Пол:</label><br />
+
+    <input type="radio" id="male" name="gender" value="male" />
+    <label for="male">Мужчина</label><br />
+    <input type="radio" id="female" name="gender" value="female" />
+    <label for="female">Женщина</label><br />
+<pre>
+  <code class="lang-html">
+    &#60;label>Пол:&#60;/label>&#60;br />
+
+    &#60;input type="radio" id="male" name="gender" value="male" />
+    &#60;label for="male">Мужчина&#60;/label>&#60;br />
+    &#60;input type="radio" id="female" name="gender" value="female" />
+    &#60;label for="female">Женщина&#60;/label>&#60;br />
+  </code>
+</pre>
+
+    <h3>Громкость</h3>
+    <label for="volume">Громкость:</label>
+    <input type="range" id="volume" /><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="volume">Громкость:&#60;/label>
+    &#60;input type="range" id="volume" />&#60;br />
+  </code>
+</pre>
+
+    <h3>Цвет</h3>
+    <label for="color">Любимый цвет:</label>
+    <input type="color" id="color" value="#2E8B57" /><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="color">Любимый цвет:&#60;/label>
+    &#60;input type="color" id="color" value="#2E8B57" />&#60;br />
+  </code>
+</pre>
+
+    <h3>Фаил</h3>
+    <label for="file">Загрузите файлы:</label>
+    <input type="file" id="file" multiple accept=".jpg,.jpeg,.png" /><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="file">Загрузите файлы:&#60;/label>
+    &#60;input type="file" id="file" multiple accept=".jpg,.jpeg,.png" />&#60;br />
+  </code>
+</pre>
+
+    <h3>Текстовая область</h3>
+    <label for="comment">Введите текст комментария:</label><br />
+    <textarea id="comment"></textarea><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="comment">Введите текст комментария:&#60;/label>&#60;br />
+    &#60;textarea id="comment">&#60;/textarea>&#60;br />
+  </code>
+</pre>
+
+    <h3>Селект</h3>
+    <label for="country">Страна:</label>
+    <select id="country">
+      <option value="usa">USA</option>
+      <option value="canada">Canada</option>
+      <option value="uk">UK</option></select
+    ><br />
+<pre>
+  <code class="lang-html">
+    &#60;label for="country">Страна:&#60;/label>
+    &#60;select id="country">
+      &#60;option value="usa">USA&#60;/option>
+      &#60;option value="canada">Canada&#60;/option>
+      &#60;option value="uk">UK&#60;/option>&#60;/select
+    >&#60;br />
+  </code>
+</pre>
+
+    <h3>Кнопка отправки</h3>
+    <button type="submit">Отправить</button>
+<pre>
+  <code class="lang-html">
+    &#60;button type="submit">Отправить&#60;/button>
+  </code>
+</pre>
+    </form>
+
+    <div id="result"></div>
+    
+  </article>
+  <button id="scrollToTopButton">&#8593;</button>
+</body>
+</html>
