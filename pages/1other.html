@@ -10,6 +10,80 @@
   <link rel="stylesheet" href="../styles/prism.css">
   <script src="../scripts/prism.js" defer></script>
   <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .container {
+      background-color: #0b0c64;
+      padding: 30px 20px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      row-gap: 20px;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+      row-gap: 10px;
+    }
+    input,
+    select,
+    button {
+      height: 30px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 6px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    select, input::placeholder {
+      font-size: 14px;
+    }
+    select,
+    input {
+      background-color: #9fcee2;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus {
+      background-color: #fff;
+      outline: none;
+    }
+    button {
+      background-color: #5ca0ff;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.5s;
+    }
+
+    button:hover {
+      background-color: #17488d;
+    }
+    #repeatPassword {
+      font-size: 24px;
+    }
+    .error-message {
+      color: red;
+      display: none;
+      text-align: center;
+    }
+    .password-invalid {
+      border: 2px solid red;
+    }
+
+    .success-message {
+      display: none;
+      color: green;
+      text-align: center;
+    }
+    @media (min-width: 2560px) {
+      .container {
+        width: 30%;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -25,83 +99,38 @@
     <h1>Тест здание</h1>
     <hr>
 
-    <form id="myForm">
-      <!-- Текстовое поле -->
-      <input type="text" id="username" placeholder="Имя" required/><br />
-      <!-- Пароль -->
-      <input
-        type="password"
-        id="password"
-        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-        title="Пароль должен содержать как минимум одну цифру, одну строчную и одну заглавную букву, и быть не менее 8 символов длиной"
-        placeholder="Пароль"
-        required
-      /><br />
-
-      <!-- Email -->
-      <input type="email" id="email" placeholder="email" /><br />
-
-      <!-- Tel -->
-      <input
-        type="tel"
-        id="phone"
-        placeholder="Телефон"
-        title="Пожалуйста, введите номер в формате +7XXXXXXXXXX"
-        pattern="\+7\d{10}"
-      /><br />
-
-      <!-- Search -->
-      <input type="search" id="search" placeholder="Найти" /><br />
-
-      <!-- Число -->
-      <input type="number" id="number" placeholder="Возраст" /><br />
-
-      <!-- Date -->
-      <label for="date">Дата:</label>
-      <input type="date" id="date" name="date" /><br />
-
-      <!-- Чекбокс -->
-      <label for="remember">Запомнить меня:</label>
-      <input type="checkbox" id="remember" /><br />
-
-      <!-- Радиокнопки -->
-      <label>Пол:</label><br />
-
-      <input type="radio" id="male" name="gender" value="male" />
-      <label for="male">Мужчина</label><br />
-      <input type="radio" id="female" name="gender" value="female" />
-      <label for="female">Женщина</label><br />
-
-      <!-- Range -->
-      <label for="volume">Громкость:</label>
-      <input type="range" id="volume" /><br />
-
-      <!-- Color -->
-      <label for="color">Любимый цвет:</label>
-      <input type="color" id="color" value="#2E8B57" /><br />
-
-      <!-- File -->
-      <label for="file">Загрузите файлы:</label>
-      <input type="file" id="file" multiple accept=".jpg,.jpeg,.png" /><br />
-
-      <!-- Текстовая область -->
-      <label for="comment">Введите текст комментария:</label><br />
-      <textarea id="comment"></textarea><br />
-
-      <!-- Селект -->
-      <label for="country">Страна:</label>
-      <select id="country">
-        <option value="usa">USA</option>
-        <option value="canada">Canada</option>
-        <option value="uk">UK</option></select
-      ><br />
-
-      <!-- Кнопка отправки -->
-      <button type="submit">Отправить</button>
-    </form>
-
-    <h3>Вывод:</h3>
-    <div id="result"></div>
+    <div class="container">
+      <h1>Форма регистрации</h1>
+      <form id="myForm">
+        <input type="text" id="user" name="user" placeholder="Имя" />
+        <input type="email" id="email" name="email" placeholder="email" />
+        <input type="text" id="password" name="password" placeholder="Пароль" />
+        <div id="passwordError" class="error-message">
+          Пароль должен состоять из латинских букв и цифр, а также быть
+          не менее 8 символов
+        </div>
+        <input
+          type="password"
+          id="repeatPassword"
+          name="repeatPassword"
+          placeholder="Подтвердите пароль"
+        />
+        <div id="confirm-password" class="error-message">
+          Пароли не совпадают
+        </div>
+        <select id="year" name="year">
+          <option value="">Дата окончания учебного заведения</option>
+        </select>
+        <button type="submit">Отправить</button>
+        <button type="reset">Очистить форму</button>
+        <div id="requiredFieldsMessage" class="error-message">
+          Проверьте заполнение полей формы
+        </div>
+        <div id="successMessage" class="success-message">
+          Данные успешно отправлены
+        </div>
+      </form>
+    </div>
   
   </article>
 </body>

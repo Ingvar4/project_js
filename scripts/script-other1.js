@@ -1,74 +1,35 @@
-document.getElementById("myForm").addEventListener("submit", function (event) {
-  event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+const form = document.getElementById('myForm');
+const dataInputs = form.querySelectorAll('input, select');
+const yearSelect = form.querySelector('#year');
+const passwordInput = form.querySelector('#password');
+const passwordErrorMessage = form.querySelector('#passwordError');
 
-  // Получение значений всех элементов формы
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
-  const search = document.getElementById("search").value;
-  const number = document.getElementById("number").value;
-  const date = document.getElementById("date").value;
-  const remember = document.getElementById("remember").checked;
-  const gender = document.querySelector('input[name="gender"]:checked')
-    ? document.querySelector('input[name="gender"]:checked').value
-    : null; // Этот код ищет первый элемент <input> с атрибутом name="gender" и состоянием :checked (то есть выбранный элемент). Если такой элемент найден, он возвращается; если нет, возвращается null.
-  const volume = document.getElementById("volume").value;
-  const color = document.getElementById("color").value;
-  const comment = document.getElementById("comment").value;
-  const country = document.getElementById("country").value;
-  const file = document.getElementById("file").files;
+const currentYear = new Date().getFullYear();
+for (let year = currentYear; year > currentYear - 40; year--) {
+  const option = document.createElement('option');
+  option.value = year;
+  option.textContent = year;
+  yearSelect.append(option);
+};
 
-  // Создание массива для хранения имен файлов
-  const fileNames = [];
-  if (file.length > 0) {
-    for (let i = 0; i < file.length; i++) {
-      fileNames.push(file[i]);
+dataInputs.forEach((dataInput, index) => {
+  dataInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const nextIndex = (index + 1) % dataInputs.length;
+      dataInputs[nextIndex].focus();
     }
-  }
-
-  // Создание объекта для хранения всех значений
-  const formData = {
-    username,
-    password,
-    email,
-    phone,
-    search,
-    number,
-    date,
-    remember,
-    gender,
-    volume,
-    color,
-    comment,
-    country,
-    files: fileNames,
-  };
-
-  // Очистка формы
-
-  document.getElementById("myForm").reset();
-
-  console.log(formData);
-
-  function renederData() {
-    const resultData = document.getElementById('result');
-    resultData.innerText = `
-      Имя: ${username} 
-      Пароль: ${password} 
-      Email: ${email} 
-      Тел.: ${phone} 
-      Поиск: ${search} 
-      Номер: ${number} 
-      Дата: ${date} 
-      Чекбокс: ${remember} 
-      Пол: ${gender} 
-      Громкость: ${volume} 
-      Цвет: ${color} 
-      Коммент: ${comment} 
-      Страна: ${country}
-    `;
-  };
-
-  renederData();
+  });
 });
+
+passwordInput.addEventListener('input', checkPasswordValidity);
+
+function checkPasswordValidity() {
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  if (!passwordRegex.test(passwordInput.value)) {
+    passwordErrorMessage.style.display = 'block';
+  } else {
+    passwordErrorMessage.style.display = 'none';
+  }
+};
