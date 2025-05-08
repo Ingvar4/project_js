@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    ul {
+      list-style: none;
+    }
+    .person {
+      width: 300px;
+      margin: 10px;
+      padding: 10px;
+      background-color: lightgreen;
+    }
+    .know-more {
+      width: 300px;
+      height: 300px;
+      color: #fff;
+      background-color: rgb(84, 21, 172);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Работа с data-атрибутами</h1>
+    <hr>
+
+    <details> 
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    ul {
+      list-style: none;
+    }
+    .person {
+      width: 300px;
+      margin: 10px;
+      padding: 10px;
+      background-color: lightgreen;
+    }
+    .know-more {
+      width: 300px;
+      height: 200px;
+      color: #fff;
+      background-color: rgb(84, 21, 172);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      display: none;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;h1>Данные о работниках&#60;/h1>
+    &#60;ul id="list">&#60;/ul>
+    &#60;div class="know-more">&#60;/div>
+  </code>
+</pre>
+    </details>
+    <h3>JS</h3>
+<pre>
+  <code class="lang-js">
+    const people = [
+      {
+        name: "Михаил",
+        age: 27,
+        isMarried: true,
+        hasCar: false,
+      },
+      {
+        name: "Анна",
+        age: 29,
+        isMarried: true,
+        hasCar: true,
+      },
+      {
+        name: "Сергей",
+        age: 33,
+        isMarried: false,
+        hasCar: false,
+      },
+      {
+        name: "Елена",
+        age: 26,
+        isMarried: false,
+        hasCar: true,
+      },
+    ];
+
+    const listElement = document.getElementById('list');
+    const moreInfo = document.querySelector('.know-more');
+
+    const renderPeople = () => {
+      const peopleHtml = people.map((person, index) => {
+        return `
+        &#60;li class='person'>
+          &#60;p>Имя: ${person.name}&#60;/p>
+          &#60;button data-age='${person.age}' data-status='${person.isMarried}'
+          data-has-car='${person.hasCar}' data-position='${index + 1}'>Узнать больше&#60;/button>
+        &#60;/li>`;
+      }).join('');
+
+      listElement.innerHTML = peopleHtml;
+    };
+
+    renderPeople();
+
+    const dataPeople = document.querySelectorAll('button');
+
+    dataPeople.forEach((dataPerson) => {
+      dataPerson.addEventListener('click', () => {
+        const age = dataPerson.dataset.age;
+        const status = dataPerson.dataset.status === "true"; // Преобразуем строку в булево значение
+        const car = dataPerson.dataset.hasCar === "true"; // Преобразуем строку в булево значение
+        const position = dataPerson.dataset.position;
+
+        moreInfo.innerHTML = '';
+
+        moreInfo.insertAdjacentHTML('beforeend', `
+          &#60;p>Место в списке: ${position}&#60;/p>
+          &#60;p>Возраст: ${age}&#60;/p>
+          &#60;p>Семейное положение: ${status ? 'Женат/Замужем' : 'Холост/Незамужем'}&#60;/p>
+          &#60;p>Наличие машины: ${car ? 'Да' : 'Нет'}&#60;/p>
+          &#60;button id='close'>Закрыть&#60;/button>
+          `);
+
+          moreInfo.style.display = 'block';
+
+          document.getElementById('close').addEventListener('click', () => {
+            moreInfo.innerHTML = '';
+            moreInfo.style.display = 'none';
+          });
+      });
+    });
+  </code>
+</pre>
+
+    <h3>Результат:</h3>
+    <h1>Данные о работниках</h1>
+    <ul id="list"></ul>
+    <div class="know-more"></div>
+  </article>
+
+  <script>
+    const people = [
+      {
+        name: "Михаил",
+        age: 27,
+        isMarried: true,
+        hasCar: false,
+      },
+      {
+        name: "Анна",
+        age: 29,
+        isMarried: true,
+        hasCar: true,
+      },
+      {
+        name: "Сергей",
+        age: 33,
+        isMarried: false,
+        hasCar: false,
+      },
+      {
+        name: "Елена",
+        age: 26,
+        isMarried: false,
+        hasCar: true,
+      },
+    ];
+
+    const listElement = document.getElementById('list');
+    const moreInfo = document.querySelector('.know-more');
+
+    const renderPeople = () => {
+      const peopleHtml = people.map((person, index) => {
+        return `
+        <li class='person'>
+          <p>Имя: ${person.name}</p>
+          <button data-age='${person.age}' data-status='${person.isMarried}'
+          data-has-car='${person.hasCar}' data-position='${index + 1}'>Узнать больше</button>
+        </li>`;
+      }).join('');
+
+      listElement.innerHTML = peopleHtml;
+    };
+
+    renderPeople();
+
+    const dataPeople = document.querySelectorAll('button');
+
+    dataPeople.forEach((dataPerson) => {
+      dataPerson.addEventListener('click', () => {
+        const age = dataPerson.dataset.age;
+        const status = dataPerson.dataset.status === "true"; // Преобразуем строку в булево значение
+        const car = dataPerson.dataset.hasCar === "true"; // Преобразуем строку в булево значение
+        const position = dataPerson.dataset.position;
+
+        moreInfo.innerHTML = '';
+
+        moreInfo.insertAdjacentHTML('beforeend', `
+          <p>Место в списке: ${position}</p>
+          <p>Возраст: ${age}</p>
+          <p>Семейное положение: ${status ? 'Женат/Замужем' : 'Холост/Незамужем'}</p>
+          <p>Наличие машины: ${car ? 'Да' : 'Нет'}</p>
+          <button id='close'>Закрыть</button>
+          `);
+
+          moreInfo.style.display = 'block';
+
+          document.getElementById('close').addEventListener('click', () => {
+            moreInfo.innerHTML = '';
+            moreInfo.style.display = 'none';
+          });
+      });
+    });
+  </script>
+</body>
+</html>
