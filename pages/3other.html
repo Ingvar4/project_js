@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .container {
+      background-color: #0b0c64;
+      padding: 30px 20px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      row-gap: 20px;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+      row-gap: 10px;
+    }
+    input,
+    select,
+    button {
+      height: 30px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 6px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    select, input::placeholder {
+      font-size: 14px;
+    }
+    select,
+    input {
+      background-color: #9fcee2;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus {
+      background-color: #fff;
+      outline: none;
+    }
+    button {
+      background-color: #5ca0ff;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.5s;
+    }
+
+    button:hover {
+      background-color: #17488d;
+    }
+    #repeatPassword {
+      font-size: 24px;
+    }
+    .error-message {
+      color: red;
+      display: none;
+      text-align: center;
+    }
+    .password-invalid {
+      border: 2px solid red;
+    }
+
+    .success-message {
+      display: none;
+      color: green;
+      text-align: center;
+    }
+    @media (min-width: 2560px) {
+      .container {
+        width: 30%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Создание формы регистрации на JavaScript</h1>
+    <hr>
+
+    <details> 
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    .container {
+      background-color: #0b0c64;
+      padding: 30px 20px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      row-gap: 20px;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+      row-gap: 10px;
+    }
+    input,
+    select,
+    button {
+      height: 30px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 6px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    select, input::placeholder {
+      font-size: 14px;
+    }
+    select,
+    input {
+      background-color: #9fcee2;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus {
+      background-color: #fff;
+      outline: none;
+    }
+    button {
+      background-color: #5ca0ff;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.5s;
+    }
+
+    button:hover {
+      background-color: #17488d;
+    }
+    #repeatPassword {
+      font-size: 24px;
+    }
+    .error-message {
+      color: red;
+      display: none;
+      text-align: center;
+    }
+    .password-invalid {
+      border: 2px solid red;
+    }
+
+    .success-message {
+      display: none;
+      color: green;
+      text-align: center;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;div class="container">
+      &#60;h1>Форма регистрации&#60;/h1>
+      &#60;form id="myForm">
+        &#60;input type="text" id="user" name="user" placeholder="Имя" />
+        &#60;input type="email" id="email" name="email" placeholder="email" />
+        &#60;input type="text" id="password" name="password" placeholder="Пароль" />
+        &#60;div id="passwordError" class="error-message">
+          Пароль должен состоять из латинских букв и цифр, а также быть
+          не менее 8 символов
+        &#60;/div>
+        &#60;input
+          type="password"
+          id="repeatPassword"
+          name="repeatPassword"
+          placeholder="Подтвердите пароль"
+        />
+        &#60;div id="confirm-password" class="error-message">
+          Пароли не совпадают
+        &#60;/div>
+        &#60;select id="year" name="year">
+          &#60;option value="">Дата окончания учебного заведения&#60;/option>
+        &#60;/select>
+        &#60;button type="submit">Отправить&#60;/button>
+        &#60;button type="reset">Очистить форму&#60;/button>
+        &#60;div id="requiredFieldsMessage" class="error-message">
+          Проверьте заполнение полей формы
+        &#60;/div>
+        &#60;div id="successMessage" class="success-message">
+          Данные успешно отправлены
+        &#60;/div>
+      &#60;/form>
+    &#60;/div>
+  </code>
+</pre>
+    </details>
+    <h3>JS</h3>
+<pre>
+  <code class="lang-js">
+    const form = document.getElementById('myForm');
+    const dataInputs = form.querySelectorAll('input, select');
+    const yearSelect = form.querySelector('#year');
+    const passwordInput = form.querySelector('#password');
+    const repeatPasswordInput = form.querySelector('#repeatPassword');
+    const passwordErrorMessage = form.querySelector('#passwordError');
+    const confirmErrorMessage = form.querySelector('#confirm-password');
+    const requiredFieldsMessage = form.querySelector('#requiredFieldsMessage');
+    const successMessage = form.querySelector('#successMessage');
+    let validatePassword = false;
+    let passwordEqual = false;
+
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year > currentYear - 40; year--) {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.append(option);
+    };
+
+    dataInputs.forEach((dataInput, index) => {
+      dataInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const nextIndex = (index + 1) % dataInputs.length;
+          dataInputs[nextIndex].focus();
+        }
+      });
+    });
+
+    passwordInput.addEventListener('input', checkPasswordValidity);
+
+    function checkPasswordValidity() {
+      checkPasswordMatch();
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+      if (!passwordRegex.test(passwordInput.value)) {
+        passwordErrorMessage.style.display = 'block';
+        validatePassword = false;
+      } else {
+        passwordErrorMessage.style.display = 'none';
+        validatePassword = true;
+      }
+    };
+
+    repeatPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    function checkPasswordMatch () {
+      if (passwordInput.value !== repeatPasswordInput.value) {
+        confirmErrorMessage.style.display = 'block';
+        repeatPasswordInput.style.color = "red";
+        passwordEqual = false;
+      } else {
+        confirmErrorMessage.style.display = 'none';
+        repeatPasswordInput.style.color = "green";
+        passwordEqual = true;
+      }
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const allFieldsFilled = Array.from(dataInputs).every((dataInput) => 
+        dataInput.value.trim()
+      );
+
+      if (!allFieldsFilled || !passwordEqual || !validatePassword) {
+        requiredFieldsMessage.style.display = 'block';
+        return;
+      } else {
+        requiredFieldsMessage.style.display = 'none';
+        const formData = new FormData(form);
+
+        const formObject = {};
+
+        formData.forEach((value, key) => {
+          formObject[key] = value;
+        });
+
+        form.reset();
+
+        console.log(JSON.stringify(formObject, null, 2));
+        successMessage.style.display = 'block';
+      }
+    });
+  </code>
+</pre>
+
+    <h3>Результат:</h3>
+
+    <div class="container">
+      <h1>Форма регистрации</h1>
+      <form id="myForm">
+        <input type="text" id="user" name="user" placeholder="Имя" />
+        <input type="email" id="email" name="email" placeholder="email" />
+        <input type="text" id="password" name="password" placeholder="Пароль" />
+        <div id="passwordError" class="error-message">
+          Пароль должен состоять из латинских букв и цифр, а также быть
+          не менее 8 символов
+        </div>
+        <input
+          type="password"
+          id="repeatPassword"
+          name="repeatPassword"
+          placeholder="Подтвердите пароль"
+        />
+        <div id="confirm-password" class="error-message">
+          Пароли не совпадают
+        </div>
+        <select id="year" name="year">
+          <option value="">Дата окончания учебного заведения</option>
+        </select>
+        <button type="submit">Отправить</button>
+        <button type="reset">Очистить форму</button>
+        <div id="requiredFieldsMessage" class="error-message">
+          Проверьте заполнение полей формы
+        </div>
+        <div id="successMessage" class="success-message">
+          Данные успешно отправлены
+        </div>
+      </form>
+    </div>
+
+
+
+  </article>
+
+  <script>
+    const form = document.getElementById('myForm');
+    const dataInputs = form.querySelectorAll('input, select');
+    const yearSelect = form.querySelector('#year');
+    const passwordInput = form.querySelector('#password');
+    const repeatPasswordInput = form.querySelector('#repeatPassword');
+    const passwordErrorMessage = form.querySelector('#passwordError');
+    const confirmErrorMessage = form.querySelector('#confirm-password');
+    const requiredFieldsMessage = form.querySelector('#requiredFieldsMessage');
+    const successMessage = form.querySelector('#successMessage');
+    let validatePassword = false;
+    let passwordEqual = false;
+
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year > currentYear - 40; year--) {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.append(option);
+    };
+
+    dataInputs.forEach((dataInput, index) => {
+      dataInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const nextIndex = (index + 1) % dataInputs.length;
+          dataInputs[nextIndex].focus();
+        }
+      });
+    });
+
+    passwordInput.addEventListener('input', checkPasswordValidity);
+
+    function checkPasswordValidity() {
+      checkPasswordMatch();
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+      if (!passwordRegex.test(passwordInput.value)) {
+        passwordErrorMessage.style.display = 'block';
+        validatePassword = false;
+      } else {
+        passwordErrorMessage.style.display = 'none';
+        validatePassword = true;
+      }
+    };
+
+    repeatPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    function checkPasswordMatch () {
+      if (passwordInput.value !== repeatPasswordInput.value) {
+        confirmErrorMessage.style.display = 'block';
+        repeatPasswordInput.style.color = "red";
+        passwordEqual = false;
+      } else {
+        confirmErrorMessage.style.display = 'none';
+        repeatPasswordInput.style.color = "green";
+        passwordEqual = true;
+      }
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const allFieldsFilled = Array.from(dataInputs).every((dataInput) => 
+        dataInput.value.trim()
+      );
+
+      if (!allFieldsFilled || !passwordEqual || !validatePassword) {
+        requiredFieldsMessage.style.display = 'block';
+        return;
+      } else {
+        requiredFieldsMessage.style.display = 'none';
+        const formData = new FormData(form);
+
+        const formObject = {};
+
+        formData.forEach((value, key) => {
+          formObject[key] = value;
+        });
+
+        form.reset();
+
+        console.log(JSON.stringify(formObject, null, 2));
+        successMessage.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
