@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .task {
+        margin-bottom: 10px;
+      }
+      .task input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      .task button {
+        margin-left: 10px;
+        cursor: pointer;
+      }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Браузерная память: localStorage, sessionStorage</h1>
+    <hr>
+
+    <h2>Список задач</h2>
+    <form id="taskForm">
+      <input
+        type="text"
+        id="taskInput"
+        placeholder="Введите новую задачу"
+        required
+      />
+      <button type="submit">Добавить задачу</button>
+    </form>
+ 
+    <ul id="taskList"></ul>
+    
+  </article>
+
+  <script>
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    const loadTasks = () => {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      return tasks;
+    };
+
+    const saveTasks = (tasks) => {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    };
+
+    const tasks = loadTasks();
+
+    const renderTasks = () => {
+      const tasksHtml = tasks.map((task) => {
+        return `<li class='task'>
+        <input type='checkbox' ${task.completed ? 'checked' : ''}/>
+        <span>${task.text}</span>
+        <button class='deleteButton'>Удалить</button>
+        </li>`
+      }).join('');
+
+      taskList.innerHTML = tasksHtml;
+
+      taskList.querySelectorAll('.deleteButton').forEach((button, index) => {
+        button.addEventListener('click', () => {
+          tasks.splice(index, 1);
+          saveTasks(tasks);
+          renderTasks();
+        });
+      });
+
+      taskList.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+        checkbox.addEventListener('change', (event) => {
+          tasks[index].completed = event.target.checked;
+          saveTasks(tasks);
+          renderTasks();
+        });
+      });
+    };
+
+    taskForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const taskText = taskInput.value.trim();
+      if (taskText) {
+        const newTask = {
+          id: Date.now(),
+          text: taskText,
+          completed: false,
+        };
+        tasks.push(newTask);
+        saveTasks(tasks);
+        renderTasks();
+        taskInput.value = '';
+      }
+    });
+
+    renderTasks();
+  </script>
+</body>
+</html>
