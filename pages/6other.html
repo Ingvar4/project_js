@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .player {
+      background: linear-gradient(135deg, #2a5298, #1e3c72);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      width: 320px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .controls {
+      padding: 10px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .controls button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .controls button:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    .controls button img {
+      width: 36px;
+      height: 36px;
+      filter: invert(1);
+    }
+
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .progress-bar span {
+      font-size: 12px;
+      margin: 0 10px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .progress-bar input[type="range"] {
+      flex-grow: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      outline: none;
+      transition: background-color 0.2s;
+    }
+
+    .volume {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .volume label {
+      font-size: 12px;
+      margin-right: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      img {
+        display: none;
+      }
+    }
+
+    .volume input[type="range"] {
+      flex-grow: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      outline: none;
+      transition: background-color 0.2s;
+    }
+
+    .playlist ul {
+      font-size: 16px;
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 20px;
+    }
+    /* Стилизация полосы прокрутки для WebKit (Chrome, Edge, Safari) */
+    .playlist ul::-webkit-scrollbar {
+      width: 8px; /* Ширина полосы прокрутки */
+    }
+
+    .playlist ul::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1); /* Фон трека */
+      border-radius: 4px;
+    }
+
+    .playlist ul::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3); /* Цвет ползунка */
+      border-radius: 4px;
+    }
+
+    .playlist ul::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5); /* Цвет ползунка при наведении */
+    }
+
+    /* Стилизация полосы прокрутки для Firefox */
+    .playlist ul {
+      scrollbar-width: thin; /* Ширина полосы прокрутки */
+      scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1); /* Цвет ползунка и трека */
+    }
+
+    .playlist li {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .playlist li:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .playlist li.active {
+      font-weight: bold;
+      color: #83baf6;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .next-track {
+      transform: scaleX(-1);
+    }
+
+    #pause {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Аудиоплеер на JavaScript</h1>
+    <hr>
+
+    <div class="player">
+      <audio id="audio"></audio>
+      <div class="controls">
+        <button id="prev">
+          <img src="../icons/stack.png" alt="Предыдущий" />
+        </button>
+        <button id="play">
+          <img src="../icons/play.png" alt="Проигрывать" />
+        </button>
+        <button id="pause"><img src="../icons/pause.png" alt="Пауза" /></button>
+        <button id="stop"><img src="../icons/stop.png" alt="Остановить" /></button>
+        <button id="next">
+          <img src="../icons/stack.png" alt="Следующий" class="next-track" />
+        </button>
+      </div>
+      <div class="progress-bar">
+        <span id="current-time">0:00</span>
+        <input
+          type="range"
+          id="progress"
+          min="0"
+          max="100"
+          value="0"
+          step="0.1"
+        />
+        <span id="duration">0:00</span>
+      </div>
+      <div class="volume">
+        <label for="volume"
+          ><img src="../icons/not-sound.png" />
+          <img src="../icons/sound-level-1.png" />
+          <img src="../icons/sound-level-2.png" />
+          <img src="../icons/sound-level-3.png"
+        /></label>
+        <input
+          type="range"
+          id="volume"
+          min="0"
+          max="1"
+          step="0.1"
+          value="0.5"
+        />
+      </div>
+      <div class="playlist">
+        <ul id="playlist">
+          <!-- Треки будут добавлены динамически -->
+        </ul>
+      </div>
+    </div>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    body {
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .player {
+      background: linear-gradient(135deg, #2a5298, #1e3c72);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      width: 320px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .controls {
+      padding: 10px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .controls button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .controls button:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    .controls button img {
+      width: 36px;
+      height: 36px;
+      filter: invert(1);
+    }
+
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .progress-bar span {
+      font-size: 12px;
+      margin: 0 10px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .progress-bar input[type="range"] {
+      flex-grow: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      outline: none;
+      transition: background-color 0.2s;
+    }
+
+    .volume {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .volume label {
+      font-size: 12px;
+      margin-right: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      img {
+        display: none;
+      }
+    }
+
+    .volume input[type="range"] {
+      flex-grow: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      outline: none;
+      transition: background-color 0.2s;
+    }
+
+    .playlist ul {
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 20px;
+    }
+    /* Стилизация полосы прокрутки для WebKit (Chrome, Edge, Safari) */
+    .playlist ul::-webkit-scrollbar {
+      width: 8px; /* Ширина полосы прокрутки */
+    }
+
+    .playlist ul::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1); /* Фон трека */
+      border-radius: 4px;
+    }
+
+    .playlist ul::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3); /* Цвет ползунка */
+      border-radius: 4px;
+    }
+
+    .playlist ul::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5); /* Цвет ползунка при наведении */
+    }
+
+    /* Стилизация полосы прокрутки для Firefox */
+    .playlist ul {
+      scrollbar-width: thin; /* Ширина полосы прокрутки */
+      scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1); /* Цвет ползунка и трека */
+    }
+
+    .playlist li {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .playlist li:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .playlist li.active {
+      font-weight: bold;
+      color: #83baf6;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .next-track {
+      transform: scaleX(-1);
+    }
+
+    #pause {
+      display: none;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;div class="player">
+      &#60;audio id="audio">&#60;/audio>
+      &#60;div class="controls">
+        &#60;button id="prev">
+          &#60;img src="icons/stack.png" alt="Предыдущий" />
+        &#60;/button>
+        &#60;button id="play">
+          &#60;img src="icons/play.png" alt="Проигрывать" />
+        &#60;/button>
+        &#60;button id="pause">&#60;img src="icons/pause.png" alt="Пауза" />&#60;/button>
+        &#60;button id="stop">&#60;img src="icons/stop.png" alt="Остановить" />&#60;/button>
+        &#60;button id="next">
+          &#60;img src="icons/stack.png" alt="Следующий" class="next-track" />
+        &#60;/button>
+      &#60;/div>
+      &#60;div class="progress-bar">
+        &#60;span id="current-time">0:00&#60;/span>
+        &#60;input
+          type="range"
+          id="progress"
+          min="0"
+          max="100"
+          value="0"
+          step="0.1"
+        />
+        &#60;span id="duration">0:00&#60;/span>
+      &#60;/div>
+      &#60;div class="volume">
+        &#60;label for="volume"
+          >&#60;img src="icons/not-sound.png" />
+          &#60;img src="icons/sound-level-1.png" />
+          &#60;img src="icons/sound-level-2.png" />
+          &#60;img src="icons/sound-level-3.png"
+        />&#60;/label>
+        &#60;input
+          type="range"
+          id="volume"
+          min="0"
+          max="1"
+          step="0.1"
+          value="0.5"
+        />
+      &#60;/div>
+      &#60;div class="playlist">
+        &#60;ul id="playlist">
+          <!-- Треки будут добавлены динамически -->
+        &#60;/ul>
+      &#60;/div>
+    &#60;/div>
+  </code>
+</pre>
+    </details>
+
+    <h3>JS</h3>
+<pre>
+  <code class="lang-js">
+    const audio = document.getElementById("audio");
+    const playBtn = document.getElementById("play");
+    const pauseBtn = document.getElementById("pause");
+    const stopBtn = document.getElementById("stop");
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
+    const progressBar = document.getElementById("progress");
+    const currentTimeEl = document.getElementById("current-time");
+    const durationEl = document.getElementById("duration");
+    const volumeSlider = document.getElementById("volume");
+    const volumeIcons = document.querySelectorAll(".volume img");
+    const playlistEl = document.getElementById("playlist");
+
+    const tracks = [
+      { name: "Dancin - [ Slowed + reverbed ] / Aaron Smith", src: "tracks/track1.mp3" },
+      {
+        name: "Soundtrack 11 / Zenless Zone Zero",
+        src: "tracks/track2.mp3",
+      },
+      {
+        name: "Daisuke / El Huervo & Shelby Cinca",
+        src: "tracks/track3.mp3",
+      },
+      {
+        name: "Memory Reboots / Narvent VJ; ",
+        src: "tracks/track4.mp3",
+      },
+      { name: "Aerials cover / Amon Amarth", src: "tracks/track5.mp3" },
+    ];
+
+    let currentTrackIndex = 0;
+
+    function setPlayList() {
+      playlistEl.innerHTML = '';
+      tracks.forEach((track, index) => {
+        const li = document.createElement('li');
+        li.textContent = track.name;
+        li.addEventListener('click', () => {
+          loadTrack(index);
+          playTrack();
+        });
+        if (index === currentTrackIndex) {
+          li.classList.add('active');
+        };
+        playlistEl.append(li);
+      });
+    };
+
+    function loadTrack(index) {
+      const track = tracks[index];
+      audio.src = track.src;
+      audio.load();
+      currentTrackIndex = index;
+      setPlayList();
+    };
+
+    function playTrack() {
+      audio.play();
+      playBtn.style.display = 'none';
+      pauseBtn.style.display = 'block';
+    };
+
+    function pauseTrack() {
+      audio.pause();
+      playBtn.style.display = 'block';
+      pauseBtn.style.display = 'none';
+    };
+
+    function stopTrack() {
+      audio.pause();
+      audio.currentTime = 0;
+      playBtn.style.display = 'block';
+      pauseBtn.style.display = 'none';
+    };
+
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+      loadTrack(currentTrackIndex);
+      playTrack();
+    };
+
+    function prevTrack() {
+      currentTrackIndex = (currentTrackIndex - 1) % tracks.length;
+      loadTrack(currentTrackIndex);
+      playTrack();
+    };
+
+    function updateProgressBar() {
+      const { currentTime, duration } = audio;
+      if (isNaN(duration)) return;
+
+      const progressPercent = (currentTime / duration) * 100;
+      progressBar.value = progressPercent;
+      currentTimeEl.textContent = formatTime(currentTime);
+      durationEl.textContent = formatTime(duration);
+    };
+
+    function formatTime(time) {
+      const minutes = Math.floor(time / 60).toString().padStart(2, '0');;
+      const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    };
+
+    function seekTrack() {
+      audio.currentTime = (progressBar.value / 100) * audio.duration;
+    };
+
+    function updateVolume(volume) {
+      audio.volume = volume;
+      volumeIcons.forEach((icon, index) => {
+        if (volume < 0.01) {
+          icon.style.display = index === 0 ? 'inline' : 'none';
+        } else {
+          const iconIndexToShow = Math.min(Math.floor(volume * 3), 2);
+          icon.style.display = index === iconIndexToShow + 1 ? 'inline' : 'none';
+        };
+      });
+    };
+
+    audio.addEventListener('ended', nextTrack);
+    audio.addEventListener('timeupdate', updateProgressBar);
+    playBtn.addEventListener('click', playTrack);
+    pauseBtn.addEventListener('click', pauseTrack);
+    stopBtn.addEventListener('click', stopTrack);
+    prevBtn.addEventListener('click', prevTrack);
+    nextBtn.addEventListener('click', nextTrack);
+    progressBar.addEventListener('input', seekTrack);
+    volumeSlider.addEventListener('input', () => {
+      const volume = volumeSlider.value;
+      updateVolume(volume);
+    });
+
+    loadTrack(currentTrackIndex);
+    setPlayList();
+    updateVolume(volumeSlider.value);
+  </code>
+</pre>
+  </article>
+
+  <script>
+    const audio = document.getElementById("audio");
+    const playBtn = document.getElementById("play");
+    const pauseBtn = document.getElementById("pause");
+    const stopBtn = document.getElementById("stop");
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
+    const progressBar = document.getElementById("progress");
+    const currentTimeEl = document.getElementById("current-time");
+    const durationEl = document.getElementById("duration");
+    const volumeSlider = document.getElementById("volume");
+    const volumeIcons = document.querySelectorAll(".volume img");
+    const playlistEl = document.getElementById("playlist");
+
+    const tracks = [
+      { name: "Dancin - [ Slowed + reverbed ] / Aaron Smith", src: "../tracks/track1.mp3" },
+      {
+        name: "Soundtrack 11 / Zenless Zone Zero",
+        src: "../tracks/track2.mp3",
+      },
+      {
+        name: "Daisuke / El Huervo & Shelby Cinca",
+        src: "../tracks/track3.mp3",
+      },
+      {
+        name: "Memory Reboots / Narvent VJ; ",
+        src: "../tracks/track4.mp3",
+      },
+      { name: "Aerials cover / Amon Amarth", src: "../tracks/track5.mp3" },
+    ];
+
+    let currentTrackIndex = 0;
+
+    function setPlayList() {
+      playlistEl.innerHTML = '';
+      tracks.forEach((track, index) => {
+        const li = document.createElement('li');
+        li.textContent = track.name;
+        li.addEventListener('click', () => {
+          loadTrack(index);
+          playTrack();
+        });
+        if (index === currentTrackIndex) {
+          li.classList.add('active');
+        };
+        playlistEl.append(li);
+      });
+    };
+
+    function loadTrack(index) {
+      const track = tracks[index];
+      audio.src = track.src;
+      audio.load();
+      currentTrackIndex = index;
+      setPlayList();
+    };
+
+    function playTrack() {
+      audio.play();
+      playBtn.style.display = 'none';
+      pauseBtn.style.display = 'block';
+    };
+
+    function pauseTrack() {
+      audio.pause();
+      playBtn.style.display = 'block';
+      pauseBtn.style.display = 'none';
+    };
+
+    function stopTrack() {
+      audio.pause();
+      audio.currentTime = 0;
+      playBtn.style.display = 'block';
+      pauseBtn.style.display = 'none';
+    };
+
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+      loadTrack(currentTrackIndex);
+      playTrack();
+    };
+
+    function prevTrack() {
+      currentTrackIndex = (currentTrackIndex - 1) % tracks.length;
+      loadTrack(currentTrackIndex);
+      playTrack();
+    };
+
+    function updateProgressBar() {
+      const { currentTime, duration } = audio;
+      if (isNaN(duration)) return;
+
+      const progressPercent = (currentTime / duration) * 100;
+      progressBar.value = progressPercent;
+      currentTimeEl.textContent = formatTime(currentTime);
+      durationEl.textContent = formatTime(duration);
+    };
+
+    function formatTime(time) {
+      const minutes = Math.floor(time / 60).toString().padStart(2, '0');;
+      const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    };
+
+    function seekTrack() {
+      audio.currentTime = (progressBar.value / 100) * audio.duration;
+    };
+
+    function updateVolume(volume) {
+      audio.volume = volume;
+      volumeIcons.forEach((icon, index) => {
+        if (volume < 0.01) {
+          icon.style.display = index === 0 ? 'inline' : 'none';
+        } else {
+          const iconIndexToShow = Math.min(Math.floor(volume * 3), 2);
+          icon.style.display = index === iconIndexToShow + 1 ? 'inline' : 'none';
+        };
+      });
+    };
+
+    audio.addEventListener('ended', nextTrack);
+    audio.addEventListener('timeupdate', updateProgressBar);
+    playBtn.addEventListener('click', playTrack);
+    pauseBtn.addEventListener('click', pauseTrack);
+    stopBtn.addEventListener('click', stopTrack);
+    prevBtn.addEventListener('click', prevTrack);
+    nextBtn.addEventListener('click', nextTrack);
+    progressBar.addEventListener('input', seekTrack);
+    volumeSlider.addEventListener('input', () => {
+      const volume = volumeSlider.value;
+      updateVolume(volume);
+    });
+
+    loadTrack(currentTrackIndex);
+    setPlayList();
+    updateVolume(volumeSlider.value);
+  </script>
+</body>
+</html>

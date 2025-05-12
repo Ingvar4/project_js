@@ -41,6 +41,114 @@
     <h1>Браузерная память: localStorage, sessionStorage</h1>
     <hr>
 
+    <details> 
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .task {
+        margin-bottom: 10px;
+      }
+      .task input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      .task button {
+        margin-left: 10px;
+        cursor: pointer;
+      }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;h2>Список задач&#60;/h2>
+    &#60;form id="taskForm">
+      &#60;input
+        type="text"
+        id="taskInput"
+        placeholder="Введите новую задачу"
+        required
+      />
+      &#60;button type="submit">Добавить задачу&#60;/button>
+    &#60;/form>
+ 
+    &#60;ul id="taskList">&#60;/ul>
+  </code>
+</pre>
+    </details>
+
+    <h3>JS</h3>
+<pre>
+  <code class="lang-js">
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    const loadTasks = () => {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      return tasks;
+    };
+
+    const saveTasks = (tasks) => {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    };
+
+    const tasks = loadTasks();
+
+    const renderTasks = () => {
+      const tasksHtml = tasks.map((task) => {
+        return `&#60;li class='task'>
+        &#60;input type='checkbox' ${task.completed ? 'checked' : ''}/>
+        &#60;span>${task.text}&#60;/span>
+        &#60;button class='deleteButton'>Удалить&#60;/button>
+        &#60;/li>`
+      }).join('');
+
+      taskList.innerHTML = tasksHtml;
+
+      taskList.querySelectorAll('.deleteButton').forEach((button, index) => {
+        button.addEventListener('click', () => {
+          tasks.splice(index, 1);
+          saveTasks(tasks);
+          renderTasks();
+        });
+      });
+
+      taskList.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+        checkbox.addEventListener('change', (event) => {
+          tasks[index].completed = event.target.checked;
+          saveTasks(tasks);
+          renderTasks();
+        });
+      });
+    };
+
+    taskForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const taskText = taskInput.value.trim();
+      if (taskText) {
+        const newTask = {
+          id: Date.now(),
+          text: taskText,
+          completed: false,
+        };
+        tasks.push(newTask);
+        saveTasks(tasks);
+        renderTasks();
+        taskInput.value = '';
+      }
+    });
+
+    renderTasks();
+  </code>
+</pre>
+
     <h2>Список задач</h2>
     <form id="taskForm">
       <input
