@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+  <style>
+    #drop {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 300px;
+      height: 200px;
+      border: 2px dashed #ddd;
+      border-radius: 18px;
+      padding: 10px;
+      transition: background-color 0.3s ease;
+      margin: 10px;
+    }
+
+    #drop.dragover {
+      background-color: #f0f0f06f;
+    }
+
+    #drag {
+      margin: 10px;
+      display: flex;
+      text-align: center;
+      align-items: center;
+      width: 250px;
+      height: 100px;
+      box-sizing: border-box;
+      background-color: lightgreen;
+      border-radius: 6px;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    #drag.dragging,
+    #drag-img.dragging {
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+
+    img {
+      margin: 10px;
+      width: 150px;
+    }
+  </style>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Знакомство с Drag&Drop.</h1>
+    <hr>
+
+    <ul>
+      <li>На HTML элементе, который нужно перетаскивать, устанавливается атрибут <code>draggable="true"</code></li>
+      <li>Этот атрибут обязателен для элементов, которые не являются перетаскиваемыми по умолчанию (div, span, p...)</li>
+      <li>Типы данных, которые устанавливаются в <code>dataTransfer</code> (для идентификации по ID перетаскиваемый элемент):
+        <ol style="margin-left: 40px;">
+          <li><code>text/plain</code> - простой текстовый формат</li>
+          <li><code>text/uri-list</code> - исп. для передачи ссылок на ресурсы, напр. URL-адресов</li>
+          <li><code>application/json</code> - формат JSON, используется для передачи структурированных данных в формате JSON</li>
+          <li><code>text/html</code> - HTML код, исп. для передачи HTML содержимого</li>
+          <li><code>files</code> - файлы, передаваемые через drag&drop (dataTransfer.files)</li>
+          <li><code>image/png</code>, <code>image/jpeg</code>, <code>image/gif</code> и другие MIME типы изображений</li>
+          <li><code>application/x-moz-file</code> (специфичный для Firefox)</li>
+        </ol>
+      </li>
+      <li><code>preventDefault</code> нужен для <code>dragover</code>, <code>drop</code>, <code>dragenter</code></li>
+    </ul>
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      font-size: 14px;
+    }
+
+    #drop {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 300px;
+      height: 200px;
+      border: 2px dashed #ddd;
+      border-radius: 18px;
+      padding: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    #drop.dragover {
+      background-color: #f0f0f0;
+    }
+
+    #drag {
+      display: flex;
+      text-align: center;
+      align-items: center;
+      width: 150px;
+      height: 100px;
+      box-sizing: border-box;
+      background-color: lightgreen;
+      border-radius: 6px;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    #drag.dragging,
+    #drag-img.dragging {
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+
+    img {
+      width: 150px;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;div id="drop">Сюда перетаскивать&#60;/div>
+    &#60;div id="drag" draggable="true">Это перетаскивать&#60;/div>
+    &#60;img id="drag-img" src="images/winter.jpg" alt="1" />
+  </code>
+</pre>
+    </details>
+    <hr>
+
+    <div id="drop">Сюда перетаскивать</div>
+    <div id="drag" draggable="true">Это перетаскивать</div>
+    <img id="drag-img" src="../images/winter.jpg" alt="1" />
+    
+    <h3>JS</h3>
+<pre>
+  <code class="lang-js">
+    // Получаем элементы
+    const dropArea = document.getElementById("drop");
+    const dragElement = document.getElementById("drag");
+    const dragImg = document.getElementById("drag-img");
+
+    //dragstart - начало перетаскивания
+    dragElement.addEventListener('dragstart', dragStartHandler);
+    dragImg.addEventListener('dragstart', dragStartHandler);
+
+    function dragStartHandler() {
+      event.dataTransfer.setData('text/plain', event.target.id);
+      //применение стилей для перетаскиваемых элементов
+      dragElement.classList.add('dragging');
+      dragImg.classList.add('dragging');
+    };
+
+    //dragend - окончание перетаскивания
+    dragElement.addEventListener('dragend', dragEndHandler);
+
+    function dragEndHandler() {
+      dragElement.classList.remove('dragging');
+    };
+
+    //зона drop
+    //dragenter - перетаскиваемый элемент попадает в допустимую цель сброса
+    dropArea.addEventListener('dragenter', dragEnterHandler);
+
+    function dragEnterHandler(event) {
+      event.preventDefault();
+      //так же применяются стили для дроп зоны
+      dropArea.classList.add('dragover');
+    };
+
+    //dragleave - перетаскиваемый элемент покидает допустимую цель сброса
+    dropArea.addEventListener('dragleave', dragLeaveHandler);
+
+    function dragLeaveHandler(event) {
+      event.preventDefault();
+      //отменяются стили для дроп зоны
+      dropArea.classList.remove('dragover');
+    };
+
+    //dragover - элемент перетаскивается над допустимой целью
+    dropArea.addEventListener('dragover', dragOverHandler);
+
+    function dragOverHandler(event) {
+      event.preventDefault();
+    };
+
+    //drop - элемент сброшен в допустимую зону
+    dropArea.addEventListener('drop', dropHandler);
+
+    function dropHandler(event) {
+      event.preventDefault();
+      const id = event.dataTransfer.getData('text/plain');
+      dropArea.append(dragElement);
+    };
+  </code>
+</pre>
+
+  </article>
+  <button id="scrollToTopButton">&#8593;</button>
+
+  <script>
+    // Получаем элементы
+    const dropArea = document.getElementById("drop");
+    const dragElement = document.getElementById("drag");
+    const dragImg = document.getElementById("drag-img");
+
+    //dragstart - начало перетаскивания
+    dragElement.addEventListener('dragstart', dragStartHandler);
+    dragImg.addEventListener('dragstart', dragStartHandler);
+
+    function dragStartHandler() {
+      event.dataTransfer.setData('text/plain', event.target.id);
+      //применение стилей для перетаскиваемых элементов
+      dragElement.classList.add('dragging');
+      dragImg.classList.add('dragging');
+    };
+
+    //dragend - окончание перетаскивания
+    dragElement.addEventListener('dragend', dragEndHandler);
+
+    function dragEndHandler() {
+      dragElement.classList.remove('dragging');
+    };
+
+    //зона drop
+    //dragenter - перетаскиваемый элемент попадает в допустимую цель сброса
+    dropArea.addEventListener('dragenter', dragEnterHandler);
+
+    function dragEnterHandler(event) {
+      event.preventDefault();
+      //так же применяются стили для дроп зоны
+      dropArea.classList.add('dragover');
+    };
+
+    //dragleave - перетаскиваемый элемент покидает допустимую цель сброса
+    dropArea.addEventListener('dragleave', dragLeaveHandler);
+
+    function dragLeaveHandler(event) {
+      event.preventDefault();
+      //отменяются стили для дроп зоны
+      dropArea.classList.remove('dragover');
+    };
+
+    //dragover - элемент перетаскивается над допустимой целью
+    dropArea.addEventListener('dragover', dragOverHandler);
+
+    function dragOverHandler(event) {
+      event.preventDefault();
+    };
+
+    //drop - элемент сброшен в допустимую зону
+    dropArea.addEventListener('drop', dropHandler);
+
+    function dropHandler(event) {
+      event.preventDefault();
+      const id = event.dataTransfer.getData('text/plain');
+      dropArea.append(dragElement);
+    };
+  </script>
+</body>
+</html>
