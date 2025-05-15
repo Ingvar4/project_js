@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .questions {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      min-height: 50px;
+      background-color: #f9f9f9ab;
+    }
+
+    .answers {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* Стили для всех элементов, у которых id начинается с "drag-item-" */
+    [id^="drag-item-"] {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      cursor: grab;
+      border-radius: 5px;
+    }
+
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Тест на Drag&Drop</h1>
+    <hr>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .questions {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      min-height: 50px;
+      background-color: #f9f9f9;
+    }
+
+    .answers {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* Стили для всех элементов, у которых id начинается с "drag-item-" */
+    [id^="drag-item-"] {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      cursor: grab;
+      border-radius: 5px;
+    }
+
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    <!-- Вопросы -->
+    &#60;div class="questions">
+      &#60;div class="drop-zone" id="drop-zone-1">
+        &#60;p>Вопрос 1: Какой оператор используется для строгого сравнения?&#60;/p>
+      &#60;/div>
+      &#60;div class="drop-zone" id="drop-zone-2">
+        &#60;p>
+          Вопрос 2: Какое значение возвращается, если JavaScript не может
+          преобразовать строку в число?
+        &#60;/p>
+      &#60;/div>
+    &#60;/div>
+
+    <!-- Ответы -->
+    &#60;div class="answers">
+      &#60;div id="drag-item-1" draggable="true">===&#60;/div>
+      &#60;div id="drag-item-2" draggable="true">NaN&#60;/div>
+      &#60;div id="drag-item-3" draggable="true">undefined&#60;/div>
+      &#60;div id="drag-item-4" draggable="true">null&#60;/div>
+      &#60;div id="drag-item-5" draggable="true">==&#60;/div>
+    &#60;/div>
+
+    <!-- Кнопка для проверки ответов -->
+    &#60;button id="check-answers">Проверить ответы&#60;/button>
+    &#60;p id="result">&#60;/p>
+  </code>
+</pre>
+    </details>
+
+    <!-- Вопросы -->
+    <div class="questions">
+      <div class="drop-zone" id="drop-zone-1">
+        <p>Вопрос 1: Какой оператор используется для строгого сравнения?</p>
+      </div>
+      <div class="drop-zone" id="drop-zone-2">
+        <p>
+          Вопрос 2: Какое значение возвращается, если JavaScript не может
+          преобразовать строку в число?
+        </p>
+      </div>
+    </div>
+
+    <!-- Ответы -->
+    <div class="answers">
+      <div id="drag-item-1" draggable="true">===</div>
+      <div id="drag-item-2" draggable="true">NaN</div>
+      <div id="drag-item-3" draggable="true">undefined</div>
+      <div id="drag-item-4" draggable="true">null</div>
+      <div id="drag-item-5" draggable="true">==</div>
+    </div>
+
+    <!-- Кнопка для проверки ответов -->
+    <button id="check-answers">Проверить ответы</button>
+    <p id="result"></p>
+    
+    <h3>JS</h3>
+<pre class="lang-js">
+  <code>
+    const dragItems = document.querySelectorAll('.answers div');
+
+    dragItems.forEach((item) => {
+      item.addEventListener('dragstart', dragstart);
+    });
+
+    function dragstart(event) {
+      event.dataTransfer.setData('text/plain', event.target.id);
+    };
+
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    dropZones.forEach((zone) => {
+      zone.addEventListener('dragover', dragOver);
+      zone.addEventListener('drop', drop);
+    });
+
+    function dragOver(event) {
+      event.preventDefault();
+    };
+    
+    function drop(event) {
+      event.preventDefault();
+      const id = event.dataTransfer.getData('text/plain');
+      const dragItem = document.getElementById(id);
+      event.target.append(dragItem);
+    };
+
+    document.getElementById('check-answers').addEventListener('click', () => {
+      let score = 0;
+      const correctAnswers = {
+        'drop-zone-1' : 'drag-item-1',
+        'drop-zone-2' : 'drag-item-2',
+      };
+
+      dropZones.forEach((zone) => {
+        const zoneId = zone.id;
+        const droppedItem = zone.querySelector('[id^="drag-item-"]');
+        if (droppedItem && droppedItem.id === correctAnswers[zoneId]) {
+          score++
+        };
+      });
+
+      const resultText = score === 2 ? 'Все ответы верные' : `Правильных ответов ${score}`;
+      document.getElementById('result').textContent = resultText;
+    });
+  </code>
+</pre>
+  </article>
+
+  <script>
+    const dragItems = document.querySelectorAll('.answers div');
+
+    dragItems.forEach((item) => {
+      item.addEventListener('dragstart', dragstart);
+    });
+
+    function dragstart(event) {
+      event.dataTransfer.setData('text/plain', event.target.id);
+    };
+
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    dropZones.forEach((zone) => {
+      zone.addEventListener('dragover', dragOver);
+      zone.addEventListener('drop', drop);
+    });
+
+    function dragOver(event) {
+      event.preventDefault();
+    };
+    
+    function drop(event) {
+      event.preventDefault();
+      const id = event.dataTransfer.getData('text/plain');
+      const dragItem = document.getElementById(id);
+      event.target.append(dragItem);
+    };
+
+    document.getElementById('check-answers').addEventListener('click', () => {
+      let score = 0;
+      const correctAnswers = {
+        'drop-zone-1' : 'drag-item-1',
+        'drop-zone-2' : 'drag-item-2',
+      };
+
+      dropZones.forEach((zone) => {
+        const zoneId = zone.id;
+        const droppedItem = zone.querySelector('[id^="drag-item-"]');
+        if (droppedItem && droppedItem.id === correctAnswers[zoneId]) {
+          score++
+        };
+      });
+
+      const resultText = score === 2 ? 'Все ответы верные' : `Правильных ответов ${score}`;
+      document.getElementById('result').textContent = resultText;
+    });
+  </script>
+</body>
+</html>
