@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .question {
+      border: 2px dotted #ddd;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .sentence {
+      font-size: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sentence.active {
+      background-color: #ddd;
+    }
+
+    .blank {
+      display: inline-block;
+      border-bottom: 2px solid #000;
+      padding: 5px;
+      min-width: 120px;
+      min-height: 20px;
+      text-align: center;
+      cursor: grab;
+    }
+
+    .correct {
+      background-color: #d4edda;
+    }
+
+    .options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .drag-item {
+      padding: 10px;
+      min-width: 100px;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: grab;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    #check-answers {
+      padding: 10px;
+      border-radius: 3px;
+      border: none;
+      background-color: blue;
+      color: #fff;
+    }
+
+    #check-answers:hover {
+      background-color: rgb(31, 31, 147);
+      color: #fff;
+    }
+
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    @media (max-width: 750px) {
+      .drag-item {
+        min-width: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Тест на Drag&Drop</h1>
+    <hr>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .question {
+      border: 2px dotted #ddd;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .sentence {
+      font-size: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sentence.active {
+      background-color: #ddd;
+    }
+
+    .blank {
+      display: inline-block;
+      border-bottom: 2px solid #000;
+      padding: 5px;
+      min-width: 120px;
+      min-height: 20px;
+      text-align: center;
+      cursor: grab;
+    }
+
+    .correct {
+      background-color: #d4edda;
+    }
+
+    .options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .drag-item {
+      padding: 10px;
+      min-width: 100px;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: grab;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    #check-answers {
+      padding: 10px;
+      border-radius: 3px;
+      border: none;
+      background-color: blue;
+      color: #fff;
+    }
+
+    #check-answers:hover {
+      background-color: rgb(31, 31, 147);
+      color: #fff;
+    }
+
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;h1>Перетащите ответ в пустое поле строки&#60;/h1>
+    &#60;div class="question">
+      &#60;div class="sentence">
+        Зимой и летом одним цветом:
+        &#60;div class="blank" id="blank-1">&#60;/div>
+      &#60;/div>
+ 
+      &#60;div class="options">
+        &#60;div class="drag-item" id="drag-item-1" draggable="true">ёлка&#60;/div>
+        &#60;div class="drag-item" id="drag-item-2" draggable="true">береза&#60;/div>
+        &#60;div class="drag-item" id="drag-item-3" draggable="true">осина&#60;/div>
+      &#60;/div>
+    &#60;/div>
+ 
+    &#60;div class="question">
+      &#60;div class="sentence">
+        Сорок одёжек - и все без застежек:
+        &#60;div class="blank" id="blank-2">&#60;/div>
+      &#60;/div>
+ 
+      &#60;div class="options">
+        &#60;div class="drag-item" id="drag-item-4" draggable="true">свекла&#60;/div>
+        &#60;div class="drag-item" id="drag-item-5" draggable="true">лук&#60;/div>
+        &#60;div class="drag-item" id="drag-item-6" draggable="true">морковь&#60;/div>
+      &#60;/div>
+    &#60;/div>
+ 
+    &#60;button id="check-answers">Проверить&#60;/button>
+    &#60;p id="result">&#60;/p>
+  </code>
+</pre>
+    </details>
+
+    <h2>Перетащите ответ в пустое поле строки</h2>
+    <div class="question">
+      <div class="sentence">
+        Зимой и летом одним цветом:
+        <div class="blank" id="blank-1"></div>
+      </div>
+ 
+      <div class="options">
+        <div class="drag-item" id="drag-item-1" draggable="true">ёлка</div>
+        <div class="drag-item" id="drag-item-2" draggable="true">береза</div>
+        <div class="drag-item" id="drag-item-3" draggable="true">осина</div>
+      </div>
+    </div>
+ 
+    <div class="question">
+      <div class="sentence">
+        Сорок одёжек - и все без застежек:
+        <div class="blank" id="blank-2"></div>
+      </div>
+ 
+      <div class="options">
+        <div class="drag-item" id="drag-item-4" draggable="true">свекла</div>
+        <div class="drag-item" id="drag-item-5" draggable="true">лук</div>
+        <div class="drag-item" id="drag-item-6" draggable="true">морковь</div>
+      </div>
+    </div>
+ 
+    <button id="check-answers">Проверить</button>
+    <p id="result"></p>
+    
+    <h3>JS</h3>
+<pre class="lang-js">
+  <code>
+    const dragItems = document.querySelectorAll(".drag-item");
+    const blanks = document.querySelectorAll(".blank");
+    const sentences = document.querySelectorAll(".sentence");
+
+    dragItems.forEach((item) => {
+      item.addEventListener("dragstart", dragStart);
+    });
+
+    function dragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.id);
+    }
+
+    blanks.forEach((blank) => {
+      blank.addEventListener("drop", drop);
+      blank.addEventListener("dragover", dragOver);
+    });
+
+    function drop(e) {
+      e.preventDefault();
+      const id = e.dataTransfer.getData("text/plain");
+      const dragItem = document.getElementById(id);
+
+      const optionsContainer = e.target
+        .closest(".question")
+        .querySelector(".options");
+
+      const allowedAnswers = Array.from(
+        optionsContainer.querySelectorAll(".drag-item")
+      ).map((item) => item.textContent);
+
+      if (!allowedAnswers.includes(dragItem.textContent)) {
+        alert("Ответ к вопросу не относится");
+      }
+      e.target.append(dragItem);
+    }
+
+    function dragOver(e) {
+      e.preventDefault();
+
+      const existingAnswer = e.target.querySelector(".drag-item");
+
+      if (existingAnswer) {
+        const optionsContainer = e.target
+          .closest(".question")
+          .querySelector(".options");
+        optionsContainer.append(existingAnswer);
+      }
+    }
+
+    sentences.forEach((sentence) => {
+      sentence.addEventListener("dragover", dragOverQuestion);
+      sentence.addEventListener("dragleave", dragLeave);
+    });
+
+    function dragOverQuestion(e) {
+      e.target.classList.add("active");
+    }
+
+    function dragLeave(e) {
+      e.target.classList.remove("active");
+    }
+
+    // Обработчик кнопки "Check Answers"
+    document.getElementById("check-answers").addEventListener("click", () => {
+      const correctAnswers = {
+        "blank-1": "ёлка",
+        "blank-2": "лук",
+      };
+
+      let correctCount = 0; // Счетчик правильных ответов
+      let totalQuestions = Object.keys(correctAnswers).length; // Общее количество вопросов
+
+      blanks.forEach((blank) => {
+        const userAnswer = blank.querySelector(".drag-item");
+        const blankId = blank.id;
+
+        if (userAnswer) {
+          const isCorrect =
+            userAnswer.textContent === correctAnswers[blankId];
+
+          if (isCorrect) {
+            userAnswer.style.backgroundColor = ""; // Сбрасываем цвет, если ответ верный
+            correctCount++; // Увеличиваем счетчик правильных ответов
+          } else {
+            userAnswer.style.backgroundColor = "red"; // Подсвечиваем неправильный ответ
+          }
+        }
+      });
+
+      // Вычисляем процент правильных ответов
+      const percentageCorrect = ((correctCount / totalQuestions) * 100).toFixed();
+
+      // Формируем результат
+      const resultText =
+        correctCount === totalQuestions
+          ? `Все ответы верны! (${correctCount} из ${totalQuestions}, ${percentageCorrect}%)`
+          : `Количество правильных ответов: ${correctCount} из ${totalQuestions}. Процент правильных ответов: ${percentageCorrect}%`;
+
+      // Выводим результат
+      document.getElementById("result").textContent = resultText;
+    });
+  </code>
+</pre>
+  </article>
+
+  <script>
+    const dragItems = document.querySelectorAll('.drag-item');
+    const blanks = document.querySelectorAll('.blank');
+    const sentences = document.querySelectorAll('.sentence');
+    
+    dragItems.forEach((item) => {
+      item.addEventListener('dragstart', dragStart);
+    });
+
+    function dragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.id);
+    };
+
+    blanks.forEach((blank) => {
+      blank.addEventListener('drop', drop);
+      blank.addEventListener('dragover', dragOver);
+    });
+
+    function drop(e) {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      const dragItem = document.getElementById(id);
+
+      const optionsContainer = e.target.closest('.question').querySelector('.options');
+      const allowedAnswers = Array.from(optionsContainer.querySelectorAll('.drag-item')).map((item) => item.textContent);
+        
+      if(!allowedAnswers.includes(dragItem.textContent)) {
+        alert('Ответ к ворпосу не относится');
+      };
+      e.target.append(dragItem);
+    };
+
+    function dragOver(e) {
+      e.preventDefault();
+
+      const existingAnswer = e.target.querySelector('.drag-item');
+
+      if (existingAnswer) {
+        const optionsContainer = e.target.closest('.question').querySelector('.options');
+        optionsContainer.append(existingAnswer);
+      };
+    };
+
+    sentences.forEach((sentence) => {
+      sentence.addEventListener('dragover', dragOverQuestion);
+      sentence.addEventListener('dragleave', dragLeave);
+    });
+
+    function dragOverQuestion(e) {
+      e.target.classList.add('active');
+    };
+
+    function dragLeave(e) {
+      e.target.classList.remove('active');
+    };
+
+    // Обработчик кнопки "Check Answers"
+    document.getElementById("check-answers").addEventListener("click", () => {
+      const correctAnswers = {
+        "blank-1": "ёлка",
+        "blank-2": "лук",
+      };
+
+      let correctCount = 0; // Счетчик правильных ответов
+      let totalQuestions = Object.keys(correctAnswers).length; // Общее количество вопросов
+
+      blanks.forEach((blank) => {
+        const userAnswer = blank.querySelector(".drag-item");
+        const blankId = blank.id;
+
+        if (userAnswer) {
+          const isCorrect =
+            userAnswer.textContent === correctAnswers[blankId];
+
+          if (isCorrect) {
+            userAnswer.style.backgroundColor = ""; // Сбрасываем цвет, если ответ верный
+            correctCount++; // Увеличиваем счетчик правильных ответов
+          } else {
+            userAnswer.style.backgroundColor = "red"; // Подсвечиваем неправильный ответ
+          }
+        }
+      });
+
+      // Вычисляем процент правильных ответов
+      const percentageCorrect = ((correctCount / totalQuestions) * 100).toFixed();
+
+      // Формируем результат
+      const resultText =
+        correctCount === totalQuestions
+          ? `Все ответы верны! (${correctCount} из ${totalQuestions}, ${percentageCorrect}%)`
+          : `Количество правильных ответов: ${correctCount} из ${totalQuestions}. Процент правильных ответов: ${percentageCorrect}%`;
+
+      // Выводим результат
+      document.getElementById("result").textContent = resultText;
+    });
+  </script>
+</body>
+</html>
