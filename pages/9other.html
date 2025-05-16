@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .title {
+      margin: 50px 0 20px 0;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .list {
+      width: 50%;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item {
+      padding: 10px;
+      text-align: center;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      cursor: move;
+      background-color: #3a3395;
+      transition: background-color 0.5s;
+    }
+
+    button {
+      width: 50%;
+      padding: 10px;
+      margin-top: 30px;
+      text-align: center;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #4e4199;
+      transition: background-color 0.5s;
+    }
+
+    .item:hover {
+      background-color: #1c0464;
+    }
+
+    .selected {
+      opacity: 0.6;
+    }
+
+    button {
+      background-color: #314395;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c95662;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Перетаскивание элементов списка с Drag&Drop</h1>
+    <hr>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 25px;
+      color: #fff;
+      background-color: #c95662;
+    }
+
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .title {
+      margin: 50px 0 20px 0;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .list {
+      width: 50%;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item {
+      padding: 10px;
+      text-align: center;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      cursor: move;
+      background-color: #86064f;
+      transition: background-color 0.5s;
+    }
+
+    button {
+      width: 50%;
+      padding: 10px;
+      margin-top: 30px;
+      text-align: center;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #86064f;
+      transition: background-color 0.5s;
+    }
+
+    .item:hover {
+      background-color: #64043a;
+    }
+
+    .selected {
+      opacity: 0.6;
+    }
+
+    button {
+      background-color: #de1286;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c95662;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;section class="tasks">
+      &#60;h1 class="title">Мое утро&#60;/h1>
+
+      &#60;ul class="list">
+        &#60;li class="item">Одеться&#60;/li>
+        &#60;li class="item">Позавтракать&#60;/li>
+        &#60;li class="item">Встать&#60;/li>
+        &#60;li class="item">Выйти из дома&#60;/li>
+        &#60;li class="item">Умыться&#60;/li>
+      &#60;/ul>
+      &#60;button id="checkBtn">Проверка&#60;/button>
+    &#60;/section>
+  </code>
+</pre>
+    </details>
+
+    <section class="tasks">
+      <h2 class="title">Мое утро</h2>
+
+      <ul class="list">
+        <li class="item">Одеться</li>
+        <li class="item">Позавтракать</li>
+        <li class="item">Встать</li>
+        <li class="item">Выйти из дома</li>
+        <li class="item">Умыться</li>
+      </ul>
+      <button id="checkBtn">Проверка</button>
+    </section>
+    
+    <h3>JS</h3>
+<pre class="lang-js">
+  <code>
+    const tasksListElement = document.querySelector('.list');
+    const taskElements = document.querySelectorAll('.item');
+    const checkBtn = document.getElementById('checkBtn');
+
+    for (const task of taskElements) {
+      task.draggable = true;
+    };
+
+    tasksListElement.addEventListener('dragstart', (e) => {
+      e.target.classList.add('selected');
+    });
+
+    tasksListElement.addEventListener('dragend', (e) => {
+      e.target.classList.remove('selected');
+    });
+
+    tasksListElement.addEventListener('dragover', (e) => {
+      e.preventDefault();
+
+      const activeElement = document.querySelector('.selected');
+
+      const currentElement = e.target;
+
+      const isMoveable = 
+        activeElement !== currentElement && 
+        currentElement.classList.contains('item');
+
+       if (!isMoveable) return;
+      // const nextElement = 
+      // currentElement === activeElement.nextElementSibling 
+      // ? currentElement.nextElementSibling 
+      // : currentElement;
+
+      let nextElement;
+      if (currentElement === activeElement.nextElementSibling) {
+        nextElement = currentElement.nextElementSibling;
+      } else {
+        nextElement = currentElement;
+      }
+
+      tasksListElement.insertBefore(activeElement, nextElement);
+    });
+
+    const checkOrder = () => {
+      const checkArr = [
+        'Встать', 
+        'Умыться', 
+        'Позавтракать', 
+        'Одеться', 
+        'Выйти из дома',
+      ];
+
+      const order = [];
+
+      const currentTaskElements = tasksListElement.querySelectorAll('.item');
+
+      currentTaskElements.forEach((task) => {
+        order.push(task.textContent);
+      });
+
+      const isOrderCorrect = JSON.stringify(order) === JSON.stringify(checkArr);
+
+      if (isOrderCorrect) {
+        alert('Порядок правильный');
+      } else {
+        alert('Порядок неправильный')
+      }
+    };
+
+    checkBtn.addEventListener('click', checkOrder);
+  </code>
+</pre>
+  </article>
+
+  <script>
+    const tasksListElement = document.querySelector('.list');
+    const taskElements = document.querySelectorAll('.item');
+    const checkBtn = document.getElementById('checkBtn');
+
+    for (const task of taskElements) {
+      task.draggable = true;
+    };
+
+    tasksListElement.addEventListener('dragstart', (e) => {
+      e.target.classList.add('selected');
+    });
+
+    tasksListElement.addEventListener('dragend', (e) => {
+      e.target.classList.remove('selected');
+    });
+
+    tasksListElement.addEventListener('dragover', (e) => {
+      e.preventDefault();
+
+      const activeElement = document.querySelector('.selected');
+
+      const currentElement = e.target;
+
+      const isMoveable = 
+        activeElement !== currentElement && 
+        currentElement.classList.contains('item');
+
+       if (!isMoveable) return;
+      // const nextElement = 
+      // currentElement === activeElement.nextElementSibling 
+      // ? currentElement.nextElementSibling 
+      // : currentElement;
+
+      let nextElement;
+      if (currentElement === activeElement.nextElementSibling) {
+        nextElement = currentElement.nextElementSibling;
+      } else {
+        nextElement = currentElement;
+      }
+
+      tasksListElement.insertBefore(activeElement, nextElement);
+    });
+
+    const checkOrder = () => {
+      const checkArr = [
+        'Встать', 
+        'Умыться', 
+        'Позавтракать', 
+        'Одеться', 
+        'Выйти из дома',
+      ];
+
+      const order = [];
+
+      const currentTaskElements = tasksListElement.querySelectorAll('.item');
+
+      currentTaskElements.forEach((task) => {
+        order.push(task.textContent);
+      });
+
+      const isOrderCorrect = JSON.stringify(order) === JSON.stringify(checkArr);
+
+      if (isOrderCorrect) {
+        alert('Порядок правильный');
+      } else {
+        alert('Порядок неправильный')
+      }
+    };
+
+    checkBtn.addEventListener('click', checkOrder);
+  </script>
+</body>
+</html>
