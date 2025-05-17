@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .form-upload {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      /* min-height: 100vh; */
+      padding: 16px;
+    }
+    .upload-zone__dragover {
+      background-color: #082752;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 80%;
+      height: 300px;
+      padding: 16px;
+      border-radius: 10px;
+      border: 2px dashed #ddd;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .upload-zone__dragover:hover,
+    .upload-zone__dragover.active {
+      /* background-color: #0056b3; */
+      opacity: 0.3;
+    }
+    .upload-loader__image {
+      width: 100px;
+    }
+    .upload-zone__text {
+      text-align: center;
+    }
+    .form-upload__label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-upload__title {
+      font-size: 16px;
+      font-weight: 500;
+      font-family: Arial, sans-serif;
+    }
+    .form-upload__label {
+      margin-top: 20px;
+      padding: 8px 15px;
+      background-color: #fff;
+      color: #000;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .form-upload__label:hover {
+      background-color: #0056b3;
+      color: #fff;
+    }
+    .form-upload__title {
+      font-size: 16px;
+    }
+    .form-upload__input {
+      display: none;
+    }
+    /* Стили для блока с информацией о файлах */
+    .file-info {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      /* background-color: #f9f9f9; */
+      display: none;
+    }
+    .file-info h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .file-info ul {
+      list-style: none;
+      padding: 0;
+    }
+    .file-info li {
+      margin: 5px 0;
+    }
+    .file-info li strong {
+      font-weight: bold;
+    }
+    /* Анимация мигания */
+    @keyframes blink {
+      0%,
+      100% {
+        background-color: #3dbf60;
+      }
+      50% {
+        background-color: #02821a; /* Цвет мигания */
+      }
+    }
+    .files-sent {
+      animation: blink 1s ease-in-out 3;
+      display: none;
+    }
+    /* Стили для кнопки "Отправить" */
+    button,
+    .files-sent {
+      width: 200px;
+      margin-top: 8px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-family: Arial, sans-serif;
+      font-weight: 500;
+      text-align: center;
+      background-color: #3dbf60;
+      color: #fff;
+    }
+    button {
+      background-color: #c4c4c4;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: none;
+    }
+    button:hover {
+      background-color: #0056b3;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Продвинутая загрузка файлов перетаскиванием с помощью Drag&Drop</h1>
+    <hr>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .form-upload {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .upload-zone__dragover {
+      background-color: #593273;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 80%;
+      height: 300px;
+      padding: 16px;
+      border-radius: 10px;
+      border: 2px dashed #ddd;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .upload-zone__dragover:hover,
+    .upload-zone__dragover.active {
+      opacity: 0.8;
+    }
+
+    .upload-loader__image {
+      width: 100px;
+    }
+
+    .upload-zone__text {
+      text-align: center;
+    }
+
+    .form-upload__label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-upload__title {
+      font-size: 16px;
+      font-weight: 500;
+      font-family: Arial, sans-serif;
+    }
+
+    .form-upload__label {
+      margin-top: 20px;
+      padding: 8px 15px;
+      background-color: #fff;
+      color: #000;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-upload__label:hover {
+      background-color: #0056b3;
+      color: #fff;
+    }
+
+    .form-upload__title {
+      font-size: 16px;
+    }
+
+    .form-upload__input {
+      display: none;
+    }
+
+    /* Стили для блока с информацией о файлах */
+    .file-info {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      display: none;
+    }
+
+    .file-info h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .file-info ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .file-info li {
+      margin: 5px 0;
+    }
+
+    .file-info li strong {
+      font-weight: bold;
+    }
+
+    /* Анимация мигания */
+    @keyframes blink {
+      0%,
+      100% {
+        background-color: #3dbf60;
+      }
+      50% {
+        background-color: #02821a; /* Цвет мигания */
+      }
+    }
+
+    .files-sent {
+      animation: blink 1s ease-in-out 3;
+      display: none;
+    }
+
+    /* Стили для кнопки "Отправить" */
+    button,
+    .files-sent {
+      width: 200px;
+      margin-top: 8px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-family: Arial, sans-serif;
+      font-weight: 500;
+      text-align: center;
+      background-color: #3dbf60;
+      color: #fff;
+    }
+
+    button {
+      background-color: #c4c4c4;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: none;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      color: #fff;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;div id="file-loader" class="upload-zone">
+      &#60;form class="form-upload" id="upload-form">
+        &#60;!-- область для перетаскивания файлов -->
+        &#60;div class="upload-zone__dragover">
+          &#60;svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            viewBox="0 0 24 24"
+            class="upload-loader__image"
+          >
+            &#60;path
+              d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 12v9"
+            >&#60;/path>
+            &#60;path d="m16 16-4-4-4 4">&#60;/path>
+          &#60;/svg>
+          &#60;p class="upload-zone__text">Перетащите файлы сюда&#60;/p>
+          &#60;label class="form-upload__label" for="upload-form__file">
+            &#60;span class="form-upload__title">Или выберите&#60;/span>
+            &#60;input
+              class="form-upload__input"
+              id="upload-form__file"
+              type="file"
+              name="file_name"
+              multiple
+              
+            />
+          &#60;/label>
+        &#60;/div>
+
+        &#60;!-- Блок для отображения информации о файлах -->
+        &#60;div id="file-info" class="file-info">
+          &#60;ul id="file-list">&#60;/ul>
+        &#60;/div>
+        &#60;div id="files-sent" class="files-sent">Файлы отправлены&#60;/div>
+
+        &#60;button type="submit" class="form-upload__submit">Отправить&#60;/button>
+      &#60;/form>
+    &#60;/div>
+  </code>
+</pre>
+    </details>
+
+    <div id="file-loader" class="upload-zone">
+      <form class="form-upload" id="upload-form">
+        <!-- область для перетаскивания файлов -->
+        <div class="upload-zone__dragover">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            viewBox="0 0 24 24"
+            class="upload-loader__image"
+          >
+            <path
+              d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 12v9"
+            ></path>
+            <path d="m16 16-4-4-4 4"></path>
+          </svg>
+          <p class="upload-zone__text">Перетащите файлы сюда</p>
+          <label class="form-upload__label" for="upload-form__file">
+            <span class="form-upload__title">Или выберите</span>
+            <input
+              class="form-upload__input"
+              id="upload-form__file"
+              type="file"
+              name="file_name"
+              multiple
+              
+            />
+          </label>
+        </div>
+
+        <!-- Блок для отображения информации о файлах -->
+        <div id="file-info" class="file-info">
+          <ul id="file-list"></ul>
+        </div>
+        <div id="files-sent" class="files-sent">Файлы отправлены</div>
+
+        <button type="submit" class="form-upload__submit">Отправить</button>
+      </form>
+    </div>
+    
+    <h3>JS</h3>
+<pre class="lang-js">
+  <code>
+    // ДОРАБОТАННЫ ВАРИАНТ (С ВОЗМОЖНОСТЬ ОТПРАВКИ ПРИ НЕОДНОКРАТНОМ ДОБАВЛЕНИИ КНОПКОЙ НЕСКОЛЬКИХ ФАЙЛОВ)
+    const dropFileZone = document.querySelector(".upload-zone__dragover");
+    const uploadInput = document.getElementById("upload-form__file");
+    const filesInfoElement = document.getElementById("file-info");
+    const filesSentElement = document.getElementById("files-sent");
+    const fileListElement = document.getElementById("file-list");
+    const submitButton = document.querySelector(".form-upload__submit");
+
+    // Обработчики для drag-and-drop
+    dropFileZone.addEventListener("dragenter", () => {
+      dropFileZone.classList.add("active");
+    });
+
+    dropFileZone.addEventListener("dragleave", () => {
+      dropFileZone.classList.remove("active");
+    });
+
+    document.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    document.addEventListener("drop", (e) => {
+      e.preventDefault();
+    });
+
+    //тот же код, что сверху
+    ["dragover", "drop"].forEach((event) => {
+      document.addEventListener(event, (e) => {
+        e.preventDefault();
+      });
+    });
+
+    // Массив для хранения всех выбранных файлов
+    let allFiles = [];
+
+    dropFileZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropFileZone.classList.remove("active");
+      submitButton.style.display = "block";
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        addFiles(files); // Добавляем файлы
+        displayFilesInfo(allFiles); // Отображаем все файлы
+      }
+    });
+
+    // Функция для добавления файлов
+    function addFiles(newFiles) {
+      allFiles = allFiles.concat(Array.from(newFiles)); // Добавляем новые файлы
+      saveFilesToInput(); // Обновляем файлы в инпуте
+    }
+
+    // Функция для обновления файлов в инпуте
+    function saveFilesToInput() {
+      const tempInput = new DataTransfer();
+      allFiles.forEach((file) => tempInput.items.add(file));
+      uploadInput.files = tempInput.files;
+    }
+
+    // Обработчик изменения инпута (выбор файлов через кнопку)
+    uploadInput.addEventListener("change", () => {
+      const files = uploadInput.files;
+      if (files.length > 0) {
+        addFiles(files); // Добавляем файлы
+        displayFilesInfo(allFiles); // Отображаем все файлы
+      }
+    });
+
+    // Функция для отображения информации о файлах
+    function displayFilesInfo(files) {
+      filesInfoElement.style.display = "block";
+      submitButton.style.display = "block";
+      fileListElement.innerHTML = ""; // Очищаем список перед добавлением новых файлов
+
+      for (const file of files) {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+          &#60;span>Загружен файл:&#60;/span> ${file.name}&#60;br>
+          &#60;span>размером:&#60;/span> ${file.size} байт&#60;br>
+        `;
+        fileListElement.append(listItem);
+      }
+    }
+
+    // Функция для очистки инпута
+    function clearUploadInput() {
+      allFiles = []; // Очищаем массив файлов
+      const tempInput = new DataTransfer();
+      uploadInput.files = tempInput.files;
+    }
+
+    // Обработчик отправки формы
+    submitButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      const files = allFiles; // Используем все файлы из массива
+
+      filesSentElement.style.display = "block";
+      submitButton.style.display = "none";
+
+      const filesInfo = files.map((file) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      }));
+
+      console.log("Файлы отправлены:", filesInfo);
+
+      clearUploadInput(); // Очищаем инпут
+      fileListElement.innerHTML = ""; // Очищаем список файлов
+      filesInfoElement.style.display = "none"; // Скрываем информацию о файлах
+      filesSentElement.style.display = "block"; // Показываем сообщение об отправке
+    });
+
+    // НИЖИ ВАРИАНТ ИЗ УРОКА 
+    // // запоминаем область перетаскивания файлов
+    // const dropFileZone = document.querySelector(".upload-zone__dragover");
+    // // запоминаем инпут для выбора файлов
+    // const uploadInput = document.getElementById("upload-form__file");
+    // // запоминаем блок для выведения информации о загруженных файлах
+    // const filesInfoElement = document.getElementById("file-info");
+    // // Элемент для отображения информации о отправленных файлах
+    // const filesSentElement = document.getElementById("files-sent");
+    // // Элемент для отображения информации о файлах
+    // const fileListElement = document.getElementById("file-list");
+    // // запоминаем кнопку отправки
+    // const submitButton = document.querySelector(".form-upload__submit");
+    
+    // // добавляем обработчик события для входа в зону перетаскивания файлов
+    // dropFileZone.addEventListener("dragenter", () => {
+    //   // добавляем класс стиля, красим форму
+    //   dropFileZone.classList.add("active");
+    // });
+    
+    // // добавляем обработчик события для выхода из зону перетаскивания файлов
+    // dropFileZone.addEventListener("dragleave", () => {
+    //   // возвращаем цвет неактивной формы
+    //   dropFileZone.classList.remove("active");
+    // });
+    
+    // document.addEventListener("dragover", (e) => {
+    //   e.preventDefault();
+    // });
+    
+    // document.addEventListener("drop", (e) => {
+    //   e.preventDefault();
+    // });
+    
+    // ["dragover", "drop"].forEach((event) => {
+    //   document.addEventListener(event, (e) => {
+    //     e.preventDefault();
+    //   });
+    // });
+    
+    // // добавляем обработчик события "drop" для зоны перетаскивания
+    // dropFileZone.addEventListener("drop", (e) => {
+    //   // останавливаем стандартное поведение браузера
+    //   e.preventDefault();
+    //   // удаляем класс активности при сбросе файлов
+    //   dropFileZone.classList.remove("active");
+    //   submitButton.style.display = "block";
+    //  // Переместил скрытие элемента в функцию saveFilesToInput
+    //   // filesSentElement.style.display = "none";
+    //   // получаем файлы из события
+    //   console.log(e.dataTransfer.files);
+    //   const files = e.dataTransfer.files;
+    //   // проверяем, что файлы есть
+    //   if (files.length > 0) {
+    //     // сохраняем файлы в инпут
+    //     saveFilesToInput(files);
+    //     // отображаем информацию о файлах
+    //     displayFilesInfo(files);
+    //   }
+    // });
+    
+    // // функция для сохранения файлов в инпут
+    // function saveFilesToInput(files) {
+    //   filesSentElement.style.display = "none";
+    //   console.log(uploadInput.files);
+    //   // Создаём временный массив для хранения всех файлов
+    //   const allFiles = Array.from(uploadInput.files); // Получаем текущие файлы
+    //   allFiles.push(...files); // Добавляем новые файлы
+    
+    //   // Создаём новый объект DataTransfer и добавляем все файлы туда
+    //   // Объект DataTransfer используется для хранения данных, 
+    //перетаскиваемых мышью во время операции drag and drop. 
+    //Он может хранить от одного до нескольких элементов данных, вне зависимости от их типа.
+    //   const tempInput = new DataTransfer();
+    //   console.log(tempInput);
+    //   allFiles.forEach((file) => tempInput.items.add(file));
+    
+    //   // Сохраняем файлы в uploadInput
+    //   uploadInput.files = tempInput.files;
+    
+    //   // Логируем файлы, чтобы убедиться, что они добавлены
+    //   console.log("Файлы добавлены в uploadInput:", uploadInput.files);
+    // }
+    
+    // uploadInput.addEventListener("change", () => {
+    //   // получаем файлы из инпута
+    //   const files = uploadInput.files;
+    //   // проверяем, что файлы есть
+    //   if (files.length > 0) {
+    //     // отображаем информацию о файлах
+    //     displayFilesInfo(files);
+    //   }
+    // });
+    
+    // // функция для отображения информации о файлах
+    // function displayFilesInfo(files) {
+    //   filesInfoElement.style.display = "block";
+    //   submitButton.style.display = "block";
+    //   // перебираем файлы
+    //   for (const file of files) {
+    //     // создаем элемент списка
+    //     const listItem = document.createElement("li");
+    //     listItem.innerHTML = `
+    //       &#60;span>Загружен файл:&#60;/span> ${file.name}&#60;br>
+    //       &#60;span>размером:&#60;/span> ${file.size} байт&#60;br>
+    //     `;
+    //     // добавляем элемент в список
+    //     fileListElement.append(listItem);
+    //   }
+    // }
+    
+    // // функция для очистки инпута с файлами
+    // function clearUploadInput() {
+    //   // создаем новый объект DataTransfer
+    //   const tempInput = new DataTransfer();
+    //   // очищаем инпут
+    //   uploadInput.files = tempInput.files;
+    // }
+    
+    // // добавляем обработчик события "click" для кнопки отправки
+    // submitButton.addEventListener("click", (e) => {
+    //   // блокируем стандартное поведение кнопки (отправку формы)
+    //   e.preventDefault();
+    //   // получаем файлы из инпута
+    //   const files = uploadInput.files;
+    
+    //   // выводим сообщение об отправке
+    //   filesSentElement.style.display = "block";
+    //   submitButton.style.display = "none";
+    
+    //   // Создаем массив объектов с информацией о файлах
+    //   const filesInfo = Array.from(files).map((file) => ({
+    //     name: file.name,
+    //     size: file.size,
+    //     type: file.type,
+    //   }));
+    
+    //   // Выводим информацию о файлах в консоль
+    //   console.log("Файлы отправлены:", filesInfo);
+    
+    //   // очищаем инпут с файлами
+    //   clearUploadInput();
+    
+    //   // очищаем список файлов
+    //   fileListElement.innerHTML = "";
+    //   // скрываем блок с информацией о файлах
+    //   filesInfoElement.style.display = "none";
+    //   // Показываем сообщение об отправке файлов
+    //   filesSentElement.style.display = "block";
+    // });
+  </code>
+</pre>
+  </article>
+
+  <script>
+    // ДОРАБОТАННЫ ВАРИАНТ (С ВОЗМОЖНОСТЬ ОТПРАВКИ ПРИ НЕОДНОКРАТНОМ ДОБАВЛЕНИИ КНОПКОЙ НЕСКОЛЬКИХ ФАЙЛОВ)
+    const dropFileZone = document.querySelector(".upload-zone__dragover");
+    const uploadInput = document.getElementById("upload-form__file");
+    const filesInfoElement = document.getElementById("file-info");
+    const filesSentElement = document.getElementById("files-sent");
+    const fileListElement = document.getElementById("file-list");
+    const submitButton = document.querySelector(".form-upload__submit");
+
+    // Обработчики для drag-and-drop
+    dropFileZone.addEventListener("dragenter", () => {
+      dropFileZone.classList.add("active");
+    });
+
+    dropFileZone.addEventListener("dragleave", () => {
+      dropFileZone.classList.remove("active");
+    });
+
+    document.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    document.addEventListener("drop", (e) => {
+      e.preventDefault();
+    });
+
+    //тот же код, что сверху
+    ["dragover", "drop"].forEach((event) => {
+      document.addEventListener(event, (e) => {
+        e.preventDefault();
+      });
+    });
+
+    // Массив для хранения всех выбранных файлов
+    let allFiles = [];
+
+    dropFileZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropFileZone.classList.remove("active");
+      submitButton.style.display = "block";
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        addFiles(files); // Добавляем файлы
+        displayFilesInfo(allFiles); // Отображаем все файлы
+      }
+    });
+
+    // Функция для добавления файлов
+    function addFiles(newFiles) {
+      allFiles = allFiles.concat(Array.from(newFiles)); // Добавляем новые файлы
+      saveFilesToInput(); // Обновляем файлы в инпуте
+    }
+
+    // Функция для обновления файлов в инпуте
+    function saveFilesToInput() {
+      const tempInput = new DataTransfer();
+      allFiles.forEach((file) => tempInput.items.add(file));
+      uploadInput.files = tempInput.files;
+    }
+
+    // Обработчик изменения инпута (выбор файлов через кнопку)
+    uploadInput.addEventListener("change", () => {
+      const files = uploadInput.files;
+      if (files.length > 0) {
+        addFiles(files); // Добавляем файлы
+        displayFilesInfo(allFiles); // Отображаем все файлы
+      }
+    });
+
+    // Функция для отображения информации о файлах
+    function displayFilesInfo(files) {
+      filesInfoElement.style.display = "block";
+      submitButton.style.display = "block";
+      fileListElement.innerHTML = ""; // Очищаем список перед добавлением новых файлов
+
+      for (const file of files) {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+          <span>Загружен файл:</span> ${file.name}<br>
+          <span>размером:</span> ${file.size} байт<br>
+        `;
+        fileListElement.append(listItem);
+      }
+    }
+
+    // Функция для очистки инпута
+    function clearUploadInput() {
+      allFiles = []; // Очищаем массив файлов
+      const tempInput = new DataTransfer();
+      uploadInput.files = tempInput.files;
+    }
+
+    // Обработчик отправки формы
+    submitButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      const files = allFiles; // Используем все файлы из массива
+
+      filesSentElement.style.display = "block";
+      submitButton.style.display = "none";
+
+      const filesInfo = files.map((file) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      }));
+
+      console.log("Файлы отправлены:", filesInfo);
+
+      clearUploadInput(); // Очищаем инпут
+      fileListElement.innerHTML = ""; // Очищаем список файлов
+      filesInfoElement.style.display = "none"; // Скрываем информацию о файлах
+      filesSentElement.style.display = "block"; // Показываем сообщение об отправке
+    });
+  </script>
+</body>
+</html>
