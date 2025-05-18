@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    /* * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin-top: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 18px;
+    } */
+
+    .blank {
+      width: 120px;
+      height: 120px;
+      border: 1px dashed #555;
+    }
+
+    .blanks,
+    .parts {
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .drag-item {
+      width: 120px;
+      height: 120px;
+      cursor: grab;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 18px;
+      /* color: #333; */
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Drag & Drop Puzzles</h1>
+    <hr>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin-top: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .blank {
+      width: 120px;
+      height: 120px;
+      border: 1px dashed #555;
+    }
+
+    .blanks,
+    .parts {
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .drag-item {
+      width: 120px;
+      height: 120px;
+      cursor: grab;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html"> 
+    &#60;h1>Нам нужно убедиться, что Вы не робот. Соберите, пожалуйста, пазл:&#60;/h1>
+    &#60;div class="blanks">
+      &#60;div class="blank">&#60;/div>
+      &#60;div class="blank">&#60;/div>
+      &#60;div class="blank">&#60;/div>
+      &#60;div class="blank">&#60;/div>
+      &#60;div class="blank">&#60;/div>
+      &#60;div class="blank">&#60;/div>
+    &#60;/div>
+
+    &#60;div class="parts">
+      &#60;img src="/images/part1.jpg" class="drag-item" id="item-1" />
+      &#60;img src="/images/part2.jpg" class="drag-item" id="item-2" />
+      &#60;img src="/images/part3.jpg" class="drag-item" id="item-3" />
+      &#60;img src="/images/part4.jpg" class="drag-item" id="item-4" />
+      &#60;img src="/images/part5.jpg" class="drag-item" id="item-5" />
+      &#60;img src="/images/part6.jpg" class="drag-item" id="item-6" />
+    &#60;/div>
+
+    &#60;button id="check-puzzles">Проверить&#60;/button>
+    &#60;p id="result">&#60;/p>
+  </code>
+</pre>
+    </details>
+
+    <h2>Нам нужно убедиться, что Вы не робот. Соберите, пожалуйста, пазл:</h2>
+    <div class="blanks">
+      <div class="blank"></div>
+      <div class="blank"></div>
+      <div class="blank"></div>
+      <div class="blank"></div>
+      <div class="blank"></div>
+      <div class="blank"></div>
+    </div>
+
+    <div class="parts">
+      <img src="/images/part1.jpg" class="drag-item" id="item-1" />
+      <img src="/images/part2.jpg" class="drag-item" id="item-2" />
+      <img src="/images/part3.jpg" class="drag-item" id="item-3" />
+      <img src="/images/part4.jpg" class="drag-item" id="item-4" />
+      <img src="/images/part5.jpg" class="drag-item" id="item-5" />
+      <img src="/images/part6.jpg" class="drag-item" id="item-6" />
+    </div>
+
+    <button id="check-puzzles">Проверить</button>
+    <p id="result"></p>
+    
+    <h3>JS</h3>
+<pre class="lang-js">
+  <code>
+    const blanks = document.querySelectorAll('.blank');
+    const parts = document.querySelector('.parts');
+    const dragItems = document.querySelectorAll('.drag-item');
+    const checkButton = document.getElementById('check-puzzles');
+    const result = document.getElementById('result');
+
+    blanks.forEach((blank) => {
+      blank.draggable = 'true';
+    });
+
+    //синтаксис sort
+    //array.sort(function(a, b) {
+    // return a - b
+    //});
+    const shuffledItems = Array.from(dragItems).sort(function () {
+      return Math.random() - 0.5;
+    });
+
+    shuffledItems.forEach((item) => parts.append(item));
+    
+    //добавляем обработчики событий на перетаскиваемые элементы
+    dragItems.forEach((item) => {
+      item.addEventListener('dragstart', dragStart);
+    });
+
+    //получаем id при перетаскивании
+    function dragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.id);
+    };
+
+    //навешиваем обработчики событий на поля сброса пазлов
+    blanks.forEach((blank) => {
+      blank.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      //функция drop, которая реагирует на сброс пазла в ячейку
+      blank.addEventListener('drop', drop);
+    });
+
+    function drop(e) {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      const draggedItem = document.getElementById(id);
+
+      //closest('.blank'); - позволяет возвращать пазл в общий пул при 
+      //перетаскивании на саму картинку а не на область сбрасывания
+      const targetBlank = e.target.closest('.blank');
+      if (!targetBlank) return;
+
+      const existingPuzzle = targetBlank.querySelector('drag-item');
+      if (existingPuzzle) {
+        parts.append(existingPuzzle);
+      };
+
+      targetBlank.append(draggedItem);
+    };
+
+    checkButton.addEventListener('click', () => {
+      let isCorrect = true;
+      blanks.forEach((blank, index) => {
+        const puzzle = blank.firstChild;
+        //index + 1 потому что в html нумерация с 1 начинается
+        //(&#60;img ... id="item-1" />)
+        if (!puzzle || puzzle.id !== `item-${index + 1}`) {
+          isCorrect = false;
+        };
+      });
+
+      if (isCorrect) {
+        result.textContent = "Пазл собран правильно!";
+      } else {
+        result.textContent = "Пазл собран неправильно. Попробуйте еще раз";
+      }
+    });
+
+    //еще вариант проверки 
+    //  function checkPuzzle() {
+    //    const correctAnswers = [];
+    //    dragItems.forEach((item) => {
+    //      correctAnswers.push(item.id);
+    //  });
+
+    //  const userPuzzles = document.querySelector(".blanks").querySelectorAll(".drag-item");
+    //  const userAnswers = [];
+    //  userPuzzles.forEach((puzzle) => {
+    //    userAnswers.push(puzzle.id);
+    //  });
+
+    //  if (JSON.stringify(correctAnswers) === JSON.stringify(userAnswers)) {
+    //    result.textContent = "Пазл собран правильно!";
+    //  } else {
+    //    resultEl.textContent = "Пазл собран неправильно, попробуйте ещё раз";
+    //  }
+    // }
+  </code>
+</pre>
+  </article>
+
+  <script>
+    const blanks = document.querySelectorAll('.blank');
+    const parts = document.querySelector('.parts');
+    const dragItems = document.querySelectorAll('.drag-item');
+    const checkButton = document.getElementById('check-puzzles');
+    const result = document.getElementById('result');
+
+    blanks.forEach((blank) => {
+      blank.draggable = 'true';
+    });
+
+    //синтаксис sort
+    //array.sort(function(a, b) {
+    // return a - b
+    //});
+    const shuffledItems = Array.from(dragItems).sort(function () {
+      return Math.random() - 0.5;
+    });
+
+    shuffledItems.forEach((item) => parts.append(item));
+    
+    //добавляем обработчики событий на перетаскиваемые элементы
+    dragItems.forEach((item) => {
+      item.addEventListener('dragstart', dragStart);
+    });
+
+    //получаем id при перетаскивании
+    function dragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.id);
+    };
+
+    //навешиваем обработчики событий на поля сброса пазлов
+    blanks.forEach((blank) => {
+      blank.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      //функция drop, которая реагирует на сброс пазла в ячейку
+      blank.addEventListener('drop', drop);
+    });
+
+    function drop(e) {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      const draggedItem = document.getElementById(id);
+
+      //closest('.blank'); - позволяет возвращать пазл в общий пул при 
+      //перетаскивании на саму картинку а не на область сбрасывания
+      const targetBlank = e.target.closest('.blank');
+      if (!targetBlank) return;
+
+      const existingPuzzle = targetBlank.querySelector('drag-item');
+      if (existingPuzzle) {
+        parts.append(existingPuzzle);
+      };
+
+      targetBlank.append(draggedItem);
+    };
+
+    checkButton.addEventListener('click', () => {
+      let isCorrect = true;
+      blanks.forEach((blank, index) => {
+        const puzzle = blank.firstChild;
+        //index + 1 потому что в html нумерация с 1 начинается
+        //(<img ... id="item-1" />)
+        if (!puzzle || puzzle.id !== `item-${index + 1}`) {
+          isCorrect = false;
+        };
+      });
+
+      if (isCorrect) {
+        result.textContent = "Пазл собран правильно!";
+      } else {
+        result.textContent = "Пазл собран неправильно. Попробуйте еще раз";
+      }
+    });
+  </script>
+</body>
+</html>
