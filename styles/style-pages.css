@@ -228,6 +228,11 @@ details {
     background: linear-gradient(0deg, #544e6850, #0d2b45) 0 0 /100% 100% repeat;
     width: 50%;
   }
+
+  li {
+    line-height: 35px;
+    padding-bottom: 15px;
+  }
   /* article ul {
     width: 70%;
     margin: 0 auto;

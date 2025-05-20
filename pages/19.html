@@ -27,7 +27,7 @@
     <hr>
 
 <pre>
-  <code class="lang-css">
+  <code class="lang-js">
     console.log(1);
 
     setTimeout(function () {
@@ -35,10 +35,79 @@
     }, 5000);
 
     console.log(2);
-
-    //результатом будет: 1 2 3 
   </code>
 </pre>
+    <p>результатом будет: 1 2 3</p>
+    <p>функция не блокирует выполнение остальной части кода</p>
+
+    <h2>Call Stack, Web Apis, Callback Queue.</h2>
+<pre>
+  <code class="lang-js">
+    const button = document.getElementById('button');
+
+    button.addEventListener('click', function onClick() {
+      setTimeout(function timer() {
+        console.log('You clicked the button!');    
+      }, 2000);
+    });
+
+    console.log("Hi!");
+
+    setTimeout(function timeout() {
+      console.log("Click the button!");
+    }, 5000);
+
+    console.log("Welcome to loupe.");
+  </code>
+</pre>
+    <a href="http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D" target="_blank">Ссылка на демо</a>
+
+    <ul><img src="../images/22.JPG" alt="1"></ul>
+
+    <ol>
+      <li>Изначально Call Stack, Web Apis, Callback Queue пустые.</li>
+      <li>Начало выполнения кода, обработчик события на кнопку <code>'button'</code> попадает в Call Stack, после этого попадает в 
+        Web Apis. (и там сидит, ждёт) А Call Stack пустой после этого.
+      </li>
+      <li>Дальше выполняется <code>console.log("Hi!");</code>. Он попадает в Call Stack, в консоле выводится 'Hi', после чего <code>console.log("Hi!");</code> удаляется из Call Stack.</li>
+      <li>Затем <code>setTimeout</code>. Он попадает в Call Stack, затем в Web Apis, а Call Stack освобождается. <code>timeout()</code> начинает выполнятся в  Web Apis. Идёт 5ти секундный отсчет.</li>
+      <li>В то же самое время, после освобождения Call Stack от <code>setTimeout</code>, туда попадает <code>console.log("Welcome to loupe.");</code>, в консоли выводится 'Welcome to loupe.', после чего <code>console.log("Welcome to loupe.");</code> удаляется из Call Stack.</li>
+      <li>На следующем шаге происходит ожидание событий. Call Stack пустой, Callback Queue пустой. В Web Apis продолжает сидеть и ждать события <code>'button'</code>. И идёт отсчет <code>setTimeout</code>.</li>
+      <li>Через 5сек таймер завершается, функция <code>timeout()</code> перемещается в Callback Queue.</li>
+      <li>Event Loop проверяет, пуст ли Callback, затем перемещает <code>timeout()</code> в Call Stack.</li>
+      <li>Далее в Call Stack происходит вывод в консоль <code>console.log("Click the button!");</code>. После чего <code>console.log("Click the button!");</code> удаляется и <code>timeout()</code> удаляется из Call Stack.</li>
+      <li>Всё это время обработчик события остаётся в Web Apis. После того, как происходит клик по кнопке, в Web Apis срабатывает обработчик клика. Внутри клика вызывается  <code>setTimeout</code> с таймером 2сек, это функция <code>timer()</code>.</li>
+      <li>2 секунды истекают, таймер завершается. Функция  <code>timer()</code> перемещается в Callback Queue.</li>
+      <li>Event Loop проверяет, пуст ли Callback и перемещает <code>timer()</code> в Call Stack.</li>
+      <li>Далее в Call Stack происходит вывод в консоль <code>console.log('You clicked the button!');</code>. После чего <code>console.log('You clicked the button!');</code> удаляется и <code>timer()</code> удаляется из Call Stack.</li>
+      <li>Обработчик события <code>'button'</code> продолжает сидеть в Web Apis.</li>
+    </ol>
+
+    <h3>Итоговый порядок вывода:</h3>
+<pre>
+  <code class="lang-js">
+    Hi!
+    Welcome to loupe.
+    Click the button!
+    You clicked the button!
+  </code>
+</pre>
+
+    <h3>Принцип работы Call Stack</h3>
+    <p>Last in, fist out - последний зашел, первый вышел</p>
+
+    <h3>Принцип работы Callback Queue</h3>
+    <p>First in, first out - первый зашел, первый вышел</p>
+
+
+
+
+
+
+
+
+
+
 
   </article>
   <button id="scrollToTopButton">&#8593;</button>
