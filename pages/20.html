@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script.js" defer></script>
+</head>
+<body>
+  
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Промисы</h1>
+    <hr>
+    <p>Синтаксис создания <code>Promise</code>:</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise(function(resolve, reject) {
+      // функция-исполнитель (executor)
+    });
+  </code>
+</pre>
+    <p>Функция, переданная в конструкцию <code>new Promise</code>, называется исполнитель (executor). Когда <code>Promise</code> создаётся, она запускается автоматически. Она должна содержать «создающий» код, который когда-нибудь создаст результат.</p>
+    <p>Её аргументы <code>resolve</code> и <code>reject</code> – это колбэки, которые предоставляет сам JavaScript. Наш код – только внутри исполнителя.</p>
+    <p>Когда он получает результат, сейчас или позже – не важно, он должен вызвать один из этих колбэков:</p>
+    <ul>
+      <li><code>resolve(value)</code> — если работа завершилась успешно, с результатом <code>value</code>.</li>
+      <li><code>reject(error)</code> — если произошла ошибка, <code>error</code> – объект ошибки.</li>
+    </ul>
+    <p>Итак, исполнитель запускается автоматически, он должен выполнить работу, а затем вызвать <code>resolve</code> или <code>reject</code>.</p>
+    <p>У объекта <code>promise</code>, возвращаемого конструктором <code>new Promise</code>, есть внутренние свойства:</p>
+    <ul>
+      <li><code>state</code> («состояние») — вначале <code>"pending"</code> («ожидание»), потом меняется на <code>"fulfilled"</code> («выполнено успешно») при вызове <code>resolve</code> или на <code>"rejected"</code> («выполнено с ошибкой») при вызове <code>reject</code>.</li>
+      <li><code>result</code> («результат») — вначале <code>undefined</code>, далее изменяется на <code>value</code> при вызове <code>resolve(value)</code> или на <code>error</code> при вызове <code>reject(error)</code>.</li>
+    </ul>
+    <p>Так что исполнитель по итогу переводит <code>promise</code> в одно из двух состояний:</p>
+    <ul><img src="../images/23.JPG" alt="1"></ul>
+    <p>Ниже пример конструктора <code>Promise</code> и простого исполнителя с кодом, дающим результат с задержкой (через <code>setTimeout</code>):</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise(function(resolve, reject) {
+      // эта функция выполнится автоматически, при вызове new Promise
+
+      // через 1 секунду сигнализировать, что задача выполнена с результатом "done"
+      setTimeout(() => resolve("done"), 1000);
+    });
+  </code>
+</pre>
+    <p>Мы можем наблюдать две вещи, запустив код выше:</p>
+    <ol>
+      <li>Функция-исполнитель запускается сразу же при вызове <code>new Promise</code>.</li>
+      <li>Исполнитель получает два аргумента: <code>resolve</code> и <code>reject</code> — это функции, встроенные в JavaScript, поэтому нам не нужно их писать. Нам нужно лишь позаботиться, чтобы исполнитель вызвал одну из них по готовности.</li>
+    </ol>
+    <p>Спустя одну секунду «обработки» исполнитель вызовет <code>resolve("done")</code>, чтобы передать результат:</p>
+    <ul><img src="../images/24.JPG" alt="1"></ul>
+    <p>Это был пример успешно выполненной задачи, в результате мы получили «успешно выполненный» промис.</p>
+    <p>А теперь пример, в котором исполнитель сообщит, что задача выполнена с ошибкой:</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise(function(resolve, reject) {
+      // спустя одну секунду будет сообщено, что задача выполнена с ошибкой
+      setTimeout(() => reject(new Error("Whoops!")), 1000);
+    });
+  </code>
+</pre>
+    <ul><img src="../images/25.JPG" alt="1"></ul>
+    <p>Подведём промежуточные итоги: исполнитель выполняет задачу (что-то, что обычно требует времени), затем вызывает <code>resolve</code> или <code>reject</code>, чтобы изменить состояние соответствующего <code>Promise</code>.</p>
+    <p>Промис – и успешный, и отклонённый будем называть «завершённым», в отличие от изначального промиса «в ожидании».</p>
+  </article>
+  <button id="scrollToTopButton">&#8593;</button>
+</body>
+</html>
