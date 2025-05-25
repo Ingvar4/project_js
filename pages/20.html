@@ -118,11 +118,74 @@
     <hr>
 
     <h2>Потребители: then, catch</h2>
+    <p>Объект <code>Promise</code> служит связующим звеном между исполнителем («создающим» кодом) и функциями-потребителями, которые получат либо результат, либо ошибку. Функции-потребители могут быть зарегистрированы (подписаны) с помощью методов <code>.then</code> и <code>.catch</code>.</p>
+    <h3>then</h3>
+    <p>Наиболее важный и фундаментальный метод – <code>.then</code></p>
+    <p>Синтаксис:</p>
+<pre>
+  <code class="lang-js">
+    promise.then(
+      function(result) { /* обработает успешное выполнение */ },
+      function(error) { /* обработает ошибку */ }
+    );
+  </code>
+</pre>
+    <p>Первый аргумент метода <code>.then</code> – функция, которая выполняется, когда промис переходит в состояние «выполнен успешно», и получает результат.</p>
+    <p>Второй аргумент <code>.then</code> – функция, которая выполняется, когда промис переходит в состояние «выполнен с ошибкой», и получает ошибку.</p>
+    <p>Например, вот реакция на успешно выполненный промис:</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise(function(resolve, reject) {
+      setTimeout(() => resolve("done!"), 1000);
+    });
 
+    // resolve запустит первую функцию, переданную в .then
+    promise.then(
+      result => alert(result), // выведет "done!" через одну секунду
+      error => alert(error) // не будет запущена
+    );
+  </code>
+</pre>
+    <p>Выполнилась первая функция.</p>
+    <p>А в случае ошибки в промисе – выполнится вторая:</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise(function(resolve, reject) {
+      setTimeout(() => reject(new Error("Whoops!")), 1000);
+    });
 
+    // reject запустит вторую функцию, переданную в .then
+    promise.then(
+      result => alert(result), // не будет запущена
+      error => alert(error) // выведет "Error: Whoops!" спустя одну секунду
+    );
+  </code>
+</pre>
+    <p>Если мы заинтересованы только в результате успешного выполнения задачи, то в <code>then</code> можно передать только одну функцию:</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise(resolve => {
+      setTimeout(() => resolve("done!"), 1000);
+    });
 
+    promise.then(alert); // выведет "done!" спустя одну секунду
+  </code>
+</pre>
+    <h3>catch</h3>
+    <p>Если мы хотели бы только обработать ошибку, то можно использовать null в качестве первого аргумента: <code>.then(null, errorHandlingFunction)</code>. Или можно воспользоваться методом <code>.catch(errorHandlingFunction)</code>, который сделает то же самое:</p>
+<pre>
+  <code class="lang-js">
+    let promise = new Promise((resolve, reject) => {
+      setTimeout(() => reject(new Error("Ошибка!")), 1000);
+    });
 
+    // .catch(f) это то же самое, что promise.then(null, f)
+    promise.catch(alert); // выведет "Error: Ошибка!" спустя одну секунду
+  </code>
+</pre>
+    <p>Вызов <code>.catch(f)</code> – это сокращённый, «укороченный» вариант <code>.then(null, f)</code>.</p>
 
+    <h2>Очистка: finally</h2>
 
 
 
