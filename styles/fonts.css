@@ -65,3 +65,9 @@
   font-weight: 400;
   src: url('../fonts/dotgothic16-v19-cyrillic_latin_latin-ext-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
+@font-face {
+  font-display: swap; 
+  font-family: 'JetBrainsMono-Thin';
+  src: url('../fonts/JetBrainsMono-Thin.woff2') format('woff2'); 
+}
