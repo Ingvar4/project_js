@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <style>
+    .post {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      background-color: #f9f9f9;
+    }
+
+    .post h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .post p {
+      color: #666;
+    }
+
+    #loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      display: none;
+    }
+
+    .comments1 {
+      background-color: #999;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .comment1 {
+      background-color: #444;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Promise.all() / Promise.allSettled()</h1>
+    <hr>
+
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    .post {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      background-color: #f9f9f9;
+    }
+
+    .post h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .post p {
+      color: #666;
+    }
+
+    #loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      display: none;
+    }
+
+    .comments {
+      background-color: #999;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .comment {
+      background-color: #444;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html"> 
+    &#60;button id="button">Получить данные&#60;/button>
+    &#60;img src="loader.gif" alt="Загрузка" id="loader">
+    &#60;div id="posts-container">&#60;/div>
+  </code>
+</pre>
+    </details>
+
+    <a href="https://jsonplaceholder.typicode.com/" style="color: rgb(142, 129, 155);" target="_blank">JSONPlaceholder тестовые материалы</a>
+    
+    <div>
+      <button id="button">Получить данные</button>
+      <button id="button2">Очистить данные</button>
+      <img src="../images/loader.gif" alt="Загрузка" id="loader">
+      <div id="posts-container"></div>
+    </div>
+
+    <h3>JS Promise.all()</h3>
+    <p>Используем <code>Promise.all()</code> для выполнения всех промисов и получения их результатов</p>
+    <details>
+      <summary>JS</summary>
+<pre>
+  <code class="lang-js">
+    const loader = document.getElementById('loader');
+
+    async function fetchData(url, errorMessage) {
+      try {
+        //добавляем лоадер при рендере постов
+        loader.style.display = 'block';
+        //1й await ставим когда делаем fetch запрос (происходит ожидание ответа от сервера, но не получение данных)
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Данные не получены. Статус ${response.status}`);
+        }
+        //2й await парсит json данные (ожидает завершения парсинга json)
+        const data = await response.json();
+        console.log('Данные получены. ', data);
+        return data;
+      } catch {
+        if (error.message === 'Failed to fetch') {
+            console.error('Ошибка: нет подключения к интернету.');
+          } else {
+            console.error(`${errorMessage}`, error.message);
+          }
+      } finally {
+        //выключаем лоадер после окончания рендера
+        loader.style.display = 'none';
+      }
+    };
+
+    //cоздаём 3 асинхронные функции (которые будут переиспользовать fetchData) 
+    //для получения данных постов, пользователей, комментов
+    async function getPosts() {
+      const url = 'https://jsonplaceholder.typicode.com/posts';
+      const errorMessage = 'Ошибка при получении постов';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    async function getUsers() {
+      const url = 'https://jsonplaceholder.typicode.com/users';
+      const errorMessage = 'Ошибка при получении пользователей';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    async function getComments() {
+      const url = 'https://jsonplaceholder.typicode.com/comments';
+      const errorMessage = 'Ошибка при получении комментариев';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    //делаем функцию ассинхронной
+    async function getData() {
+      try {
+        //нужно получить результат выполнения 3х функций с помощью Promise.all
+        //получается массив данных из 3х запросов
+        //далее этот массив деструктурируется
+        const [postsResult, usersResult, commentsResult] = await Promise.all([getPosts(), getUsers(), getComments()]);
+
+        console.log('Посты', postsResult);
+        console.log('Юзеры', usersResult);
+        console.log('Комменты', commentsResult);
+
+        const container = document.getElementById('posts-container');
+        //изначально делаем пустым, чтобы при перезагрузке контейнер очищался
+        container.innerHTML = '';
+        //в ответе (data которая стала posts) возвращается body, id, title, userID. Рендерим то, что нужно 
+        postsResult.forEach((post) => {
+          const postElement = document.createElement('div');
+          //навешиваем уже заготовленные стили для пост элемента
+          postElement.classList.add('post');
+
+          const titleElement = document.createElement('h3');
+          titleElement.textContent = post.title;
+
+          const bodyElement = document.createElement('p');
+          bodyElement.textContent = post.body;
+
+          postElement.append(titleElement);
+          postElement.append(bodyElement);
+
+          //ищем юзера по соответствию его id с id постов этого юзера
+          //поиск идет в usersResult
+          const user = usersResult.find((user) => user.id === post.userId);
+
+          //выбираем данные для рендера 
+          if (user) {
+            const userElement = document.createElement('div');
+            const nameElement = document.createElement('p');
+            nameElement.textContent = `Author: ${user.name}`;
+
+            const emailElement = document.createElement('p');
+            emailElement.textContent = `Email: ${user.email}`;
+
+            const websiteElement = document.createElement('p');
+            websiteElement.textContent = `Website: ${user.website}`;
+
+            userElement.append(nameElement);
+            userElement.append(emailElement);
+            userElement.append(websiteElement);
+            //прикрепляем это всё к postElement
+            postElement.append(userElement);
+          }
+          
+          //находим комментарии для текущего поста
+          const postComments = commentsResult.filter((comment) => comment.postId === post.id);
+
+          if (postComments.length > 0) {
+            const commentsContainer = document.createElement('div');
+            commentsContainer.classList.add('comments');
+
+            const commentsTitle = document.createElement('h3');
+            commentsTitle.textContent = 'Comments:';
+            commentsContainer.append(commentsTitle);
+
+            postComments.forEach((comment) => {
+              const commentElement = document.createElement('div');
+              commentElement.classList.add('comment');
+
+              const commentName = document.createElement('p');
+              commentName.textContent = `Name: ${comment.name}`;
+
+              const commentEmail = document.createElement('p');
+              commentEmail.textContent = `Email: ${comment.email}`;
+
+              const commentBody = document.createElement('p');
+              commentBody.textContent = comment.body;
+
+              commentElement.append(commentName);
+              commentElement.append(commentEmail);
+              commentElement.append(commentBody);
+
+              commentsContainer.append(commentElement);
+            });
+
+            postElement.append(commentsContainer);
+          }
+
+          container.append(postElement);
+        });
+
+      } catch (error) {
+        console.error('Ошибка при получении данных', error);
+      }
+    }
+
+    function cleanContainer(posts) {
+      const container = document.getElementById('posts-container');
+      container.innerHTML = '';
+    };
+
+    const btn = document.getElementById('button');
+    btn.addEventListener('click', getData);
+
+    const btn2 = document.getElementById('button2');
+    btn2.addEventListener('click', cleanContainer);
+  </code>
+</pre>
+    </details>
+
+
+    <h3>JS Promise.allSettled()</h3>
+    <p>Используем <code>Promise.allSettled()</code> для получения результатов всех промисов, включая отклоненные.</p>
+  <p>Короче, если какой то промис отработал с ошибкой, результат остальных всё равно будет выведен, а в случае с <code>Promise.all()</code> не будет.</p>
+<pre>
+  <code class="lang-js">
+    const loader = document.getElementById('loader');
+
+    async function fetchData(url, errorMessage) {
+      try {
+        //добавляем лоадер при рендере постов
+        loader.style.display = 'block';
+        //1й await ставим когда делаем fetch запрос (происходит ожидание ответа от сервера, но не получение данных)
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Данные не получены. Статус ${response.status}`);
+        }
+        //2й await парсит json данные (ожидает завершения парсинга json)
+        const data = await response.json();
+        console.log('Данные получены. ', data);
+        return data;
+      } catch {
+        if (error.message === 'Failed to fetch') {
+            console.error('Ошибка: нет подключения к интернету.');
+          } else {
+            console.error(`${errorMessage}`, error.message);
+          }
+          //добавляем throw error при Promise.allSettled 
+          //функция fetchData даже при неудачном запросе должна что-то вернуть
+          //throw error выбрасывает ошибку на верхний уровень
+          //в конкретном случае в getData
+          throw error;
+      } finally {
+        //выключаем лоадер после окончания рендера
+        loader.style.display = 'none';
+      }
+    };
+
+    //cоздаём 3 асинхронные функции (которые будут переиспользовать fetchData) 
+    //для получения данных постов, пользователей, комментов
+    async function getPosts() {
+      const url = 'https://jsonplaceholder.typicode.com/posts';
+      const errorMessage = 'Ошибка при получении постов';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    async function getUsers() {
+      const url = 'https://jsonplaceholder.typicode.com/users';
+      const errorMessage = 'Ошибка при получении пользователей';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    async function getComments() {
+      const url = 'https://jsonplaceholder.typicode.com/comments';
+      const errorMessage = 'Ошибка при получении комментариев';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    //делаем функцию ассинхронной
+    async function getData() {
+      try {
+        //нужно получить результат выполнения 3х функций
+        //получается массив данных из 3х запросов
+        //далее этот массив деструктурируется
+        //используем Promise.allSettled
+        const [postsResult, usersResult, commentsResult] = await Promise.allSettled([getPosts(), getUsers(), getComments()]);
+
+        //для Promise.allSettled заводим 
+        const posts = postsResult.status === 'fulfilled' ? postsResult.value : [];
+        const users = usersResult.status === 'fulfilled' ? usersResult.value : [];
+        const comments = commentsResult.status === 'fulfilled' ? commentsResult.value : [];
+
+        console.log('Посты', postsResult);
+        console.log('Юзеры', usersResult);
+        console.log('Комменты', commentsResult);
+
+        const container = document.getElementById('posts-container');
+        //изначально делаем пустым, чтобы при перезагрузке контейнер очищался
+        container.innerHTML = '';
+
+        if (posts.length === 0) {
+          container.innerHTML = '&#60;p>Нет доступных постов&#60;/p>';
+          return;
+        }
+
+        //в ответе (data которая стала posts) возвращается body, id, title, userID. Рендерим то, что нужно 
+        posts.forEach((post) => {
+          const postElement = document.createElement('div');
+          //навешиваем уже заготовленные стили для пост элемента
+          postElement.classList.add('post');
+
+          const titleElement = document.createElement('h3');
+          titleElement.textContent = post.title;
+
+          const bodyElement = document.createElement('p');
+          bodyElement.textContent = post.body;
+
+          postElement.append(titleElement);
+          postElement.append(bodyElement);
+
+          //выбираем данные для рендера 
+          if (users.length > 0) {
+            //ищем юзера по соответствию его id с id постов этого юзера
+            const user = users.find((user) => user.id === post.userId);
+
+            const userElement = document.createElement('div');
+            const nameElement = document.createElement('p');
+            nameElement.textContent = `Author: ${user.name}`;
+
+            const emailElement = document.createElement('p');
+            emailElement.textContent = `Email: ${user.email}`;
+
+            const websiteElement = document.createElement('p');
+            websiteElement.textContent = `Website: ${user.website}`;
+
+            userElement.append(nameElement);
+            userElement.append(emailElement);
+            userElement.append(websiteElement);
+            //прикрепляем это всё к postElement
+            postElement.append(userElement);
+          }
+          
+          if (comments.length > 0) {
+            //находим комментарии для текущего поста
+            const postComments = comments.filter((comment) => comment.postId === post.id);
+
+            if (postComments.length > 0) {
+              const commentsContainer = document.createElement('div');
+              commentsContainer.classList.add('comments1');
+
+              const commentsTitle = document.createElement('h3');
+              commentsTitle.textContent = 'Comments:';
+              commentsContainer.append(commentsTitle);
+
+              postComments.forEach((comment) => {
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment1');
+
+                const commentName = document.createElement('p');
+                commentName.textContent = `Name: ${comment.name}`;
+
+                const commentEmail = document.createElement('p');
+                commentEmail.textContent = `Email: ${comment.email}`;
+
+                const commentBody = document.createElement('p');
+                commentBody.textContent = comment.body;
+
+                commentElement.append(commentName);
+                commentElement.append(commentEmail);
+                commentElement.append(commentBody);
+
+                commentsContainer.append(commentElement);
+              });
+
+              postElement.append(commentsContainer);
+            }
+          }
+
+          container.append(postElement);
+        });
+
+      } catch (error) {
+        console.error('Ошибка при получении данных', error);
+      }
+    }
+
+    function cleanContainer(posts) {
+      const container = document.getElementById('posts-container');
+      container.innerHTML = '';
+    };
+
+    const btn = document.getElementById('button');
+    btn.addEventListener('click', getData);
+
+    const btn2 = document.getElementById('button2');
+    btn2.addEventListener('click', cleanContainer);
+  </code>
+</pre>
+
+  </article>
+
+  <script>
+    const loader = document.getElementById('loader');
+
+    async function fetchData(url, errorMessage) {
+      try {
+        //добавляем лоадер при рендере постов
+        loader.style.display = 'block';
+        //1й await ставим когда делаем fetch запрос (происходит ожидание ответа от сервера, но не получение данных)
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Данные не получены. Статус ${response.status}`);
+        }
+        //2й await парсит json данные (ожидает завершения парсинга json)
+        const data = await response.json();
+        console.log('Данные получены. ', data);
+        return data;
+      } catch {
+        if (error.message === 'Failed to fetch') {
+            console.error('Ошибка: нет подключения к интернету.');
+          } else {
+            console.error(`${errorMessage}`, error.message);
+          }
+          //добавляем throw error при Promise.allSettled 
+          //функция fetchData даже при неудачном запросе должна что-то вернуть
+          //throw error выбрасывает ошибку на верхний уровень
+          //в конкретном случае в getData
+          throw error;
+      } finally {
+        //выключаем лоадер после окончания рендера
+        loader.style.display = 'none';
+      }
+    };
+
+    //cоздаём 3 асинхронные функции (которые будут переиспользовать fetchData) 
+    //для получения данных постов, пользователей, комментов
+    async function getPosts() {
+      const url = 'https://jsonplaceholder.typicode.com/posts';
+      const errorMessage = 'Ошибка при получении постов';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    async function getUsers() {
+      const url = 'https://jsonplaceholder.typicode.com/users';
+      const errorMessage = 'Ошибка при получении пользователей';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    async function getComments() {
+      const url = 'https://jsonplaceholder.typicode.com/comments';
+      const errorMessage = 'Ошибка при получении комментариев';
+      const result = await fetchData(url, errorMessage);
+      return result;
+    }
+
+    //делаем функцию ассинхронной
+    async function getData() {
+      try {
+        //нужно получить результат выполнения 3х функций
+        //получается массив данных из 3х запросов
+        //далее этот массив деструктурируется
+        //используем Promise.allSettled
+        const [postsResult, usersResult, commentsResult] = await Promise.allSettled([getPosts(), getUsers(), getComments()]);
+
+        //для Promise.allSettled заводим 
+        const posts = postsResult.status === 'fulfilled' ? postsResult.value : [];
+        const users = usersResult.status === 'fulfilled' ? usersResult.value : [];
+        const comments = commentsResult.status === 'fulfilled' ? commentsResult.value : [];
+
+        console.log('Посты', postsResult);
+        console.log('Юзеры', usersResult);
+        console.log('Комменты', commentsResult);
+
+        const container = document.getElementById('posts-container');
+        //изначально делаем пустым, чтобы при перезагрузке контейнер очищался
+        container.innerHTML = '';
+
+        if (posts.length === 0) {
+          container.innerHTML = '<p>Нет доступных постов</p>';
+          return;
+        }
+
+        //в ответе (data которая стала posts) возвращается body, id, title, userID. Рендерим то, что нужно 
+        posts.forEach((post) => {
+          const postElement = document.createElement('div');
+          //навешиваем уже заготовленные стили для пост элемента
+          postElement.classList.add('post');
+
+          const titleElement = document.createElement('h3');
+          titleElement.textContent = post.title;
+
+          const bodyElement = document.createElement('p');
+          bodyElement.textContent = post.body;
+
+          postElement.append(titleElement);
+          postElement.append(bodyElement);
+
+          //выбираем данные для рендера 
+          if (users.length > 0) {
+            //ищем юзера по соответствию его id с id постов этого юзера
+            const user = users.find((user) => user.id === post.userId);
+
+            const userElement = document.createElement('div');
+            const nameElement = document.createElement('p');
+            nameElement.textContent = `Author: ${user.name}`;
+
+            const emailElement = document.createElement('p');
+            emailElement.textContent = `Email: ${user.email}`;
+
+            const websiteElement = document.createElement('p');
+            websiteElement.textContent = `Website: ${user.website}`;
+
+            userElement.append(nameElement);
+            userElement.append(emailElement);
+            userElement.append(websiteElement);
+            //прикрепляем это всё к postElement
+            postElement.append(userElement);
+          }
+          
+          if (comments.length > 0) {
+            //находим комментарии для текущего поста
+            const postComments = comments.filter((comment) => comment.postId === post.id);
+
+            if (postComments.length > 0) {
+              const commentsContainer = document.createElement('div');
+              commentsContainer.classList.add('comments1');
+
+              const commentsTitle = document.createElement('h3');
+              commentsTitle.textContent = 'Comments:';
+              commentsContainer.append(commentsTitle);
+
+              postComments.forEach((comment) => {
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment1');
+
+                const commentName = document.createElement('p');
+                commentName.textContent = `Name: ${comment.name}`;
+
+                const commentEmail = document.createElement('p');
+                commentEmail.textContent = `Email: ${comment.email}`;
+
+                const commentBody = document.createElement('p');
+                commentBody.textContent = comment.body;
+
+                commentElement.append(commentName);
+                commentElement.append(commentEmail);
+                commentElement.append(commentBody);
+
+                commentsContainer.append(commentElement);
+              });
+
+              postElement.append(commentsContainer);
+            }
+          }
+
+          container.append(postElement);
+        });
+
+      } catch (error) {
+        console.error('Ошибка при получении данных', error);
+      }
+    }
+
+    function cleanContainer(posts) {
+      const container = document.getElementById('posts-container');
+      container.innerHTML = '';
+    };
+
+    const btn = document.getElementById('button');
+    btn.addEventListener('click', getData);
+
+    const btn2 = document.getElementById('button2');
+    btn2.addEventListener('click', cleanContainer);
+  </script>
+</body>
+</html>
