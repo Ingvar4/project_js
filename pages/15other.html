@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/script-other1.js" defer></script>
+  <script src="../scripts/data.js" defer></script>
+  <style>
+    body {
+      min-height: 100vh;
+    }
+    .todoTest {
+      /* font-family: "Arial", sans-serif; */
+      background: linear-gradient(135deg, #9499a1, #255198);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      /* min-height: 100vh; */
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    /* Overlay */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный цвет */
+      display: none; /* По умолчанию скрыт */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* overlay поверх всех элементов */
+    }
+
+    /* Спиннер */
+    #spinner {
+      border: 4px solid #f3f3f3; /* Светлый круг */
+      border-top: 4px solid #3498db; /* Синий круг */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite; /* Анимация вращения */
+    }
+
+    /* Анимация вращения */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .input-block {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Контейнер для ввода задачи */
+    #task-input {
+      width: 300px;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #task-input:focus {
+      border-color: #007bff;
+    }
+
+    #add-button {
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #add-button:hover {
+      background-color: #089d17;
+    }
+
+    .icons {
+      width: 48px;
+    }
+
+    /* Кнопки */
+    .button-download {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button-download:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .button-download:active {
+      transform: translateY(0);
+    }
+
+    /* Контейнер для задач */
+    #posts-container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+
+    /* Стили для каждой задачи */
+    .todo {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .todo:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .todo p {
+      margin: 8px 0;
+      color: #333;
+    }
+
+    /* Чекбокс */
+    .todo input[type="checkbox"] {
+      margin-right: 12px;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Кнопки внутри задачи */
+    .button-function {
+      border: none;
+      margin-right: 8px;
+      padding: 8px 16px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button-function:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>CRUD-операции</h1>
+    <hr>
+    
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    /* Общие стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Overlay */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный цвет */
+      display: none; /* По умолчанию скрыт */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* overlay поверх всех элементов */
+    }
+
+    /* Спиннер */
+    #spinner {
+      border: 4px solid #f3f3f3; /* Светлый круг */
+      border-top: 4px solid #3498db; /* Синий круг */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite; /* Анимация вращения */
+    }
+
+    /* Анимация вращения */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .input-block {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Контейнер для ввода задачи */
+    #task-input {
+      width: 300px;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #task-input:focus {
+      border-color: #007bff;
+    }
+
+    #add-button {
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #add-button:hover {
+      background-color: #089d17;
+    }
+
+    .icons {
+      width: 48px;
+    }
+
+    /* Кнопки */
+    .button-download {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button-download:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .button-download:active {
+      transform: translateY(0);
+    }
+
+    /* Контейнер для задач */
+    #posts-container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+
+    /* Стили для каждой задачи */
+    .todo {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .todo:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .todo p {
+      margin: 8px 0;
+      color: #333;
+    }
+
+    /* Чекбокс */
+    .todo input[type="checkbox"] {
+      margin-right: 12px;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Кнопки внутри задачи */
+    .button-function {
+      border: none;
+      margin-right: 8px;
+      padding: 8px 16px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button-function:hover {
+      transform: scale(1.1);
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;div id="overlay">
+      &#60;div id="spinner">&#60;/div>
+    &#60;/div>
+    &#60;div class="input-block">
+      &#60;input type="text" id="task-input" placeholder="Введите задачу" />
+      &#60;button id="add-button">
+        &#60;img src="images/icon-add.png" class="icons" />
+      &#60;/button>
+    &#60;/div>
+
+    &#60;div>
+      &#60;button id="button" class="button-download">Получить задачи&#60;/button>
+    &#60;/div>
+
+    &#60;div id="posts-container">&#60;/div>
+  </code>
+</pre>
+    </details>
+
+    <div class="todoTest">
+
+      <div id="overlay">
+        <div id="spinner"></div>
+      </div>
+      <div class="input-block">
+        <input type="text" id="task-input" placeholder="Введите задачу" />
+        <button id="add-button">
+          <img src="../images/icon-add.png" class="icons" />
+        </button>
+      </div>
+      <div>
+        <button id="button" class="button-download">Получить задачи</button>
+      </div>
+      <div id="posts-container"></div>
+
+    </div>
+    
+    <h2>JS</h2>
+<pre>
+  <code class="lang-js">
+
+  </code>
+</pre>
+  </article>
+
+  <script>
+    //1. По нажатию на кнопку 'Получить задачи' мы получаем список задач
+    //2. Отрендерить задачи, создав их элементы динамически
+    //3. Реализовать удаление из списка отдельной задачи
+    //4. Реализовать изменение статуса задачи
+    //5. Реализовать добавление новой задачи
+    //6. Реализовать обновление текста существующей задачи
+    //7. overlay, спиннер
+  </script>
+</body>
+</html>
