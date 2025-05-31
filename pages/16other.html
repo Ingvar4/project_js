@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/16other.js" type="module"></script>
+  <script src="../scripts/data.js" defer></script>
+  <style>
+    body {
+      min-height: 100vh;
+    }
+    .todoTest {
+      background: linear-gradient(135deg, #9499a1, #255198);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    /* Overlay */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный цвет */
+      display: none; /* По умолчанию скрыт */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* overlay поверх всех элементов */
+    }
+
+    /* Спиннер */
+    #spinner {
+      border: 4px solid #f3f3f3; /* Светлый круг */
+      border-top: 4px solid #3498db; /* Синий круг */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite; /* Анимация вращения */
+    }
+
+    /* Анимация вращения */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .input-block {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Контейнер для ввода задачи */
+    #task-input {
+      width: 300px;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #task-input:focus {
+      border-color: #007bff;
+    }
+
+    #add-button {
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #add-button:hover {
+      background-color: #089d17;
+    }
+
+    .icons {
+      width: 48px;
+    }
+
+    /* Кнопки */
+    .button-download {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button-download:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .button-download:active {
+      transform: translateY(0);
+    }
+
+    /* Контейнер для задач */
+    #posts-container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+
+    /* Стили для каждой задачи */
+    .todo {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .todo:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .todo p {
+      margin: 8px 0;
+      color: #333;
+    }
+
+    /* Чекбокс */
+    .todo input[type="checkbox"] {
+      margin-right: 12px;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Кнопки внутри задачи */
+    .button-function {
+      border: none;
+      margin-right: 8px;
+      padding: 8px 16px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button-function:hover {
+      transform: scale(1.1);
+    }
+    pre {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>CRUD-операции</h1>
+    <hr>
+    
+    <details>
+      <summary>CSS</summary>
+<pre>
+  <code class="lang-css">
+    /* Общие стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Overlay */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный цвет */
+      display: none; /* По умолчанию скрыт */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* overlay поверх всех элементов */
+    }
+
+    /* Спиннер */
+    #spinner {
+      border: 4px solid #f3f3f3; /* Светлый круг */
+      border-top: 4px solid #3498db; /* Синий круг */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite; /* Анимация вращения */
+    }
+
+    /* Анимация вращения */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .input-block {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Контейнер для ввода задачи */
+    #task-input {
+      width: 300px;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #task-input:focus {
+      border-color: #007bff;
+    }
+
+    #add-button {
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #add-button:hover {
+      background-color: #089d17;
+    }
+
+    .icons {
+      width: 48px;
+    }
+
+    /* Кнопки */
+    .button-download {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button-download:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .button-download:active {
+      transform: translateY(0);
+    }
+
+    /* Контейнер для задач */
+    #posts-container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+
+    /* Стили для каждой задачи */
+    .todo {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .todo:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .todo p {
+      margin: 8px 0;
+      color: #333;
+    }
+
+    /* Чекбокс */
+    .todo input[type="checkbox"] {
+      margin-right: 12px;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Кнопки внутри задачи */
+    .button-function {
+      border: none;
+      margin-right: 8px;
+      padding: 8px 16px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button-function:hover {
+      transform: scale(1.1);
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>HTML</summary>
+<pre>
+  <code class="lang-html">
+    &#60;div id="overlay">
+      &#60;div id="spinner">&#60;/div>
+    &#60;/div>
+    &#60;div class="input-block">
+      &#60;input type="text" id="task-input" placeholder="Введите задачу" />
+      &#60;button id="add-button">
+        &#60;img src="images/icon-add.png" class="icons" />
+      &#60;/button>
+    &#60;/div>
+
+    &#60;div>
+      &#60;button id="button" class="button-download">Получить задачи&#60;/button>
+    &#60;/div>
+
+    &#60;div id="posts-container">&#60;/div>
+  </code>
+</pre>
+    </details>
+
+    <div class="todoTest">
+
+      <div id="overlay">
+        <div id="spinner"></div>
+      </div>
+
+      <div class="input-block">
+        <input type="text" id="task-input" placeholder="Введите задачу" />
+        <button id="add-button">
+          <img src="../images/icon-add.png" class="icons" />
+        </button>
+      </div>
+
+      <div>
+        <button id="button" class="button-download">Получить задачи</button>
+      </div>
+      <div id="posts-container"></div>
+
+    </div>
+
+    <details>
+      <summary>getTodoApi.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+
+    export async function getTodos() {
+      try {
+        const responce = await fetch(host);
+
+        if(!responce.ok) {
+          throw new Error (`Данные не получены. Статус: ${responce.status}`)
+        }
+        
+        const data = await responce.json();
+        console.log('Данный получены', data);
+        return data;
+      } catch (error) {
+        console.error(`Ошибка получения данных:`, error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>getStatusTodoApi.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+
+    export async function toogleTodoStatus(id, completed) {
+      try {
+        //дополнительно понадобятся заголовки и тело
+        const responce = await fetch(`${host}/${id}`, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json',},
+          body: JSON.stringify({completed}),
+        });
+        if(!responce.ok) {
+          throw new Error (`Не удалось обновить статус задачи. Статус: ${responce.status}`);
+        }
+        console.log('Статус задачи обновлён');
+        return true;
+      } catch (error) {
+        console.error(`Ошибка обновления статуса задачи:`, error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>deleteTodoApi.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+    
+    export async function deleteTodo(id) {
+      try {
+        const responce = await fetch(`${host}/${id}`, { method: 'DELETE' });
+        
+        if(!responce.ok) {
+          throw new Error (`Не удалось удалить задачу. Статус: ${responce.status}`);
+        }
+        console.log('Задача удалена');
+        return true;
+      } catch (error) {
+        console.error(`Ошибка удаления:`, error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>updateTodoApi.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+    
+    export async function updateTodo(id, newText) {
+      try {
+        const responce = await fetch(`${host}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({text: newText}),
+        });
+
+        if(!responce.ok) {
+          throw new Error (`Не удалось обновить задачу. Статус: ${responce.status}`);
+        }
+
+        console.log('Текст задачи обновлён');
+        return true;
+      } catch (error) {
+        console.error(`Ошибка обновления текста задачи:`, error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>addTodoApi.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+    
+    export async function addTodo(newTodo) {
+      try {
+        const responce = await fetch(`${host}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json',},
+          body: JSON.stringify(newTodo),
+        });
+
+        if(!responce.ok) {
+          throw new Error (`Не удалось добавить задачу. Статус: ${responce.status}`);
+        }
+        
+        console.log('Задача добавлена');
+        return true;
+      } catch (error) {
+        console.error(`Ошибка добавления:`, error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
+    <h2>JS</h2>
+<pre>
+  <code class="lang-js">
+    import { getTodos } from '../API/getTodoApi.js';
+    import { toogleTodoStatus } from '../API/getStatusTodoApi.js';
+    import { deleteTodo } from '../API/deleteTodoApi.js';
+    import { updateTodo } from '../API/updateTodoApi.js';
+    import { addTodo } from '../API/addTodoApi.js';
+
+    const container = document.getElementById('posts-container');
+    const taskInput = document.getElementById('task-input');
+    const addButton = document.getElementById('add-button');
+    const downloadButton = document.querySelector('.button-download');
+    const overlay = document.getElementById('overlay');
+    //создаём отдельную переменную для переиспользования URL API для работы с задачами
+    export const host = 'https://68382f1e2c55e01d184c4d9a.mockapi.io/api/v1/todos';
+    // Загрузка данных с сервера (READ)
+    async function loadData() {
+      try {
+        showLoader(); 
+        const todos = await getTodos();
+        renderData(todos); 
+      } catch (error) {
+        console.error(error.message);
+      } finally {
+        hideLoader();
+      }
+    }
+    // Отрисовка задач на странице 
+    function renderData(todos) {
+      container.innerHTML = ''; //очищаем контейнер перед каждым вызовом функции
+      todos.forEach((todo) => {
+        const todoElement = document.createElement('div');
+        todoElement.classList.add('todo'); //добавляем заготовленные стили для каждой задачи
+        const checkbox = document.createElement('input'); //создаём чекбокс динамически и задаём ему тип + статус состояния
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        //для реализации 4 задачи на изменение статуса
+        checkbox.addEventListener('change', async () => {
+          try {
+            await toogleTodoStatus(todo.id, checkbox.checked);
+            await loadData();
+          } catch (error) {
+            console.error(error.message);
+          }
+        });
+        const textElement = document.createElement('p'); //создаём элемент для текста задачи
+        textElement.textContent = todo.text; //зачёркивать задачу при отметки о выполнении
+        textElement.style.textDecoration = todo.completed ? 'line-through' : 'none';
+
+        const timeElement = document.createElement('p'); //создаём элемент с датой и форматируем её
+        timeElement.textContent = new Date(todo.createdAt).toLocaleString('ru-RU', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        //создаём кнопку удаления внутри задачи с заготовленными стилями
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('button-function');
+        const deleteIcon = document.createElement('img'); //внутри кнопки иконка
+        deleteIcon.src = '../images/icon-delete.png';
+        deleteIcon.alt = 'Удалить';
+        deleteIcon.title = 'Удалить';
+        deleteButton.append(deleteIcon);
+        //навешиваем обработчик на кнопку, вызываем функцию deleteTodo, куда пробрасываем id задач
+        deleteButton.addEventListener("click", async () => {
+          try {
+            await deleteTodo(todo.id);
+            await loadData();
+          } catch (error) {
+            console.error(error.message);
+          }
+        });
+
+        // Кнопка обновления текста задачи
+        const updateButton = document.createElement('button');
+        updateButton.classList.add('button-function');
+        const updateIcon = document.createElement('img');
+        updateIcon.src = '../images/icon-update.png';
+        updateIcon.alt = 'Изменить';
+        updateIcon.title = 'Изменить';
+        updateButton.append(updateIcon);
+        //Добавляем для 6 пункта, обновление текста существующей задачи
+        updateButton.addEventListener('click', async () => {
+          const newText = prompt('Введите новый текст задачи', todo.text);
+          if (newText) {
+            try {
+              await updateTodo(todo.id, newText);
+              await loadData();
+            } catch (error) {
+              console.error(error.message);
+            }
+          }
+        });
+
+        //пробрасываем всё это в todo элемент
+        todoElement.append(checkbox, textElement, timeElement, deleteButton, updateButton);
+        container.append(todoElement);
+        downloadButton.hidden = true; //скрываем кнопку получения задач после их рендера
+        hideLoader(); //реализация 7 пункта
+      }); 
+    }
+
+    //5. Реализовать добавление новой задачи (CREATE)
+    async function addNewTodo() {
+      const newTodoText = taskInput.value.trim();
+      if (!newTodoText) {
+        alert('Введите текст задачи');
+        return;
+      }
+
+      const newTodo = {
+        text: newTodoText,
+        createdAt: Date.now(),
+        completed: false,
+      };
+
+      try {
+        await addTodo(newTodo);
+        
+        console.log('Задача добавлена');
+        taskInput.value = ''; // Очищаем поле ввода
+        await loadData(); //получение данных, обновление списка задач
+      } catch (error) {
+        console.error(`Ошибка добавления:`, error.message);
+      }
+    }
+    //1й способ добавления задачи
+    addButton.addEventListener('click', addNewTodo);
+    //2й способ
+    taskInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        addNewTodo();
+      }
+    });
+
+    //7. overlay, спиннер
+    function showLoader() {
+      overlay.style.display = 'flex';
+    }
+
+    function hideLoader() {
+      overlay.style.display = 'none';
+    }
+
+    downloadButton.addEventListener('click', loadData);
+  </code>
+</pre>
+  </article>
+</body>
+</html>
