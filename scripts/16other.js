@@ -3,12 +3,15 @@ import { toogleTodoStatus } from '../API/getStatusTodoApi.js';
 import { deleteTodo } from '../API/deleteTodoApi.js';
 import { updateTodo } from '../API/updateTodoApi.js';
 import { addTodo } from '../API/addTodoApi.js';
+import { updateTaskOrderOnServer } from '../API/updateTasksOrderApi.js';
+import { deleteCompletedTodos } from '../API/deleteCompletedTodosApi.js';
 
 const container = document.getElementById('posts-container');
 const taskInput = document.getElementById('task-input');
 const addButton = document.getElementById('add-button');
 const downloadButton = document.querySelector('.button-download');
 const overlay = document.getElementById('overlay');
+const deleteCompletedButton = document.getElementById('delete-completed-button');
 //создаём отдельную переменную для переиспользования URL API для работы с задачами
 export const host = 'https://68382f1e2c55e01d184c4d9a.mockapi.io/api/v1/todos';
 // Загрузка данных с сервера (READ)
@@ -26,9 +29,15 @@ async function loadData() {
 // Отрисовка задач на странице 
 function renderData(todos) {
   container.innerHTML = ''; //очищаем контейнер перед каждым вызовом функции
+
+  //проверяем есть ли выполненая задача
+  const hasCompletedTodos = todos.some((todo) => todo.completed);
+  deleteCompletedButton.style.display = hasCompletedTodos ? 'block' : 'none';
+
   todos.forEach((todo) => {
     const todoElement = document.createElement('div');
     todoElement.classList.add('todo'); //добавляем заготовленные стили для каждой задачи
+    todoElement.setAttribute('data-id', todo.id); //задаём каждому todo элементу data атрибут
     const checkbox = document.createElement('input'); //создаём чекбокс динамически и задаём ему тип + статус состояния
     checkbox.type = 'checkbox';
     checkbox.checked = todo.completed;
@@ -94,6 +103,7 @@ function renderData(todos) {
 
     //пробрасываем всё это в todo элемент
     todoElement.append(checkbox, textElement, timeElement, deleteButton, updateButton);
+    addDragAndDropListeners(todoElement, todo);
     container.append(todoElement);
     downloadButton.hidden = true; //скрываем кнопку получения задач после их рендера
     hideLoader(); //реализация 7 пункта
@@ -133,6 +143,24 @@ taskInput.addEventListener('keydown', (event) => {
   }
 });
 
+downloadButton.addEventListener('click', loadData);
+
+//Реализация удаления выполненных задач
+deleteCompletedButton.addEventListener('click', async () => {
+  const isConfirmed = confirm('Вы уверены? Все выполненные задачи будут удалены!');
+
+  if (!isConfirmed) {
+    return;
+  }
+
+  try {
+    await deleteCompletedTodos(container);
+    await loadData();
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 //7. overlay, спиннер
 function showLoader() {
   overlay.style.display = 'flex';
@@ -142,4 +170,59 @@ function hideLoader() {
   overlay.style.display = 'none';
 }
 
-downloadButton.addEventListener('click', loadData);
+
+//Функция перетаскивания элементов
+function addDragAndDropListeners(todoElement, todo) {
+  todoElement.draggable = true;
+  todoElement.addEventListener('dragstart', (event) => {
+    event.dataTransfer.setData('text/plain', todo.id);
+    event.currentTarget.classList.add('dragging');
+  });
+
+  todoElement.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    const draggable = document.querySelector('.dragging');
+    const overElement = event.currentTarget;
+
+    if (overElement !== draggable) {
+      const rect = overElement.getBoundingClientRect();
+      const offset = event.clientY - rect.top;
+      if (offset < rect.height / 2) {
+        container.insertBefore(draggable, overElement);
+      } else {
+        container.insertBefore(draggable, overElement.nextSibling);
+      }
+    }
+  });
+  //снятие стилей после перетаскивания
+  todoElement.addEventListener('dragend', (event) => {
+    event.currentTarget.classList.remove('dragging');
+
+    updateTaskOrder();
+  });
+}
+
+//функция обновления данных на сервере после перетаскивания
+async function updateTaskOrder () {
+  const todos = [...container.querySelectorAll('.todo')]; // превращаем получ. данные в массив
+  const updatedOrder = todos.map((todo, index) => {
+    return {
+      id: todo.getAttribute('data-id'),
+      order: index + 1,
+    };
+  });
+  
+  try {
+    showLoader();
+    for (const task of updatedOrder) {
+      await updateTaskOrderOnServer(task.id, task.order);
+    }
+    
+    console.log('Порядок задач обновлён');
+    return true;
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    hideLoader();
+  }
+}

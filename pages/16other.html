@@ -100,7 +100,7 @@
     }
 
     /* Кнопки */
-    .button-download {
+    .button-download, #delete-completed-button {
       padding: 12px 24px;
       border: none;
       border-radius: 8px;
@@ -111,12 +111,24 @@
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
-    .button-download:hover {
+    #delete-completed-button {
+      background-color: #ed3846;
+      display: none;
+    }
+
+    #delete-completed-button:hover {
+      background-color: #de1829;
+      transform: translateY(-2px);
+    }
+
+    .button-download:hover, 
+    #delete-completed-button:hover {
       background-color: #0056b3;
       transform: translateY(-2px);
     }
 
-    .button-download:active {
+    .button-download:active, 
+    #delete-completed-button:active {
       transform: translateY(0);
     }
 
@@ -171,6 +183,15 @@
     }
     pre {
       width: 100%;
+    }
+
+    .todo.dragging {
+      opacity: 0.4;
+      background-color: #f0f0f0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .todo {
+      transition: all 0.3s;
     }
   </style>
 </head>
@@ -287,7 +308,8 @@
     }
 
     /* Кнопки */
-    .button-download {
+    .button-download,
+    #delete-completed-button {
       padding: 12px 24px;
       border: none;
       border-radius: 8px;
@@ -298,12 +320,23 @@
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
+    #delete-completed-button {
+      background-color: #ed3846;
+      display: none;
+    }
+
+    #delete-completed-button:hover {
+      background-color: #de1829;
+      transform: translateY(-2px);
+    }
+
     .button-download:hover {
       background-color: #0056b3;
       transform: translateY(-2px);
     }
 
-    .button-download:active {
+    .button-download:active,
+    #delete-completed-button:active {
       transform: translateY(0);
     }
 
@@ -356,6 +389,15 @@
     .button-function:hover {
       transform: scale(1.1);
     }
+
+    .todo.dragging {
+      opacity: 0.4;
+      background-color: #f0f0f0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .todo {
+      transition: all 0.3s;
+    }
   </code>
 </pre>
     </details>
@@ -379,6 +421,7 @@
     &#60;/div>
 
     &#60;div id="posts-container">&#60;/div>
+    &#60;button id="delete-completed-button">Удалить все выполненные задачи&#60;/button>
   </code>
 </pre>
     </details>
@@ -400,6 +443,7 @@
         <button id="button" class="button-download">Получить задачи</button>
       </div>
       <div id="posts-container"></div>
+      <button id="delete-completed-button">Удалить все выполненные задачи</button>
 
     </div>
 
@@ -418,6 +462,7 @@
         }
         
         const data = await responce.json();
+        data.sort((a, b) => a.order - b.order);
         console.log('Данный получены', data);
         return data;
       } catch (error) {
@@ -539,6 +584,65 @@
 </pre>
     </details>
 
+    <details>
+      <summary>updateTaskOrderOnServer.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+
+    export async function updateTaskOrderOnServer(taskId, order) {
+      try {
+        const responce = await fetch(`${host}/${taskId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify({ order }),
+      });
+
+        if(!responce.ok) {
+          throw new Error (`Не удалось обновить порядок задач. Статус: ${responce.status}`);
+        }
+      } catch (error) {
+        console.error(`Ошибка обновления порядка задач:`, error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
+    <details>
+      <summary>deleteCompletedTodos.js</summary>
+<pre>
+  <code class="lang-js">
+    import { host } from '../scripts/16other.js';
+
+    export async function deleteCompletedTodos(container) {
+      try {
+        const completedTodos = Array.from(container.querySelectorAll('.todo')).filter((todoElement) => {
+          const checkbox = todoElement.querySelector('input[type="checkbox"]');
+          return checkbox.checked;
+        });
+
+        for (const todoElement of completedTodos) {
+          const taskId = todoElement.getAttribute('data-id');
+
+          const deleteResponce = await fetch(`${host}/${taskId}`, {
+            method: 'DELETE',
+          });
+          if (!deleteResponce.ok) {
+            throw new Error(`Не удалось удалить список выполненных задач. Статус: ${deleteResponce.status}`);
+          }
+        }
+        return true;
+      } catch (error) {
+        console.error('Ошибка удаления выполненных задач:', error.message);
+        throw error;
+      }
+    }
+  </code>
+</pre>
+    </details>
+
     <h2>JS</h2>
 <pre>
   <code class="lang-js">
@@ -547,12 +651,15 @@
     import { deleteTodo } from '../API/deleteTodoApi.js';
     import { updateTodo } from '../API/updateTodoApi.js';
     import { addTodo } from '../API/addTodoApi.js';
+    import { updateTaskOrderOnServer } from '../API/updateTasksOrderApi.js';
+    import { deleteCompletedTodos } from '../API/deleteCompletedTodosApi.js';
 
     const container = document.getElementById('posts-container');
     const taskInput = document.getElementById('task-input');
     const addButton = document.getElementById('add-button');
     const downloadButton = document.querySelector('.button-download');
     const overlay = document.getElementById('overlay');
+    const deleteCompletedButton = document.getElementById('delete-completed-button');
     //создаём отдельную переменную для переиспользования URL API для работы с задачами
     export const host = 'https://68382f1e2c55e01d184c4d9a.mockapi.io/api/v1/todos';
     // Загрузка данных с сервера (READ)
@@ -570,9 +677,15 @@
     // Отрисовка задач на странице 
     function renderData(todos) {
       container.innerHTML = ''; //очищаем контейнер перед каждым вызовом функции
+
+      //проверяем есть ли выполненая задача
+      const hasCompletedTodos = todos.some((todo) => todo.completed);
+      deleteCompletedButton.style.display = hasCompletedTodos ? 'block' : 'none';
+
       todos.forEach((todo) => {
         const todoElement = document.createElement('div');
         todoElement.classList.add('todo'); //добавляем заготовленные стили для каждой задачи
+        todoElement.setAttribute('data-id', todo.id); //задаём каждому todo элементу data атрибут
         const checkbox = document.createElement('input'); //создаём чекбокс динамически и задаём ему тип + статус состояния
         checkbox.type = 'checkbox';
         checkbox.checked = todo.completed;
@@ -638,6 +751,7 @@
 
         //пробрасываем всё это в todo элемент
         todoElement.append(checkbox, textElement, timeElement, deleteButton, updateButton);
+        addDragAndDropListeners(todoElement, todo);
         container.append(todoElement);
         downloadButton.hidden = true; //скрываем кнопку получения задач после их рендера
         hideLoader(); //реализация 7 пункта
@@ -677,6 +791,24 @@
       }
     });
 
+    downloadButton.addEventListener('click', loadData);
+
+    //Реализация удаления выполненных задач
+    deleteCompletedButton.addEventListener('click', async () => {
+      const isConfirmed = confirm('Вы уверены? Все выполненные задачи будут удалены!');
+
+      if (!isConfirmed) {
+        return;
+      }
+
+      try {
+        await deleteCompletedTodos(container);
+        await loadData();
+      } catch (error) {
+        console.error(error.message);
+      }
+    });
+
     //7. overlay, спиннер
     function showLoader() {
       overlay.style.display = 'flex';
@@ -686,7 +818,62 @@
       overlay.style.display = 'none';
     }
 
-    downloadButton.addEventListener('click', loadData);
+
+    //Функция перетаскивания элементов
+    function addDragAndDropListeners(todoElement, todo) {
+      todoElement.draggable = true;
+      todoElement.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData('text/plain', todo.id);
+        event.currentTarget.classList.add('dragging');
+      });
+
+      todoElement.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        const draggable = document.querySelector('.dragging');
+        const overElement = event.currentTarget;
+
+        if (overElement !== draggable) {
+          const rect = overElement.getBoundingClientRect();
+          const offset = event.clientY - rect.top;
+          if (offset < rect.height / 2) {
+            container.insertBefore(draggable, overElement);
+          } else {
+            container.insertBefore(draggable, overElement.nextSibling);
+          }
+        }
+      });
+      //снятие стилей после перетаскивания
+      todoElement.addEventListener('dragend', (event) => {
+        event.currentTarget.classList.remove('dragging');
+
+        updateTaskOrder();
+      });
+    }
+
+    //функция обновления данных на сервере после перетаскивания
+    async function updateTaskOrder () {
+      const todos = [...container.querySelectorAll('.todo')]; // превращаем получ. данные в массив
+      const updatedOrder = todos.map((todo, index) => {
+        return {
+          id: todo.getAttribute('data-id'),
+          order: index + 1,
+        };
+      });
+      
+      try {
+        showLoader();
+        for (const task of updatedOrder) {
+          await updateTaskOrderOnServer(task.id, task.order);
+        }
+        
+        console.log('Порядок задач обновлён');
+        return true;
+      } catch (error) {
+        console.error(error.message);
+      } finally {
+        hideLoader();
+      }
+    }
   </code>
 </pre>
   </article>
