@@ -22,6 +22,11 @@ async function loadData() {
     renderData(todos); 
   } catch (error) {
     console.error(error.message);
+    if (error.message === 'Задач нет') {
+      showError('Задач нет');
+    } else {
+      showError('Не удалось получить данные');
+    }
   } finally {
     hideLoader();
   }
@@ -48,6 +53,7 @@ function renderData(todos) {
         await loadData();
       } catch (error) {
         console.error(error.message);
+        showError('Не удалось изменить статус задачи');
       }
     });
     const textElement = document.createElement('p'); //создаём элемент для текста задачи
@@ -77,6 +83,7 @@ function renderData(todos) {
         await loadData();
       } catch (error) {
         console.error(error.message);
+        showError('Не удалось удалить задачу');
       }
     });
 
@@ -90,15 +97,39 @@ function renderData(todos) {
     updateButton.append(updateIcon);
     //Добавляем для 6 пункта, обновление текста существующей задачи
     updateButton.addEventListener('click', async () => {
-      const newText = prompt('Введите новый текст задачи', todo.text);
+      //переписываем prompt под библиотеку SweetAlert
+      const { value: newText } = await Swal.fire({
+        title: 'Редактирование задачи',
+        input: 'text',
+        inputLabel: 'Введите текст новой задачи',
+        inputValue: todo.text,
+        showCancelButton: true,
+        confirmButtonText: 'Сохранить',
+        inputValidator: (value) => {
+          if (!value) {
+            return 'Поле не может быть пустым!';
+          }
+        },
+      });
+
       if (newText) {
         try {
           await updateTodo(todo.id, newText);
           await loadData();
         } catch (error) {
-          console.error(error.message);
+          showError('Не удалось обновить задачу');
         }
       }
+      // const newText = prompt('Введите новый текст задачи', todo.text);
+      // if (newText) {
+      //   try {
+      //     await updateTodo(todo.id, newText);
+      //     await loadData();
+      //   } catch (error) {
+      //     console.error(error.message);
+      //     showError('Не удалось обновить задачу');
+      //   }
+      // }
     });
 
     //пробрасываем всё это в todo элемент
@@ -126,12 +157,12 @@ async function addNewTodo() {
 
   try {
     await addTodo(newTodo);
-    
     console.log('Задача добавлена');
     taskInput.value = ''; // Очищаем поле ввода
     await loadData(); //получение данных, обновление списка задач
   } catch (error) {
-    console.error(`Ошибка добавления:`, error.message);
+    console.error(error.message);
+    showError('Не удалось добавить задачу');
   }
 }
 //1й способ добавления задачи
@@ -147,8 +178,19 @@ downloadButton.addEventListener('click', loadData);
 
 //Реализация удаления выполненных задач
 deleteCompletedButton.addEventListener('click', async () => {
-  const isConfirmed = confirm('Вы уверены? Все выполненные задачи будут удалены!');
-
+  //библиотека SweetAlert2 - A confirm dialog
+  //деструктурируем (не работает 'Отменить') потому что функция возвращает объект
+  const { isConfirmed } = await Swal.fire({ 
+    title: "Вы уверены?",
+    text: "Все выполенные задачи будут удалены!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Да, удалить!",
+    cancelButtonText: "Отменить",
+  });
+  
   if (!isConfirmed) {
     return;
   }
@@ -158,6 +200,7 @@ deleteCompletedButton.addEventListener('click', async () => {
     await loadData();
   } catch (error) {
     console.error(error.message);
+    showError('Не удалось удалить список задач');
   }
 });
 
@@ -222,7 +265,21 @@ async function updateTaskOrder () {
     return true;
   } catch (error) {
     console.error(error.message);
+    showError('Не удалось переместить предмет');
   } finally {
     hideLoader();
   }
 }
+
+function showError (message) {
+  const icon = message === 'Задач нет' ? 'info' : 'error';
+  const title = message === 'Задач нет' ? 'Информация' : 'Ошибка';
+  const text = message === 'Задач нет' ? 'У Вас нет задач' : message;
+  Swal.fire({
+    title,
+    text,
+    icon,
+    showConfirmButton: true,
+  });
+}
+
