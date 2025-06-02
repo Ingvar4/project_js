@@ -1,4 +1,4 @@
-import { host } from '../scripts/16other.js';
+import { host } from '../host.js';
 
 export async function updateTaskOrderOnServer(taskId, order) {
   try {

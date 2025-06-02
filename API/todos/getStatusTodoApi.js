@@ -1,6 +1,6 @@
 //4. Реализовать изменение статуса задачи (PUT)
 //параметры будут приходить из функции где отрендерились все задачи
-import { host } from '../scripts/16other.js';
+import { host } from '../host.js';
 
 export async function toogleTodoStatus(id, completed) {
   try {

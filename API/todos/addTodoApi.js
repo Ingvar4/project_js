@@ -1,4 +1,4 @@
-import { host } from '../scripts/16other.js';
+import { host } from '../host.js';
 //5. Реализовать добавление новой задачи (CREATE)
 export async function addTodo(newTodo) {
   try {

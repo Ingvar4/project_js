@@ -1,4 +1,4 @@
-import { host } from '../scripts/16other.js';
+import { host } from '../host.js';
 //6. Реализовать обновление текста существующей задачи (UPDATE)
 export async function updateTodo(id, newText) {
   try {
