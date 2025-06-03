@@ -2,7 +2,7 @@ import { host } from '../host.js';
 //5. Реализовать добавление новой задачи (CREATE)
 export async function addTodo(newTodo) {
   try {
-    const responce = await fetch(`${host}`, {
+    const responce = await fetch(`${host}.json`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json',},
       body: JSON.stringify(newTodo),

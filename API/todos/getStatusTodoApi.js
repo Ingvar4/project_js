@@ -5,8 +5,8 @@ import { host } from '../host.js';
 export async function toogleTodoStatus(id, completed) {
   try {
     //дополнительно понадобятся заголовки и тело
-    const responce = await fetch(`${host}/${id}`, {
-      method: 'PUT',
+    const responce = await fetch(`${host}/${id}.json`, {
+      method: 'PATCH',
       headers: {'Content-Type': 'application/json',},
       body: JSON.stringify({completed}),
     });
