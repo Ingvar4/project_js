@@ -1,5 +1,3 @@
-
-
 import { addDragAndDropListeners, downloadButton } from "../index.js";
 import { hideLoader } from "../../utils/helpers.js";
 

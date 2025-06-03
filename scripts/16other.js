@@ -1,8 +1,7 @@
 import { 
   initDeleteCompleted,  
   initAddTodo, 
-  initDownload, 
-  renderData,
+  initDownload,
 } from '../src/components/index.js';
 
 initAddTodo();

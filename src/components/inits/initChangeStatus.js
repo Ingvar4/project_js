@@ -14,4 +14,3 @@ export function initChangeStatus(todo, checkbox) {
     }
   });
 }
-
