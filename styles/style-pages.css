@@ -197,7 +197,23 @@ details {
   padding: 10px 10px;
   display: none;
 }
- 
+ul{
+  margin-left: 20px; 
+}
+ol {
+  margin-left: 20px; 
+}
+li {
+  line-height: 27px;
+  padding: 0px;
+}
+details[open] {
+  animation: slide .3s ease-in-out;
+}
+@keyframes slide {
+  0%    { opacity: 0; transform:  translate(0, -5px); }
+  100%  { opacity: 1; transform:  translate(0, 0); }
+}
 
 /* МЕДИА ЗАПРОСЫ */
 
@@ -212,6 +228,16 @@ details {
 
   img {
     width: 100%;
+  }
+  ul{
+    margin-left: 10px; 
+  }
+  ol {
+    margin-left: 10px; 
+  }
+  li {
+    line-height: 20px;
+    padding: 0px;
   }
 }
 
@@ -230,10 +256,10 @@ details {
     width: 50%;
   }
 
-  li {
+  /* li {
     line-height: 35px;
     padding-bottom: 15px;
-  }
+  } */
   /* article ul {
     width: 70%;
     margin: 0 auto;
