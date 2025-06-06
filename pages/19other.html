@@ -231,6 +231,7 @@
         <input type="email" id="signup-email" placeholder="email" required>
         <input type="password" id="signup-password" placeholder="пароль" required>
         <button type="submit">Зарегистрироваться</button>
+        <button id="signIn" type="button">Войти</button>
       </form>
       <!-- форма авторизации -->
        <form id="signin-form">
@@ -240,17 +241,19 @@
         <button type="submit">Войти</button>
       </form>
 
-      <div class="input-block">
-        <input type="text" id="task-input" placeholder="Введите задачу" />
-        <button id="add-button">
-          <img src="../images/icon-add.png" class="icons" />
-        </button>
+      <div id="task-container">
+        <div class="input-block">
+          <input type="text" id="task-input" placeholder="Введите задачу" />
+          <button id="add-button">
+            <img src="../images/icon-add.png" class="icons" />
+          </button>
+        </div>
+        <!-- <div>
+          <button id="button" class="button-download">Получить задачи</button>
+        </div> -->
+        <div id="posts-container"></div>
+        <button id="delete-completed-button">Удалить все выполненные задачи</button>
       </div>
-      <div>
-        <button id="button" class="button-download">Получить задачи</button>
-      </div>
-      <div id="posts-container"></div>
-      <button id="delete-completed-button">Удалить все выполненные задачи</button>
     </div>
     
     <h3>Структура проекта</h3>
@@ -265,10 +268,13 @@
 <pre>
   <code class="lang-js">
     import { host } from '../host.js';
+    import { getUserInfo } from '../../src/utils/authHelper.js';
     //5. Реализовать добавление новой задачи (CREATE)
     export async function addTodo(newTodo) {
       try {
-        const responce = await fetch(`${host}.json`, {
+        const {uid, token} = await getUserInfo();
+
+        const responce = await fetch(`${host}/${uid}.json?auth=${token}`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json',},
           body: JSON.stringify(newTodo),
@@ -295,9 +301,12 @@
 <pre>
   <code class="lang-js">
     import { host } from '../host.js';
+    import { getUserInfo } from '../../src/utils/authHelper.js';
 
     export async function deleteCompletedTodos(container) {
       try {
+        const {uid, token} = await getUserInfo();
+
         const completedTodos = Array.from(container.querySelectorAll('.todo')).filter((todoElement) => {
           const checkbox = todoElement.querySelector('input[type="checkbox"]');
           return checkbox.checked;
@@ -306,7 +315,7 @@
         for (const todoElement of completedTodos) {
           const taskId = todoElement.getAttribute('data-id');
 
-          const deleteResponce = await fetch(`${host}/${taskId}.json`, {
+          const deleteResponce = await fetch(`${host}/${uid}/${taskId}.json?auth=${token}`, {
             method: 'DELETE',
           });
           if (!deleteResponce.ok) {
@@ -329,10 +338,14 @@
 <pre>
   <code class="lang-js">
     import { host } from '../host.js';
+    import { getUserInfo } from '../../src/utils/authHelper.js';
+
     //3. Реализовать удаление из списка отдельной задачи (DELETE)
     export async function deleteTodo(id) {
       try {
-        const responce = await fetch(`${host}/${id}.json`, { method: 'DELETE' });
+        const {uid, token} = await getUserInfo();
+
+        const responce = await fetch(`${host}/${uid}/${id}.json?auth=${token}`, { method: 'DELETE' });
         
         if(!responce.ok) {
           throw new Error (`Не удалось удалить задачу. Статус: ${responce.status}`);
@@ -356,13 +369,16 @@
     //4. Реализовать изменение статуса задачи (PUT)
     //параметры будут приходить из функции где отрендерились все задачи
     import { host } from '../host.js';
+    import { getUserInfo } from '../../src/utils/authHelper.js';
 
     export async function toogleTodoStatus(id, completed) {
       try {
+        const {uid, token} = await getUserInfo();
+
         //дополнительно понадобятся заголовки и тело
-        const responce = await fetch(`${host}/${id}.json`, {
+        const responce = await fetch(`${host}/${uid}/${id}.json?auth=${token}`, {
           method: 'PATCH',
-          headers: {'Content-Type': 'application/json',},
+          headers: {'Content-Type': 'application/json?auth=${token}',},
           body: JSON.stringify({completed}),
         });
         if(!responce.ok) {
@@ -387,9 +403,9 @@
     //переделываем функию getData в getTodos
     import { host } from '../host.js';
 
-    export async function getTodos() {
+    export async function getTodos(uid, token) {
       try {
-        const responce = await fetch(`${host}.json`); //method GET
+        const responce = await fetch(`${host}/${uid}.json?auth=${token}`); //method GET
 
         if(!responce.ok) {
           throw new Error (`Данные не получены. Статус: ${responce.status}`)
@@ -424,10 +440,13 @@
 <pre>
   <code class="lang-js">
     import { host } from '../host.js';
+    import { getUserInfo } from '../../src/utils/authHelper.js';
 
     export async function updateTaskOrderOnServer(taskId, order) {
       try {
-        const responce = await fetch(`${host}/${taskId}.json`, {
+        const {uid, token} = await getUserInfo();
+
+        const responce = await fetch(`${host}/${uid}/${taskId}.json?auth=${token}`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json',},
         body: JSON.stringify({ order }),
@@ -451,10 +470,13 @@
 <pre>
   <code class="lang-js">
     import { host } from '../host.js';
+    import { getUserInfo } from '../../src/utils/authHelper.js';
     //6. Реализовать обновление текста существующей задачи (UPDATE)
     export async function updateTodo(id, newText) {
       try {
-        const responce = await fetch(`${host}/${id}.json`, {
+        const {uid, token} = await getUserInfo();
+
+        const responce = await fetch(`${host}/${uid}/${id}.json?auth=${token}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({text: newText}),
@@ -519,12 +541,20 @@
     import { 
       initDeleteCompleted,  
       initAddTodo, 
-      initDownload,
+      // initDownload,
     } from '../src/components/index.js';
 
     initAddTodo();
     initDeleteCompleted();
-    initDownload();
+    // initDownload();
+
+    const signupForm = document.getElementById('signup-form');
+    const signinForm = document.getElementById('signin-form');
+    const taskContainer = document.getElementById('task-container');
+
+    signupForm.style.display = 'display';
+    signinForm.style.display = 'none';
+    taskContainer.style.display = 'none';
   </code>
 </pre>
             </details>
@@ -534,9 +564,14 @@
               <summary>firebaseConfig.js</summary>
 <pre>
   <code class="lang-js">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 
-    import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js';
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+    } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js';
     const firebaseConfig = {
       apiKey: "AIzaSyBYs7mbI6kItFQeV6GwPv1oWsITInJ1RdE",
       authDomain: "todo-1a2d7.firebaseapp.com",
@@ -552,7 +587,7 @@
     const app = initializeApp(firebaseConfig);
 
     const auth = getAuth(app);
-    export { auth, createUserWithEmailAndPassword };
+    export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, };
   </code>
 </pre>
             </details>
@@ -570,14 +605,55 @@
                 <ul>
                   <li>
                     <details>
+                      <summary>signIn.js</summary>
+<pre>
+  <code class="lang-js">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+    } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js';
+    const firebaseConfig = {
+      apiKey: "AIzaSyBYs7mbI6kItFQeV6GwPv1oWsITInJ1RdE",
+      authDomain: "todo-1a2d7.firebaseapp.com",
+      databaseURL: "https://todo-1a2d7-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "todo-1a2d7",
+      storageBucket: "todo-1a2d7.firebasestorage.app",
+      messagingSenderId: "474579066585",
+      appId: "1:474579066585:web:b4cfd3a278c5eb8a2568c8",
+      measurementId: "G-HL2VTF2H1N"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+    export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, };
+  </code>
+</pre>
+                    </details>
+                  </li>
+                  <li>
+                    <details>
                       <summary>signUp.js</summary>
 <pre>
   <code class="lang-js">
     import { auth, createUserWithEmailAndPassword } from "../../../scripts/firebaseConfig.js";
 
-    const signUpForm = document.getElementById('signup-form');
+    const signupForm = document.getElementById('signup-form');
+    const signinForm = document.getElementById('signin-form');
+    const signInButton = document.getElementById('signIn');
 
-    signUpForm.addEventListener('submit', async (event) => {
+    signInButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      hideSignupForm();
+      showSigninForm();
+    });
+
+    signupForm.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const email = document.getElementById('signup-email').value;
@@ -594,11 +670,22 @@
         const user = userCredential.user;
         console.log('Пользователь зарегистрирован', user.uid);
         alert('Регистрация прошла успешно');
+        signupForm.reset();
+        hideSignupForm();
+        showSigninForm();
       } catch (error) {
         console.error('Ошибка регистрации', error.message, error.code);
         alert(`Ошибка регистрации: ${error.message}`);
       }
     });
+
+    function hideSignupForm() {
+      signupForm.style.display = "none";
+    }
+
+    function showSigninForm() {
+      signinForm.style.display = "block";
+    }
   </code>
 </pre>
                     </details>
@@ -727,13 +814,19 @@
                       <summary>initDownload.js</summary>
 <pre>
   <code class="lang-js">
-    import { loadData } from "../index.js";
+    //Кнопку получить задачи удалили, сделали автоматическую
+    //подгрузку задач при авторизации
 
-    export const downloadButton = document.querySelector('.button-download');
 
-    export function initDownload() {
-      downloadButton.addEventListener('click', loadData);
-    }
+
+
+    // import { loadData } from "../index.js";
+
+    // export const downloadButton = document.querySelector('.button-download');
+
+    // export function initDownload() {
+    //   downloadButton.addEventListener('click', loadData);
+    // }
   </code>
 </pre>
                     </details>
@@ -980,11 +1073,15 @@
     import { getTodos } from '../../../API/index.js';
     import { renderData } from '../index.js';
     import { showError, showLoader, hideLoader } from '../../utils/helpers.js';
+    import { getUserInfo } from '../../utils/authHelper.js';
     // Загрузка данных с сервера (READ)
     export async function loadData() {
       try {
         showLoader(); 
-        const todos = await getTodos();
+
+        const {uid, token} = await getUserInfo();
+
+        const todos = await getTodos(uid, token);
         renderData(todos); 
       } catch (error) {
         console.error(error.message);
@@ -1006,9 +1103,8 @@
                       <summary>renderData.js</summary>
 <pre>
   <code class="lang-js">
-    import { addDragAndDropListeners, downloadButton } from "../index.js";
+    // import { addDragAndDropListeners, downloadButton } from "../index.js";
     import { hideLoader } from "../../utils/helpers.js";
-
     import { createTodoElement } from "./createElements/createTodoElement.js";
 
     export const container = document.getElementById('posts-container');
@@ -1027,7 +1123,6 @@
         container.append(todoElement);
       }); 
 
-      downloadButton.hidden = true; //скрываем кнопку получения задач после их рендера
       hideLoader(); //реализация 7 пункта
     }
   </code>
@@ -1129,7 +1224,7 @@
     export * from './inits/initDragAndDrop.js';
     export * from './inits/initDeleteCompleted.js';
     export * from './inits/initAddTodo.js';
-    export * from './inits/initDownload.js';
+    // export * from './inits/initDownload.js';
     export * from './inits/initChangeStatus.js';
     export * from './inits/initDelete.js';
 
@@ -1138,6 +1233,9 @@
     export * from './ui/updateTask.js';
     export * from './ui/renderData.js';
     export * from './ui/loadData.js';
+
+    export * from './auth/signUp.js';
+    export * from './auth/signIn.js';
   </code>
 </pre>
                 </details>
@@ -1146,6 +1244,39 @@
           </li>
           <li>utils
             <ul>
+              <li>
+                <details>
+                  <summary>authHelper.js</summary>
+<pre>
+  <code class="lang-js">
+    import{ auth, onAuthStateChanged } from '../../scripts/firebaseConfig.js';
+
+    /**
+    * Получает информацию о текущем авторизованном пользователе
+    * @returns {Promise<{uid: string, token: string}} Объект с uid и токеном пользователя
+    * @throws {Error} Если пользователь не авторизован
+    */
+
+    export const getUserInfo = () => {
+      return new Promise ((resolve, reject) => {
+        onAuthStateChanged(auth, async(user) => {
+          if(user) {
+            try {
+              const token = await user.getIdToken();
+              resolve({ uid: user.uid, token });
+            } catch (error) {
+              reject(new Error ('Не удалось получить token'));
+            }
+          } else {
+            reject(new Error('Пользователь не авторизован'));
+          }
+        });
+      });
+    };
+  </code>
+</pre>
+                </details>
+              </li>
               <li>
                 <details>
                   <summary>helpers.js</summary>
@@ -1195,17 +1326,35 @@
       &#60;div id="overlay">
         &#60;div id="spinner">&#60;/div>
       &#60;/div>
-      &#60;div class="input-block">
-        &#60;input type="text" id="task-input" placeholder="Введите задачу" />
-        &#60;button id="add-button">
-          &#60;img src="../images/icon-add.png" class="icons" />
-        &#60;/button>
+      &#60;!-- форма регистрации -->
+      &#60;form id="signup-form">
+        &#60;h3>Регистрация&#60;/h3>
+        &#60;input type="email" id="signup-email" placeholder="email" required>
+        &#60;input type="password" id="signup-password" placeholder="пароль" required>
+        &#60;button type="submit">Зарегистрироваться&#60;/button>
+        &#60;button id="signIn" type="button">Войти&#60;/button>
+      &#60;/form>
+      &#60;!-- форма авторизации -->
+       &#60;form id="signin-form">
+        &#60;h3>Авторизация&#60;/h3>
+        &#60;input type="email" id="signin-email" placeholder="email" required>
+        &#60;input type="password" id="signin-password" placeholder="пароль" required>
+        &#60;button type="submit">Войти&#60;/button>
+      &#60;/form>
+
+      &#60;div id="task-container">
+        &#60;div class="input-block">
+          &#60;input type="text" id="task-input" placeholder="Введите задачу" />
+          &#60;button id="add-button">
+            &#60;img src="../images/icon-add.png" class="icons" />
+          &#60;/button>
+        &#60;/div>
+        &#60;!-- &#60;div>
+          &#60;button id="button" class="button-download">Получить задачи&#60;/button>
+        &#60;/div> -->
+        &#60;div id="posts-container">&#60;/div>
+        &#60;button id="delete-completed-button">Удалить все выполненные задачи&#60;/button>
       &#60;/div>
-      &#60;div>
-        &#60;button id="button" class="button-download">Получить задачи&#60;/button>
-      &#60;/div>
-      &#60;div id="posts-container">&#60;/div>
-      &#60;button id="delete-completed-button">Удалить все выполненные задачи&#60;/button>
     &#60;/div>
   </code>
 </pre>

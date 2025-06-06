@@ -1,8 +1,11 @@
 import { host } from '../host.js';
+import { getUserInfo } from '../../src/utils/authHelper.js';
 
 export async function updateTaskOrderOnServer(taskId, order) {
   try {
-    const responce = await fetch(`${host}/${taskId}.json`, {
+    const {uid, token} = await getUserInfo();
+
+    const responce = await fetch(`${host}/${uid}/${taskId}.json?auth=${token}`, {
     method: 'PATCH',
     headers: {'Content-Type': 'application/json',},
     body: JSON.stringify({ order }),

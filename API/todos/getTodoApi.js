@@ -1,9 +1,9 @@
 //переделываем функию getData в getTodos
 import { host } from '../host.js';
 
-export async function getTodos() {
+export async function getTodos(uid, token) {
   try {
-    const responce = await fetch(`${host}.json`); //method GET
+    const responce = await fetch(`${host}/${uid}.json?auth=${token}`); //method GET
 
     if(!responce.ok) {
       throw new Error (`Данные не получены. Статус: ${responce.status}`)

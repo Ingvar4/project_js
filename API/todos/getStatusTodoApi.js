@@ -1,13 +1,16 @@
 //4. Реализовать изменение статуса задачи (PUT)
 //параметры будут приходить из функции где отрендерились все задачи
 import { host } from '../host.js';
+import { getUserInfo } from '../../src/utils/authHelper.js';
 
 export async function toogleTodoStatus(id, completed) {
   try {
+    const {uid, token} = await getUserInfo();
+
     //дополнительно понадобятся заголовки и тело
-    const responce = await fetch(`${host}/${id}.json`, {
+    const responce = await fetch(`${host}/${uid}/${id}.json?auth=${token}`, {
       method: 'PATCH',
-      headers: {'Content-Type': 'application/json',},
+      headers: {'Content-Type': 'application/json?auth=${token}',},
       body: JSON.stringify({completed}),
     });
     if(!responce.ok) {

@@ -1,8 +1,16 @@
 import { auth, createUserWithEmailAndPassword } from "../../../scripts/firebaseConfig.js";
 
-const signUpForm = document.getElementById('signup-form');
+const signupForm = document.getElementById('signup-form');
+const signinForm = document.getElementById('signin-form');
+const signInButton = document.getElementById('signIn');
 
-signUpForm.addEventListener('submit', async (event) => {
+signInButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  hideSignupForm();
+  showSigninForm();
+});
+
+signupForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const email = document.getElementById('signup-email').value;
@@ -19,8 +27,19 @@ signUpForm.addEventListener('submit', async (event) => {
     const user = userCredential.user;
     console.log('Пользователь зарегистрирован', user.uid);
     alert('Регистрация прошла успешно');
+    signupForm.reset();
+    hideSignupForm();
+    showSigninForm();
   } catch (error) {
     console.error('Ошибка регистрации', error.message, error.code);
     alert(`Ошибка регистрации: ${error.message}`);
   }
 });
+
+function hideSignupForm() {
+  signupForm.style.display = "none";
+}
+
+function showSigninForm() {
+  signinForm.style.display = "block";
+}

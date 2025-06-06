@@ -1,6 +1,5 @@
-import { addDragAndDropListeners, downloadButton } from "../index.js";
+// import { addDragAndDropListeners, downloadButton } from "../index.js";
 import { hideLoader } from "../../utils/helpers.js";
-
 import { createTodoElement } from "./createElements/createTodoElement.js";
 
 export const container = document.getElementById('posts-container');
@@ -19,6 +18,5 @@ export function renderData(todos) {
     container.append(todoElement);
   }); 
 
-  downloadButton.hidden = true; //скрываем кнопку получения задач после их рендера
   hideLoader(); //реализация 7 пункта
 }
