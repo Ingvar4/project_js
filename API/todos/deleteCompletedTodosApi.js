@@ -19,6 +19,7 @@ export async function deleteCompletedTodos(container) {
       if (!deleteResponce.ok) {
         throw new Error(`Не удалось удалить список выполненных задач. Статус: ${deleteResponce.status}`);
       }
+      todoElement.remove();
     }
     return true;
   } catch (error) {

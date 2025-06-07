@@ -21,7 +21,7 @@ signinForm.addEventListener('submit', async (event) => {
     const user = userCredential.user;
     console.log('Пользователь авторизован', user.uid);
     
-    alert('Авторизация прошла успешно');
+    // alert('Авторизация прошла успешно');
     hideSigninForm();
     showTasksBlock();
     loadData();
@@ -31,10 +31,10 @@ signinForm.addEventListener('submit', async (event) => {
   }
 });
 
-function showTasksBlock() {
+export function showTasksBlock() {
   taskContainer.style.display = "block";
 }
 
-function hideSigninForm() {
+export function hideSigninForm() {
   signinForm.style.display = "none";
 }

@@ -13,3 +13,4 @@ export * from './ui/loadData.js';
 
 export * from './auth/signUp.js';
 export * from './auth/signIn.js';
+export * from './auth/signOut.js';
