@@ -1,5 +1,6 @@
 import { updateTaskOrderOnServer } from "../../../API/index.js";
-import { showError, showLoader, hideLoader } from "../../utils/helpers.js";
+import { showLoader, hideLoader } from "../../utils/helpers.js";
+import { showError } from "../../utils/notification.js";
 //функция обновления данных на сервере после перетаскивания
 export async function updateTasksOrder (container) {
   const todos = [...container.querySelectorAll('.todo')]; // превращаем получ. данные в массив

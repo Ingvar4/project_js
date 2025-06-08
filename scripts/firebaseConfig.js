@@ -1,11 +1,15 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 
 import { 
   getAuth, 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged, signOut
+  onAuthStateChanged, 
+  signOut,
+  sendEmailVerification,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail
 } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js';
 const firebaseConfig = {
   apiKey: "AIzaSyBYs7mbI6kItFQeV6GwPv1oWsITInJ1RdE",
@@ -27,5 +31,9 @@ export {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   onAuthStateChanged, 
-  signOut
+  signOut,
+  sendEmailVerification,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail
 };

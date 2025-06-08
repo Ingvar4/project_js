@@ -1,6 +1,6 @@
 import { toogleTodoStatus } from "../../../API/index.js";
 import { loadData } from "../index.js";
-import { showError } from "../../utils/helpers.js";
+import { showError } from "../../utils/notification.js";
 
 export function initChangeStatus(todo, checkbox) {
   //для реализации 4 задачи на изменение статуса

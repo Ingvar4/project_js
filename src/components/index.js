@@ -14,3 +14,5 @@ export * from './ui/loadData.js';
 export * from './auth/signUp.js';
 export * from './auth/signIn.js';
 export * from './auth/signOut.js';
+export * from './auth/googleAuth.js';
+export * from './auth/forgotPassword.js';

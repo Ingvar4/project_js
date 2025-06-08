@@ -13,7 +13,7 @@ export async function getTodos(uid, token) {
     console.log('Данный получены', data);
 
     if (!data) {
-      throw new Error('Задач нет');
+      return [];
     }
 
     const todosArray = Object.keys(data).map((key) => ({

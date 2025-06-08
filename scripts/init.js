@@ -8,11 +8,15 @@ import {
 import { auth, onAuthStateChanged } from './firebaseConfig.js';
 import { loadData } from '../src/components/index.js';
 import { showTasksBlock } from '../src/components/index.js';
+import { showWarning } from '../src/utils/notification.js';
 
 export function initApp() {
   onAuthStateChanged(auth, (user) => {
     if(user) {
-      console.log('Пользователь уже авторизован');
+      if(!user.emailVerified) {
+        showWarning('Ваш email не верифицирован, проверьте почту.');
+        return;
+      }
       loadData();
       hideSigninForm();
       hideSignupForm();
