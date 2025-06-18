@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="../images/image3.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS LAIR</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="../styles/style-pages.css">
+  <link rel="stylesheet" href="../styles/prism.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../scripts/prism.js" defer></script>
+  <script src="../scripts/16other.js" type="module"></script>
+  <script src="../scripts/data.js" defer></script>
+  <style>
+    pre {width: 100%;}
+    a {color: greenyellow;}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <ul>
+      <li><a href="../index.html">Дом</a></li>
+      <li><a href="../pages/browse.html">Просмотр</a></li>
+      <li><a href="../pages/other.html">Прочее</a></li>
+      <li><a href="#">Проект</a></li>
+    </ul>
+  </header>
+
+  <article>
+    <h1>Web Meteo код</h1>
+    <hr>
+
+    <a href="https://ingvar4.github.io/project_W/" target="_blank">сам сайт</a>
+
+    <ul>
+      <li>public
+        <ul>
+          <li>icons</li>
+          <li>img</li>
+        </ul>
+      </li>
+    </ul>
+
+    <ul>
+      <li>src
+        <ul>
+          <li>api
+            <ul>
+              <li>
+                <details>
+                  <summary>apiKeyAndHost.js</summary>
+<pre>
+  <code class="lang-js">
+    //экспортируем api ключ с сайта openweathermap
+    export const apiKey = '#';
+    //а так же базвый url:
+    export const baseUrl = 'https://api.openweathermap.org';
+
+    //при работе надо ломать url, чтобы не заблочили api
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>geoData.js</summary>
+<pre>
+  <code class="lang-js">
+    import { apiKey, baseUrl } from './apiKeyAndHost.js';
+    import { cityInput, getWeatherByForm } from '../components/inputForm.js';
+    import { showError } from '../components/error.js';
+    import { isCyrillic } from '../helpers/checkCyrillic.js';
+    import { replaceAbbreviation } from '../helpers/cityAbbreviation.js';
+    import { saveCityToLocalStorage } from '../helpers/saveCityToLocalStorage.js';
+    import { getWeather, getForecast } from './getWeatherAndForecast.js';
+    import { renderCurrentWeather } from '../components/currentWeather.js';
+    import { renderHourlyForecast } from '../components/hourlyForecast.js';
+    import { renderDailyForecast } from '../components/dailyForecast.js';
+
+    export const getGeoData = async () => {
+      let city = cityInput.value.trim();
+
+      if (!city) {
+        return;
+      }
+
+      if (!isCyrillic(city)) {
+        showError('Проверьте название города');
+        return;
+      }
+
+      city = replaceAbbreviation(city);
+
+      try {
+        const geoUrl = `${baseUrl}/geo/1.0/direct`;
+        const queryParams = new URLSearchParams({
+          q: city,
+          limit: 1,
+          appid: apiKey,
+        });
+
+        const geoResponse = await fetch(`${geoUrl}?${queryParams.toString()}`);
+        const geoData = await geoResponse.json();
+
+        if (!geoData.length) {
+          throw new Error('Город не найден');
+        }
+        //деструктурируем приходящие данные согласно документации openweathermap
+        const { lat, lon } = geoData[0];
+
+        saveCityToLocalStorage(city);
+
+        const weatherData = await getWeather(lat, lon);
+        const forecastData = await getForecast(lat, lon);
+
+        console.log(weatherData);
+        console.log(forecastData);
+        
+        renderCurrentWeather(weatherData, city);
+        renderHourlyForecast(forecastData);
+        renderDailyForecast(forecastData);
+
+      } catch (error) {
+        console.error(error.message);
+        showError('Данные не получены');
+      }
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>getWeatherAndForecast.js</summary>
+<pre>
+  <code class="lang-js">
+    import { apiKey, baseUrl } from "./apiKeyAndHost.js";
+
+    const fetchData = async (endpoint, lat, lon) => {
+      const url = new URL(`${baseUrl}/data/2.5/${endpoint}`);
+
+      const queryParams = new URLSearchParams({
+        lat: lat,
+        lon: lon,
+        appid: apiKey,
+        lang: 'ru',
+        units: 'metric',
+      });
+      url.search = queryParams.toString();
+
+      const responce = await fetch(url);
+
+      if (!responce.ok) {
+        throw new Error('Не удалось загрузить данные о погоде');
+      }
+      return responce.json();
+    };
+
+    export const getWeather = async (lat, lon) => {
+      return fetchData('weather', lat, lon);
+    };
+
+    export const getForecast = async (lat, lon) => {
+      return fetchData('forecast', lat, lon);
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+            </ul>
+          </li>
+          <li>components
+            <ul>
+              <li>
+                <details>
+                  <summary>currentWeather.js</summary>
+<pre>
+  <code class="lang-js">
+    import { updateWindDirection } from "../helpers/windParam.js";
+    import { updateHumidityScale } from "../helpers/humidityParam.js";
+    import { formatTime } from "../helpers/formatTime.js";
+    import { calcDayLength } from "../helpers/calcDayLength.js";
+    import { updateSunPosition } from "../helpers/calcSunPosition.js";
+    import { calcSunPosition } from "../helpers/calcSunPosition.js";
+
+    const currentCity = document.querySelector('.city');
+    const currentTemp = document.querySelector('.temperature');
+    const feelsLike = document.querySelector('.feels');
+    const currentDescription = document.querySelector('.description');
+    const currentWeatherIcon = document.querySelector('.weather-icon img');
+    const currentWind = document.querySelector('.wind');
+    const currentVisibility = document.querySelector('.visibility');
+    const currentHumidity = document.querySelector('.humidity');
+    const currentPressure = document.querySelector('.pressure');
+    const sunriseItem = document.querySelector('.sunrise');
+    const sunsetItem = document.querySelector('.sunset');
+    const dayLength = document.querySelector('.day-length');
+
+    export const renderCurrentWeather = (data, city) => {
+      currentCity.textContent = city || 'Неизвестно';
+      currentTemp.textContent = `${Math.round(data.main?.temp || 0)}°С`;
+      feelsLike.textContent = `${Math.round(data.main?.feels_like || 0)}°С`;
+      currentDescription.textContent = data.weather?.[0]?.description || 'Неизвестно';
+      currentWeatherIcon.src = `https://openweathermap.org/img/wn/${data.weather?.[0]?.icon || '01d'}@2x.png`;
+      currentWind.textContent = `${Math.round(data.wind?.speed || 0)} м/с`;
+      const visibility = data.visibility || 0;
+      if(visibility > 1000) {
+        currentVisibility.textContent = `${(visibility / 1000).toFixed(1)} км`;
+      } else {
+        currentVisibility.textContent = `${visibility} м`;
+      }
+      currentHumidity.textContent = `${data.main?.humidity || 0}%`;
+      currentPressure.textContent = `${Math.round((data.main?.pressure || 0) * 0.750062)} мм рт.ст.`;
+      
+      const windDegrees = data.wind?.deg || 0;
+      updateWindDirection(windDegrees);
+
+      const humidity = data.main?.humidity || 0;
+      updateHumidityScale(humidity);
+
+      const { sunrise, sunset } = data.sys || {};
+      
+      const { timezone } = data || {};
+
+      sunriseItem.textContent = sunrise ? formatTime(sunrise, timezone) : 'Неизвестно';
+      sunsetItem.textContent = sunset ? formatTime(sunset, timezone) : 'Неизвестно';
+
+      dayLength.textContent = `Долгота дня: ${sunrise && sunset ? calcDayLength(sunrise, sunset) : 'Неизвестно'}`;
+
+      const sunPosition = sunrise && sunset ? calcSunPosition(sunrise, sunset) : 0;
+      updateSunPosition(sunPosition);
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>dailyForecast.js</summary>
+<pre>
+  <code class="lang-js">
+    import { showError } from "./error.js";
+
+    const dailyForecast = document.querySelector('.forecast-list');
+
+    export const renderDailyForecast = (data) => {
+      dailyForecast.innerHTML = '';
+
+      if(!data) {
+        showError('Данные о погоде недоступны');
+      }
+
+      const groupedData = groupDataByDay(data.list);
+
+      Object.keys(groupedData).slice(0, 5).forEach((dayKey) => {
+        const dayData = groupedData[dayKey];
+
+        const maxTemp = Math.round(Math.max(...dayData.map((item) => item.main.temp_max)));
+
+        const minTemp = Math.round(Math.min(...dayData.map((item) => item.main.temp_min)));
+
+        const icon = dayData[0].weather[0].icon;
+
+        const date = new Date(dayData[0].dt * 1000);
+
+        const dayName = date.toLocaleDateString('ru-RU', {
+          weekday: 'short',
+        });
+
+        const dayNumber = date.getDate();
+
+        const monthName = date.toLocaleDateString('ru-RU', {
+          month: 'short',
+        });
+
+        const forecastItem = document.createElement('div');
+
+        forecastItem.classList.add('forecast-item');
+        forecastItem.innerHTML = `
+          &#60;p class="day">${dayName},&#60;/p>
+          &#60;p class="day">${dayNumber} ${monthName}&#60;/p>
+          &#60;img
+            src="https://openweathermap.org/img/wn/${icon}@4x.png"
+            alt="Погода"
+          />
+          &#60;div class="temp">
+            &#60;p class="temp-day">${maxTemp}°C&#60;/p>
+            &#60;p class="temp-night">${minTemp}°C&#60;/p>
+          &#60;/div>
+        `;
+
+        dailyForecast.append(forecastItem);
+      });
+    };
+
+    const groupDataByDay = (list) => {
+      const groupedData = {};
+
+      list.forEach((item) => {
+        const date = new Date(item.dt * 1000);
+        const dayKey = date.toLocaleDateString('ru-RU');
+
+        if (!groupedData[dayKey]) {
+          groupedData[dayKey] = [];
+        }
+
+        groupedData[dayKey].push(item);
+      });
+
+      return groupedData;
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>error.js</summary>
+<pre>
+  <code class="lang-js">
+    const errorMessage = document.getElementById('error-message');
+
+    export function showError(message) {
+      errorMessage.textContent = message;
+    }
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>geoLocation.js</summary>
+<pre>
+  <code class="lang-js">
+    import { apiKey, baseUrl } from "../api/apiKeyAndHost.js";
+    import { showError } from "./error.js";
+    import { getWeather, getForecast } from "../api/getWeatherAndForecast.js";
+    import { renderCurrentWeather } from "./currentWeather.js";
+    import { renderHourlyForecast } from "./hourlyForecast.js";
+    import { renderDailyForecast } from "./dailyForecast.js";
+
+    export function geoLocation() {
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          //получить данные о широте и долготе
+          const {latitude, longitude} = await getBrowserGeolocation();
+          //получить название населённого пункта
+          const locationName = await geoLocationName(latitude, longitude);
+          //проброс полученных для получения прогноза погоды 
+          await fetchWeatherByCoords(latitude, longitude, locationName);
+        } catch (error) {
+          //обработка ошибок
+          console.error('Ошибка при получении геолокации: ', error.message);
+          showError('Не удалось определить местоположение');
+        }
+      });
+    }
+
+    const getBrowserGeolocation = () => {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Геолокация не поддерживается браузером'));
+        } else {
+          navigator.geolocation.getCurrentPosition((position) => {
+              const { latitude, longitude } = position.coords;
+              resolve({ latitude, longitude });
+            },
+            (error) => {
+              reject(error);
+            }
+          );
+        }
+      });
+    };
+
+    const geoLocationName = async (latitude, longitude) => {
+      const reverseGeocodingUrl = new URL(`${baseUrl}/geo/1.0/reverse`);
+
+      const queryParams = new URLSearchParams({
+        lat: latitude,
+        lon: longitude,
+        limit: 1,
+        appid: apiKey,
+      });
+
+      const url = `${reverseGeocodingUrl}?${queryParams.toString()}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+          const { local_names } = data[0];
+          const russianName = local_names?.ru || data[0].name;
+          return `${russianName}`;
+        } else {
+          throw new Error('Название места не найдено');
+        }
+      } catch (error) {
+        console.error('Ошибка при получении названия места: ', error.message);
+        showError('Ошибка при получении названия места')
+      }
+    };
+
+    const fetchWeatherByCoords = async (latitude, longitude, locationName) => {
+      try {
+        const weatherData = await getWeather(latitude, longitude);
+        const forecastData = await getForecast(latitude, longitude);
+
+        renderCurrentWeather(weatherData, locationName);
+        renderHourlyForecast(forecastData);
+        renderDailyForecast(forecastData);
+      } catch (error) {
+        console.error(error.message);
+        showError('Не удалось получить данные о погоде');
+      }
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>getCurrentYear.js</summary>
+<pre>
+  <code class="lang-js">
+    export function getCurrentYear() {
+      const currentYear = new Date().getFullYear();
+      const yearElement = document.getElementById("currentYear");
+      yearElement.textContent = currentYear;
+    }
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>hourlyForecast.js</summary>
+<pre>
+  <code class="lang-js">
+    import { showError } from "./error.js";
+
+    const hourlyForecast = document.querySelector('.hourly-scroll');
+
+    export const renderHourlyForecast = (data) => {
+      hourlyForecast.innerHTML = '';
+
+      if(!data) {
+        showError('Данные о погоде недоступны');
+      }
+
+      const currentDate = new Date();
+
+      currentDate.setHours(0, 0, 0, 0);
+
+      const daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб',];
+
+      const timezoneOffset = data.city.timezone * 1000;
+
+      data.list.forEach((item) => {
+        const date = new Date(item.dt * 1000 + timezoneOffset);
+        const hour = date.getHours();
+        const temp = Math.round(item.main.temp);
+        const icon = item.weather[0].icon;
+
+        const forecastDate = new Date(date);
+        forecastDate.setHours(0, 0, 0, 0);
+
+        const timeDiff = forecastDate.getTime() - currentDate.getTime();
+
+        const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+        let dayLabel;
+
+        if (dayDiff === 0) {
+          dayLabel = 'Сегодня';
+        } else if (dayDiff === 1) {
+          dayLabel = 'Завтра';
+        } else {
+          dayLabel = daysOfWeek[forecastDate.getDay()];
+        }
+
+        const hourlyItem = document.createElement('div');
+        hourlyItem.classList.add('hourly-item');
+        hourlyItem.innerHTML = `
+          &#60;p class="hour">${dayLabel}&#60;/p>
+          &#60;p class="hour">${hour}:00&#60;/p>
+          &#60;img
+            src="https://openweathermap.org/img/wn/${icon}@4x.png"
+            alt="Погода"
+          />
+          &#60;p class="temp">${temp} °C&#60;/p>
+        `;
+        hourlyForecast.append(hourlyItem);
+      });
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>inputForm.js</summary>
+<pre>
+  <code class="lang-js">
+    import { getGeoData } from "../api/geoData.js";
+    import { showRecentCities } from "./showRecentCities.js";
+
+    const searchForm = document.querySelector('.search-form');
+    export const cityInput = document.querySelector('.city-input');
+
+    export function getWeatherByForm() {
+      searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        getGeoData(cityInput);
+      });
+
+      cityInput.addEventListener('focus', () => {
+        showRecentCities();
+      });
+    }
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>scrollToTop.js</summary>
+<pre>
+  <code class="lang-js">
+    const scrollToTopBtn = document.getElementById("toTop");
+
+    scrollToTopBtn.addEventListener("click", scrollToTop);
+
+    export function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        scrollToTopBtn.style.display = "block";
+      } else {
+        scrollToTopBtn.style.display = "none";
+      }
+    });
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>showRecentCities.js</summary>
+<pre>
+  <code class="lang-js">
+    import { cityInput } from "./inputForm.js";
+
+    const recentCitiesList = document.getElementById('recent-cities-list');
+
+    document.addEventListener('click', (e) => {
+      if (e.target !== cityInput && e.target !== recentCitiesList) {
+        recentCitiesList.style.display = 'none';
+      }
+    });
+
+    export const showRecentCities = () => {
+      const cities = JSON.parse(localStorage.getItem('recentCities')) || [];
+      if (cities.length === 0) return;
+
+      recentCitiesList.innerHTML = '';
+
+      cities.forEach((city) => {
+        const li = document.createElement('li');
+        li.textContent = city;
+        li.addEventListener('click', () => {
+          cityInput.value = city;
+          recentCitiesList.style.display = 'none';
+        });
+        recentCitiesList.append(li);
+      });
+      recentCitiesList.style.display = 'block';
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>switchTheme.js</summary>
+<pre>
+  <code class="lang-js">
+    //переключение темы светлая/темная
+    export function switchTheme() {
+      const themeSwitch = document.getElementById('themeSwitch');
+      let userHasChosenTheme = false;
+
+      themeSwitch.addEventListener('change', toggleTheme);
+      //функция получения темы (getAttribute)
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+
+        let newTheme;
+        if (currentTheme === 'dark') {
+          newTheme = 'light';
+        } else {
+          newTheme = 'dark';
+        }
+
+        userHasChosenTheme = true;
+
+        setTheme(newTheme);
+      }
+      //функция для установки темы (setAttribute)
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (userHasChosenTheme) {
+        //сохраняем выбор в localStorage
+        localStorage.setItem('theme', theme);
+        }
+      }
+
+      const savedTheme = localStorage.getItem('theme');
+
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else {
+        const themeByBrowser = getThemeByBrowserSetting();
+        if (themeByBrowser === 'dark') {
+          setTheme('dark');
+        } else {
+          //функция получения темы в зависимости от времени суток
+          const themeByTime = getThemeByTime();
+          setTheme(themeByTime);
+        }
+      }
+
+      function getThemeByTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        return hours >= 7 && hours < 22 ? 'light' : 'dark';
+      }
+    }
+    //получение темы в зависимости от настроек браузера
+    function getThemeByBrowserSetting() {
+      if (
+        window.matchMedia && 
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      ) {
+        return 'dark';
+      } else {
+        return 'light';
+      }
+    }
+  </code>
+</pre>
+                </details>
+              </li>
+            </ul>
+          </li>
+          <li>helpers
+            <ul>
+              <li>
+                <details>
+                  <summary>calcDayLength.js</summary>
+<pre>
+  <code class="lang-js">
+    export function calcDayLength(sunrise, sunset) {
+      const diffInSeconds = sunset - sunrise;
+      const hours = Math.floor(diffInSeconds / 3600);
+      const minutes = Math.floor((diffInSeconds % 3600) / 60);
+
+      return `${hours} час ${minutes} мин`;
+    }
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>calcSunPosition.js</summary>
+<pre>
+  <code class="lang-js">
+    export const calcSunPosition = (sunrise, sunset) => {
+      const now = Math.floor(Date.now() / 1000);
+      const totalDayLength = sunset - sunrise;
+      const elapsedTime = now - sunrise;
+
+      const percentage = elapsedTime / totalDayLength;
+      return percentage;
+    };
+
+    export const updateSunPosition = (sunPosition) => {
+      const sun = document.querySelector('.sun-graphic circle');
+
+      if(sunPosition < 0 || sunPosition > 1) {
+        sun.setAttribute('visibility', 'hidden');
+        return;
+      }
+
+      sun.setAttribute('visibility', 'visible');
+
+      const startX = 20;
+      const endX = 180;
+      const horizonY = 35;
+      const arcRadius = 45;
+
+      const x = startX + sunPosition * (endX - startX);
+      const y = horizonY - Math.sin(sunPosition * Math.PI) * arcRadius;
+
+      sun.setAttribute('cx', x);
+      sun.setAttribute('cy', y);
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>capitalize.js</summary>
+<pre>
+  <code class="lang-js">
+    export const capitalizeCity = (city) => {
+      if (!city) return city;
+
+      const citiesWithHyphens = ['Комсомольск-на-Амуре', 'Ростов-на-Дону'];
+
+      if (citiesWithHyphens.includes(city)) {
+        return city
+          .toLowerCase()
+          .split(/[\s-]/)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join('-');
+      }
+      return city
+        .toLowerCase()
+        .split(/[\s-]/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>checkCyrillic.js</summary>
+<pre>
+  <code class="lang-js">
+    import { showError } from "../components/error.js";
+
+    const cityInput = document.querySelector('.city-input');
+
+    export const isCyrillic = (text) => {
+      const cyrillicPattern = /^[А-Яа-яЁё\s-]+$/;
+      return cyrillicPattern.test(text);
+    };
+
+    cityInput.addEventListener('input', () => {
+      const inputValue = cityInput.value;
+
+      if (inputValue && !isCyrillic(inputValue)) {
+        showError('Введите на кириллице');
+      } else {
+        showError('');
+      }
+    });
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>cityAbbreviation.js</summary>
+<pre>
+  <code class="lang-js">
+    export const replaceAbbreviation = (city) => {
+      const lowerCaseCity = city.toLowerCase();
+
+      if (cityAbbreviation[lowerCaseCity]) {
+        return cityAbbreviation[lowerCaseCity];
+      }
+      return city;
+    }
+
+    const cityAbbreviation = {
+      мск: 'Москва',
+      спб: 'Санкт-Петербург',
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>currentTime.js</summary>
+<pre>
+  <code class="lang-js">
+    export const formatDate = (date) => {
+      const datePart = date.toLocaleDateString('ru', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      });
+
+      const timePart = date.toLocaleTimeString('ru', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      return `${datePart}, ${timePart}`;
+    };
+
+    export const renderCurrentTime = () => {
+      const nowElement = document.querySelector('.now');
+      const currentTime = new Date();
+
+      const formattedTime = formatDate(currentTime);
+      nowElement.textContent = `Сейчас: ${formattedTime}`;
+  };
+
+  setInterval(renderCurrentTime, 60000);
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>formatTime.js</summary>
+<pre>
+  <code class="lang-js">
+    export function formatTime(unixTime, timezone) {
+      const localTime = unixTime + timezone;
+
+      const date = new Date(localTime * 1000);
+
+      const hours = date.getUTCHours();
+      const minutes = date.getUTCMinutes();
+
+      return `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+    }
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>humidityParam.js</summary>
+<pre>
+  <code class="lang-js">
+    export const updateHumidityScale = (humidity) => {
+      const parameter = document.querySelector('.parameter');
+
+      parameter.style.width = `${humidity}%`;
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>saveCityToLocalStorage.js</summary>
+<pre>
+  <code class="lang-js">
+    import { capitalizeCity } from "./capitalize.js";
+
+    export const saveCityToLocalStorage = (city) => {
+      const capitalizedCity = capitalizeCity(city);//функция для приведения к заглавной букве
+      let cities = JSON.parse(localStorage.getItem('recentCities')) || [];
+      if (!cities.includes(capitalizedCity)) {
+        cities.unshift(capitalizedCity);
+        if (cities.length > 5) {
+          cities.pop();
+        }
+        localStorage.setItem('recentCities', JSON.stringify(cities));
+      }
+    };
+  </code>
+</pre>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>windParam.js</summary>
+<pre>
+  <code class="lang-js">
+    export function updateWindDirection(windDeg) {
+    const windIcon = document.getElementById('wind-direction-icon');
+    const windText = document.getElementById('wind-direction-text');
+
+    const iconRotation = (windDeg + 180) % 360;
+    windIcon.style.transform = `rotate(${iconRotation}deg)`;
+
+    const directions = ['С', 'СВ', 'В', 'ЮВ', 'Ю', 'ЮЗ', 'З', 'СЗ'];
+    const normalizeDegrees = (windDeg + 360) % 360;
+    const index = Math.round(normalizeDegrees / 45) % 8;
+    windText.textContent = directions[index] || 'Н/Д';
+  }
+  </code>
+</pre>
+                </details>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <ul>
+      <li>styles
+        <ul>
+          <li>
+            <details>
+              <summary>current.css</summary>
+<pre>
+  <code class="lang-css">
+    /* Текущая погода */
+    .current-weather {
+      display: flex;
+      flex-direction: column;
+      row-gap: 30px;
+      background-color: var(--bg-block);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      color: var(--light-text-color);
+      transition: background-color 1s ease;
+    }
+
+    .weather-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    @media (width < 400px) {
+      .weather-info {
+        flex-direction: column;
+      }
+    }
+
+    .weather-icon img {
+      width: 100px;
+      height: 100px;
+    }
+
+    .weather-details .city {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .weather-details .temperature {
+      font-size: 3rem;
+      margin: 10px 0;
+    }
+
+    .weather-details .feels {
+      font-size: 1rem;
+      margin: 10px 0;
+      color: var(--text-feels);
+    }
+
+    .weather-details .description {
+      font-size: 1.2rem;
+    }
+
+    /* Дополнительные параметры погоды */
+    .weather-stats {
+      display: grid;
+      gap: 15px;
+      text-align: center;
+    }
+
+    .weather-stats {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    @media (width > 425px) {
+      .weather-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (width > 768px) {
+      .weather-stats {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      row-gap: 10px;
+      background-color: var(--background-color);
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 135px;
+      box-shadow: 0 0 3px 3px rgba(0, 191, 255, 0.8);
+      font-size: 0.8rem;
+      transition: background-color 1s ease;
+    }
+
+    .stat-item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
+    .stat-item .humidity {
+      display: flex;
+      flex-direction: column;
+
+      color: #3b6680;
+      width: 100%;
+    }
+
+    .stat-item .humidity-points {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .stat-item .scale {
+      border: 1px solid #3b6680;
+      border-radius: 6px;
+      height: 8px;
+      width: 100%;
+    }
+
+    .stat-item .parameter {
+      border-radius: 6px;
+      background-color: #3b6680;
+      height: 6px;
+      width: 60%;
+    }
+
+    .stat-item img {
+      width: 48px;
+      height: 48px;
+    }
+
+    .stat-item .wind {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    .stat-item .direction {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #3b6680;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.9rem;
+      color: #3b6680;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #3b6680;
+    }
+
+    /* Стили для блока восхода и заката */
+    .sunrise-sunset {
+      min-height: 135px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      row-gap: 15px;
+      margin-top: 15px;
+      padding: 15px;
+      background-color: var(--background-color);
+      border-radius: 10px;
+      box-shadow: 0 0 3px 3px rgba(0, 191, 255, 0.8);
+      transition: background-color 1s ease;
+    }
+
+    .sun-info {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .day-parameters {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sun-label {
+      display: block;
+      font-size: 0.9rem;
+      color: #3b6680;
+    }
+
+    .sun-time {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #3b6680;
+    }
+
+    .sun-graphic {
+      width: 100%;
+      max-width: 160px;
+      margin: 10px 0;
+    }
+
+    /* Стили для SVG */
+    .sun-graphic svg {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .day-length {
+      font-size: 0.75rem;
+      color: #3b6680;
+      width: 200px;
+    }
+
+    @media (width > 465px) {
+      .sunrise-sunset {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+      }
+
+      .sun-info {
+        margin-bottom: 0;
+      }
+
+      .sun-graphic {
+        margin: 0 20px;
+      }
+
+      .day-length {
+        font-size: 0.9rem;
+      }
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>daily.css</summary>
+<pre>
+  <code class="lang-css">
+    /* Прогноз на 5 дней */
+    .forecast {
+      background-color: var(--bg-block);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .forecast h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--light-text-color);
+    }
+
+    .forecast-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .forecast-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      row-gap: 8px;
+      text-align: center;
+      background-color: var(--background-color);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 3px 3px rgba(0, 191, 255, 0.8);
+      transition: background-color 1s ease;
+    }
+
+    .forecast-item img {
+      width: 80px;
+      height: 80px;
+    }
+
+    .forecast-item .temp {
+      display: flex;
+      flex-direction: row;
+      font-size: 1.2rem;
+      justify-content: center;
+      column-gap: 20px;
+    }
+
+    .temp-day {
+      color: var(--dark-text-color);
+    }
+
+    .temp-night {
+      color: #737373;
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>footer.css</summary>
+<pre>
+  <code class="lang-css">
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      background-color: var(--bg-footer);
+      border-radius: 10px;
+      transition: background-color 1s ease;
+    }
+
+    footer a {
+      color: var(--light-text-color);
+      text-decoration: none;
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>header.css</summary>
+<pre>
+  <code class="lang-css">
+    header {
+      display: flex;
+
+      flex-direction: column;
+      text-align: center;
+      margin-bottom: 40px;
+      row-gap: 15px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: var(--dark-text-color);
+    }
+
+    /* Переключение темы */
+    .switch-theme {
+      display: flex;
+      justify-content: center;
+    }
+
+    #themeSwitch {
+      position: absolute;
+      visibility: hidden;
+    }
+
+    label {
+      position: relative;
+      width: 64px;
+      height: 32px;
+      border: 2px solid var(--bg-indicate);
+      border-radius: 20px;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .switch-block {
+      position: absolute;
+      left: var(--left-position);
+      transform: rotate(var(--rotate-angle));
+      transition: all 0.5s ease;
+    }
+
+    .indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 100%;
+      transition: background-color 1s ease;
+      color: var(--indicate);
+      background-color: var(--bg-indicate);
+      cursor: pointer;
+    }
+
+    .search-block {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .search-form {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .city-input {
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid var(--input-border);
+      border-radius: 5px;
+      background-color: var(--bg-input);
+      color: var(--input-text);
+      outline: none;
+      transition: background-color 1s ease, border 1s ease;
+    }
+
+    .city-input:focus,
+    .city-input:hover {
+      background-color: var(--bg-input);
+      color: var(--input-text);
+      transition: background-color 1s ease, color 1s ease;
+    }
+
+    .search-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: var(--bg-btn);
+      color: var(--light-text-color);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 1s ease, color 1s ease;
+    }
+
+    .search-button:hover {
+      background-color: var(--bg-btn-hover);
+      transition: background-color 1s ease;
+    }
+
+    /* Всплывающее меню */
+    .recent-cities {
+      position: absolute;
+      top: 45px;
+      text-align: left;
+      display: none;
+      background-color: var(--background-color);
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      color: var(--light-text-color);
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: background-color 1s ease, color 1s ease, border 1s ease;
+    }
+
+    .recent-cities li {
+      padding: 5px;
+      margin: 2px;
+      cursor: pointer;
+      border-radius: 3px;
+      background-color: var(--bg-block);
+      transition: background-color 1s ease;
+    }
+
+    .recent-cities li:hover {
+      background-color: var(--bg-block-hover);
+      transition: background-color 1s ease;
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>hourly.css</summary>
+<pre>
+  <code class="lang-css">
+    /* Стили для блока почасового прогноза */
+    .hourly-forecast {
+      padding: 15px;
+      background-color: var(--bg-block);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .hourly-forecast h2 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      text-align: center;
+      color: var(--light-text-color);
+    }
+    
+    .hourly-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding: 10px 10px 15px;
+    }
+    
+    .hourly-item {
+      flex: 0 0 auto;
+      text-align: center;
+      background-color: var(--background-color);
+      padding: 10px;
+      border-radius: 10px;
+      min-width: 80px;
+      box-shadow: 0 0 3px 3px rgba(0, 191, 255, 0.8);
+      transition: background-color 1s ease;
+    }
+    
+    .hourly-item img {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .hourly-item .hour {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 5px 0;
+    }
+    
+    .hourly-item .temp {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #3b6680;
+      margin: 5px 0;
+    }
+    
+    /* Скрыть стандартный скроллбар */
+    .hourly-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .hourly-scroll::-webkit-scrollbar-thumb {
+      background-color: var(--background-color);
+      border-radius: 4px;
+      transition: background-color 1s ease;
+    }
+    
+    .hourly-scroll::-webkit-scrollbar-track {
+      background-color: var(--scroll-color);
+      border-radius: 4px;
+      transition: background-color 1s ease;
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>main.css</summary>
+<pre>
+  <code class="lang-css">
+    @import url("variables.css");
+    @import url("header.css");
+    @import url("current.css");
+    @import url("hourly.css");
+    @import url("daily.css");
+    @import url("toTop.css");
+    @import url("footer.css");
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+
+      margin: 0;
+      padding: 0;
+      color: #3b6680;
+      background-image: var(--background-image);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: all 1s ease;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      row-gap: 40px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: var(--background-color);
+      margin-top: 30px;
+      margin-bottom: 30px;
+      border-radius: 20px;
+      transition: background-color 1s ease;
+    }
+
+    /* Дополнительные стили*/
+    #error-message {
+      color: red;
+      font-size: 1.2rem;
+      margin-top: 5px;
+    }
+
+    @keyframes glow {
+      0%,
+      100% {
+        filter: drop-shadow(0 0 3px #ffa500);
+      }
+      50% {
+        filter: drop-shadow(0 0 10px #ffa500);
+      }
+    }
+
+    .sun-disk {
+      animation: glow 2s infinite;
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>toTop.css</summary>
+<pre>
+  <code class="lang-css">
+    #toTop {
+      position: fixed;
+      right: 30px;
+      bottom: 34px;
+      border: none;
+      border-radius: 50%;
+      padding: 6px;
+      background-color: var(--bg-block);
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      transition: background-color 1s ease;
+    }
+
+    #toTop img {
+      width: 100%;
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>variables.css</summary>
+<pre>
+  <code class="lang-css">
+    :root {
+      --background-color: #a7e2ff;
+      --bg-block: #4089ad;
+      --bg-block-hover: #0e7cb3;
+      --light-text-color: #f9f9f9;
+      --dark-text-color: #3b6680;
+      --bg-input: #e6e6e6;
+      --input-border: #4089ad;
+      --input-text: #010101;
+      --bg-btn: #37a2e9;
+      --bg-btn-hover: #2980b9;
+      --text-feels: #bbb;
+      --scroll-color: #f9f9f9;
+      --bg-footer: #225c7a;
+      --indicate: #e6e6e6;
+      --bg-indicate: #64b5f6;
+      --left-position: 5px;
+      --rotate-angle: 0deg;
+      --background-image: url("../public/img/clouds.jpg"); 
+    }
+
+    :root[data-theme="dark"] {
+      --background-color: #100e1c;
+      --bg-block: #062839;
+      --bg-block-hover: #0c638f;
+      --light-text-color: #8d8d8d;
+      --bg-input: #062839;
+      --input-border: #1b87cf;
+      --input-text: #8d8d8d;
+      --bg-btn: #0c4a69;
+      --bg-btn-hover: #09364d;
+      --text-feels: #5d5d5d;
+      --scroll-color: #3b6680;
+      --bg-footer: #011c2a;
+      --bg-indicate: #ec6e4d;
+      --left-position: 35px;
+      --rotate-angle: 360deg;
+      --background-image: url("../public/img/space.jpg"); 
+    }
+  </code>
+</pre>
+            </details>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <ul>
+      <li>
+        <details>
+          <summary>index.html</summary>
+<pre>
+  <code class="lang-html">
+    &#60;!DOCTYPE html>
+    &#60;html lang="ru">
+      &#60;head>
+        &#60;meta charset="UTF-8" />
+        &#60;meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        &#60;title>Web Meteo&#60;/title>
+        &#60;link rel="stylesheet" href="./styles/main.css" />
+      &#60;/head>
+      &#60;body>
+        &#60;div class="container">
+          &#60;header>
+            &#60;h1>Web Meteo&#60;/h1>
+            &#60;div class="switch-theme">
+              &#60;input
+                type="checkbox"
+                id="themeSwitch"
+                aria-label="Переключить на дневную / ночную тему"
+              />
+
+              &#60;label for="themeSwitch">
+                &#60;div class="switch-block">
+                  &#60;div class="indicator">
+                    &#60;svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="13"
+                      height="13"
+                      viewBox="0 0 13 13"
+                      fill="none"
+                    >
+                      &#60;path
+                        d="M10.6067 2.12132C9.83451 1.34916 8.89689 0.8358 7.9126 0.572756C8.44717 2.57528 7.93381 4.79418 6.36403 6.36396C4.79425 7.93374 2.57535 8.4471 0.572826 7.91253C0.83587 8.89682 1.34923 9.83444 2.12139 10.6066C4.46333 12.9485 8.26473 12.9485 10.6067 10.6066C12.9486 8.26466 12.9486 4.46326 10.6067 2.12132Z"
+                        fill="currentColor"
+                      />
+                    &#60;/svg>
+                  &#60;/div>
+                &#60;/div>
+              &#60;/label>
+            &#60;/div>
+            &#60;div id="error-message">&#60;/div>
+            &#60;form class="search-form">
+              &#60;div class="search-block">
+                &#60;input
+                  type="search"
+                  class="city-input"
+                  placeholder="Введите город"
+                  required
+                  autocomplete="off"
+                />
+                &#60;ul id="recent-cities-list" class="recent-cities">&#60;/ul>
+              &#60;/div>
+
+              &#60;button type="submit" class="search-button">Поиск&#60;/button>
+            &#60;/form>
+          &#60;/header>
+
+          &#60;main>
+            &#60;div class="current-weather">
+              &#60;h2 class="now">Сейчас: вс, 9 сент, 12:29&#60;/h2>
+              &#60;div class="weather-info">
+                &#60;div class="weather-icon">
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/01d@2x.png"
+                    alt="Погода"
+                  />
+                &#60;/div>
+                &#60;div class="weather-details">
+                  &#60;p class="city">Москва&#60;/p>
+                  &#60;p class="temperature">20 °C&#60;/p>
+                  &#60;p class="feels">Ощущается как 19 °C&#60;/p>
+                  &#60;p class="description">Солнечно&#60;/p>
+                &#60;/div>
+              &#60;/div>
+              &#60;div class="weather-stats">
+                &#60;div class="stat-item">
+                  &#60;div>
+                    &#60;span class="stat-label">Ветер&#60;/span>
+                    &#60;span class="stat-value wind">5 м/с&#60;/span>
+                  &#60;/div>
+                  &#60;div class="wind">
+                    &#60;img
+                      src="./public/icons/icon-direction.png"
+                      alt="Направление ветра"
+                      id="wind-direction-icon"
+                    />
+                    &#60;p class="direction" id="wind-direction-text">Ю&#60;/p>
+                  &#60;/div>
+                &#60;/div>
+                &#60;div class="stat-item">
+                  &#60;span class="stat-label">Видимость&#60;/span>
+                  &#60;span class="stat-value visibility">10 км&#60;/span>
+                &#60;/div>
+                &#60;div class="stat-item">
+                  &#60;span class="stat-label">Влажность&#60;/span>
+                  &#60;span class="stat-value humidity">60%&#60;/span>
+                  &#60;div class="humidity">
+                    &#60;div class="humidity-points">
+                      &#60;div>0&#60;/div>
+                      &#60;div>50&#60;/div>
+                      &#60;div>100&#60;/div>
+                    &#60;/div>
+                    &#60;div class="scale">&#60;div class="parameter">&#60;/div>&#60;/div>
+                  &#60;/div>
+                &#60;/div>
+                &#60;div class="stat-item">
+                  &#60;span class="stat-label">Давление&#60;/span>
+                  &#60;span class="stat-value pressure">760 мм рт.ст.&#60;/span>
+                &#60;/div>
+              &#60;/div>
+              &#60;div class="sunrise-sunset">
+                &#60;div class="sun-info">
+                  &#60;span class="sun-label">Восход&#60;/span>
+                  &#60;span class="sun-time sunrise">06:30&#60;/span>
+                &#60;/div>
+                &#60;div class="day-parameters">
+                  &#60;div class="sun-graphic">
+                    &#60;svg viewBox="0 0 200 50" width="180" height="100" class="sun-disk">
+                      &#60;line
+                        x1="0"
+                        y1="40"
+                        x2="200"
+                        y2="40"
+                        stroke="#ccc"
+                        stroke-width="2"
+                      />
+                      &#60;!--Пропишите class для солнца, если хотие сделать анимацию-->
+                      &#60;circle cx="50" cy="40" r="10" fill="#EC6E4C" />
+                      &#60;path
+                        d="M20 40 A90 90 0 0 1 180 40"
+                        stroke="#EC6E4C"
+                        stroke-width="2"
+                        fill="none"
+                      />
+                    &#60;/svg>
+
+                    &#60;div class="day-length">Долгота дня 12 час 15 мин&#60;/div>
+                  &#60;/div>
+                &#60;/div>
+
+                &#60;div class="sun-info">
+                  &#60;span class="sun-label">Закат&#60;/span>
+                  &#60;span class="sun-time sunset">18:45&#60;/span>
+                &#60;/div>
+              &#60;/div>
+            &#60;/div>
+            &#60;section class="hourly-forecast">
+              &#60;h2>Погода по часам&#60;/h2>
+              &#60;div class="hourly-scroll">
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Сегодня&#60;/p>
+                  &#60;p class="hour">12:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/01d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">20 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Сегодня&#60;/p>
+                  &#60;p class="hour">15:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/02d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">19 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Сегодня&#60;/p>
+                  &#60;p class="hour">18:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/03d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">18 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Сегодня&#60;/p>
+                  &#60;p class="hour">21:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/04d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">17 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">00:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/09d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">16 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">03:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/10d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">15 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">06:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/01d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">15 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">09:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/02d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">19 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">12:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/03d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">18 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">15:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/04d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">17 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">18:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/09d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">16 °C&#60;/p>
+                &#60;/div>
+                &#60;div class="hourly-item">
+                  &#60;p class="hour">Завтра&#60;/p>
+                  &#60;p class="hour">21:00&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/10d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;p class="temp">15 °C&#60;/p>
+                &#60;/div>
+              &#60;/div>
+            &#60;/section>
+
+            &#60;section class="forecast">
+              &#60;h2>Прогноз на 5 дней&#60;/h2>
+              &#60;div class="forecast-list">
+                &#60;div class="forecast-item">
+                  &#60;p class="day">Завтра,&#60;/p>
+                  &#60;p class="day">9 сент&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/02d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;div class="temp">
+                    &#60;p class="temp-day">21 °C&#60;/p>
+                    &#60;p class="temp-night">14 °C&#60;/p>
+                  &#60;/div>
+                &#60;/div>
+                &#60;div class="forecast-item">
+                  &#60;p class="day">Вт,&#60;/p>
+                  &#60;p class="day">10 сент&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/03d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;div class="temp">
+                    &#60;p class="temp-day">22 °C&#60;/p>
+                    &#60;p class="temp-night">16 °C&#60;/p>
+                  &#60;/div>
+                &#60;/div>
+                &#60;div class="forecast-item">
+                  &#60;p class="day">Ср,&#60;/p>
+                  &#60;p class="day">11 сент&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/04d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;div class="temp">
+                    &#60;p class="temp-day">18 °C&#60;/p>
+                    &#60;p class="temp-night">11 °C&#60;/p>
+                  &#60;/div>
+                &#60;/div>
+                &#60;div class="forecast-item">
+                  &#60;p class="day">Чт,&#60;/p>
+                  &#60;p class="day">12 сент&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/09d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;div class="temp">
+                    &#60;p class="temp-day">15 °C&#60;/p>
+                    &#60;p class="temp-night">12 °C&#60;/p>
+                  &#60;/div>
+                &#60;/div>
+                &#60;div class="forecast-item">
+                  &#60;p class="day">Пт,&#60;/p>
+                  &#60;p class="day">13 сент&#60;/p>
+                  &#60;img
+                    src="https://openweathermap.org/img/wn/10d@2x.png"
+                    alt="Погода"
+                  />
+                  &#60;div class="temp">
+                    &#60;p class="temp-day">17 °C&#60;/p>
+                    &#60;p class="temp-night">13 °C&#60;/p>
+                  &#60;/div>
+                &#60;/div>
+              &#60;/div>
+            &#60;/section>
+          &#60;/main>
+          &#60;button id="toTop">
+            &#60;img src="public/icons/icon-toTop.png" alt="" />
+          &#60;/button>
+          &#60;footer>
+            &#60;a href="#" target="_blank">
+              © &#60;span id="currentYear">&#60;/span> Прогноз погоды. Все права защищены.
+            &#60;/a>
+          &#60;/footer>
+        &#60;/div>
+        &#60;script src="main.js" type="module">&#60;/script>
+      &#60;/body>
+    &#60;/html>
+  </code>
+</pre>
+        </details>
+      </li>
+    </ul>
+
+    <ul>
+      <li>
+        <details>
+          <summary>init.js</summary>
+<pre>
+  <code class="lang-js">
+    //создаём данный файл для инициализации всего приложения
+    import { switchTheme } from "./src/components/switchTheme.js";
+    import { getGeoData } from "./src/api/geoData.js";
+    import { getWeatherByForm } from "./src/components/inputForm.js";
+    import { renderCurrentTime } from "./src/helpers/currentTime.js";
+    import { geoLocation } from "./src/components/geoLocation.js";
+    import { scrollToTop } from "./src/components/scrollToTop.js";
+    import { getCurrentYear } from "./src/components/getCurrentYear.js";
+
+    export function initApp() {
+      switchTheme();
+      getGeoData();
+      getWeatherByForm();
+      renderCurrentTime();
+      geoLocation();
+      scrollToTop();
+      getCurrentYear();
+    }
+  </code>
+</pre>
+        </details>
+      </li>
+    </ul>
+
+    <ul>
+      <li>
+        <details>
+          <summary>main.js</summary>
+<pre>
+  <code class="lang-js">
+    import { initApp } from './init.js';
+
+    initApp();
+  </code>
+</pre>
+        </details>
+      </li>
+    </ul>
+
+    
+  </article>
+</body>
+</html>
