@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="../styles/prism.css">
   <script src="../scripts/prism.js" defer></script>
   <script src="../scripts/script.js" defer></script>
+  <style>
+    a {color: greenyellow;}
+  </style>
 </head>
 <body>
   
@@ -25,9 +28,73 @@
   <article>
     <h1>NPM</h1>
     <hr>
-    
+    <ul>
+      <li>NPM работает в среде <a href="https://nodejs.org" target="_blank">node.js</a></li>
+      <li>Проверить версию node.js:</li>
+<pre>
+  <code class="lang-js">
+    node -v
+  </code>
+</pre>
+      <li>Сайт <a href="https://www.npmjs.com/" target="_blank">NPM</a></li>
+      <li>Проверить версию NPM:</li>
+<pre>
+  <code class="lang-js">
+    npm -v
+  </code>
+</pre>
+      <li>Для инициализации NPM в проекте:</li>
+<pre>
+  <code class="lang-js">
+    npm init
+  </code>
+</pre>
+      <li>Для пропуска 'вопросов' и создания дефолтного package.json:</li>
+<pre>
+  <code class="lang-js">
+    npm init -y
+  </code>
+</pre>
+      <li>Запуск скриптов из package.json</li>
+<pre>
+  <code class="lang-js">
+    npm run (название скрипта из раздела 'scripts')
+  </code>
+</pre>
+      <li>Установить пакеты (пример библиотека lodash)</li>
+<pre>
+  <code class="lang-js">
+    npm i lodash
+  </code>
+</pre>
+      <li>Чтобы не пересылать зависимости в удалённый репозиторий, в корне проекта создаётся фаил <code>.gitignore</code></li>
+<pre>
+  <code class="lang-js">
+    //в самом файле указывается:
+    /node_modules
+  </code>
+</pre>
+      <li>dev зависимости (пакеты, необходимые только во время разработки). Если не указать <code>-D</code>, зависимость установится как основная</li>
+<pre>
+  <code class="lang-js">
+    //для примера установить eslint
+    npm install eslint -D
+  </code>
+</pre>
 
-
+      <li>Удаление пакетов:</li>
+<pre>
+  <code class="lang-js">
+    npm uninstall lodash
+  </code>
+</pre>
+      <li>Удалять node модули (папку целиком) нужно рекурсивно с помощью команды:</li>
+<pre>
+  <code class="lang-js">
+    Remove-Item -Path node_modules -Recurse -Force
+  </code>
+</pre>
+    </ul>
   </article>
   <button id="scrollToTopButton">&#8593;</button>
 </body>
