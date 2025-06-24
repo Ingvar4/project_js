@@ -28,8 +28,10 @@
   <article>
     <h1>Axios</h1>
     <hr>
-    
-    <p>Пример использования:</p>
+
+    <h3>Особенности</h3>
+    <ol>
+      <li>Простота использования</li>
 <pre>
   <code class="lang-js">
     axios.get('https://api.example.com/data')
@@ -37,6 +39,46 @@
     .catch(error => console.error(error));
   </code>
 </pre>
+      <li>Поддержка промисов</li>
+      <li>Автоматическая трансформация данных (JS>JSON, JSON>JS)</li>
+      <li>Перехватчики (Interceptors)</li>
+<pre>
+  <code class="lang-js">
+    axios.interceptors.request.use((config) => {
+      config.headers.Authorization = 'Bearer token';
+      return config;
+    });
+  </code>
+</pre>
+      <li>Отмена запросов</li>
+<pre>
+  <code class="lang-js">
+    const controller = new AbortController();
+
+    axios
+      .get('https://api.example.com/data', { signal: controller.signal})
+      .then((responce) => console.log(responce.data))
+      .catch((error) => {
+        if (axios.isCancel(error)) {
+          console.log('Запрос отменен');
+        }
+      });
+    controller.abort();
+  </code>
+</pre>
+      <li>Глобальная конфигурация</li>
+<pre>
+  <code class="lang-js">
+    axios.defaults.baseURL = 'https://api.example.com';
+    axios.defaults.headers.common['Authorization'] = 'Bearer token';
+  </code>
+</pre>
+      <li>Обработка ошибок</li>
+      <li>Поддержка всех основных HTTP-методов</li>
+      <li>Поддрежка прогресса загрузки</li>
+    </ol>
+
+
 
 
 
