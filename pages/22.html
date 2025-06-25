@@ -29,43 +29,13 @@
     <h1>Axios</h1>
     <hr>
 
-    <h3>Особенности</h3>
+    <h2>1. Особенности</h2>
     <ol>
       <li>Простота использования</li>
-<pre>
-  <code class="lang-js">
-    axios.get('https://api.example.com/data')
-    .then(response => console.log(response.data))
-    .catch(error => console.error(error));
-  </code>
-</pre>
       <li>Поддержка промисов</li>
       <li>Автоматическая трансформация данных (JS>JSON, JSON>JS)</li>
       <li>Перехватчики (Interceptors)</li>
-<pre>
-  <code class="lang-js">
-    axios.interceptors.request.use((config) => {
-      config.headers.Authorization = 'Bearer token';
-      return config;
-    });
-  </code>
-</pre>
       <li>Отмена запросов</li>
-<pre>
-  <code class="lang-js">
-    const controller = new AbortController();
-
-    axios
-      .get('https://api.example.com/data', { signal: controller.signal})
-      .then((responce) => console.log(responce.data))
-      .catch((error) => {
-        if (axios.isCancel(error)) {
-          console.log('Запрос отменен');
-        }
-      });
-    controller.abort();
-  </code>
-</pre>
       <li>Глобальная конфигурация</li>
 <pre>
   <code class="lang-js">
@@ -78,10 +48,182 @@
       <li>Поддрежка прогресса загрузки</li>
     </ol>
 
+    <h2>2. Установка и подключение</h2>
+<pre>
+  <code class="lang-js">
+    //bash
+    npm install axios
+    # или
+    yarn add axios
+  </code>
+</pre>
+<pre>
+  <code class="lang-js">
+    //JS
+    // В браузере через ES-модули
+    import axios from 'axios';
 
+    // В Node.js (CommonJS)
+    const axios = require('axios');
+  </code>
+</pre>
 
+    <h2>3. Базовое использование</h2>
+    <h3>3.1 GET-запрос</h3>
+<pre>
+  <code class="lang-js">
+    axios.get('https://api.example.com/users')
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+    });
+  </code>
+</pre>
+    <h3>3.2 POST-запрос</h3>
+<pre>
+  <code class="lang-js">
+    axios.post('https://api.example.com/users', {
+      name: 'Игорь',
+      hobby: 'фотография'
+    })
+      .then(response => console.log(response.data))
+      .catch(error => console.error(error));
+  </code>
+</pre>
 
+    <h2>4. Создание экземпляров и конфигурация</h2>
+    <p>Часто удобно создавать собственный экземпляр с преднастройками:</p>
+<pre>
+  <code class="lang-js">
+    const api = axios.create({
+      baseURL: 'https://api.example.com',
+      timeout: 5000,
+      headers: { 'X-Custom-Header': 'foobar' }
+    });
 
+    // Дальше
+    api.get('/users');
+  </code>
+</pre>
+
+    <h2>5. Интерсепторы (перехватчики)</h2>
+    <p>Axios позволяет «ловить» запросы и ответы до того, как они попадут в <code>.then/.catch</code>:</p>
+<pre>
+  <code class="lang-js">
+    // Перехват запросов
+    axios.interceptors.request.use(config => {
+      // Например, добавляем токен авторизации
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    }, error => Promise.reject(error));
+
+    // Перехват ответов
+    axios.interceptors.response.use(response => {
+      // Обработка успешного ответа
+      return response;
+    }, error => {
+      if (error.response.status === 401) {
+        // Редирект на логин
+      }
+      return Promise.reject(error);
+    });
+  </code>
+</pre>
+
+    <h2>6. Отмена запросов и таймауты</h2>
+    <h3>6.1 Таймаут</h3>
+<pre>
+  <code class="lang-js">
+    axios.get('/slow-endpoint', { timeout: 3000 })
+    .catch(error => {
+      if (error.code === 'ECONNABORTED') {
+        console.warn('Запрос занял слишком много времени!');
+      }
+    });
+  </code>
+</pre>
+    <h3>6.2 Отмена через CancelToken</h3>
+<pre>
+  <code class="lang-js">
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+
+    axios.get('/search', { cancelToken: source.token })
+      .catch(thrown => {
+        if (axios.isCancel(thrown)) {
+          console.log('Запрос отменён:', thrown.message);
+        }
+      });
+
+    // Позже
+    source.cancel('Пользователь перешёл на другую страницу');
+  </code>
+</pre>
+
+    <h2>7. Работа с формами и файлами</h2>
+    <p>Для отправки <code>FormData</code> достаточно передать его в тело запроса:</p>
+<pre>
+  <code class="lang-js">
+    const formData = new FormData();
+    formData.append('avatar', fileInput.files[0]);
+
+    axios.post('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  </code>
+</pre>
+    <p>И уже автоматом будут выставлены нужные заголовки.</p>
+
+    <h2>8. Поддержка TypeScript</h2>
+    <p>Axios написан на JS, но имеет встроенные .d.ts типы:</p>
+<pre>
+  <code class="lang-js">
+    import axios, { AxiosResponse } from 'axios';
+
+    interface User { id: number; name: string; }
+
+    axios.get&#8249;User[]>('/users')
+      .then((res: AxiosResponse&#8249;User[]>) => {
+        res.data.forEach(user => console.log(user.name));
+      });
+  </code>
+</pre>
+
+    <h3>9. Сравнение с <code>fetch</code></h3>
+    <table>
+      <tr>
+        <td><strong>Функция</strong></td>
+        <td><strong>Axios</strong></td>
+        <td><strong>Fetch</strong></td>
+      </tr>
+      <tr>
+        <td>Поддержка IE</td>
+        <td>Да (с полифиллом)</td>
+        <td>Частичная (нужен полифилл)</td>
+      </tr>
+      <tr>
+        <td>Автоматический JSON	</td>
+        <td>Да (<code>response.data</code> распарсен)</td>
+        <td>Нет (<code>response.json()</code> нужно вызывать отдельно)</td>
+      </tr>
+      <tr>
+        <td>Перехватчики</td>
+        <td>Есть</td>
+        <td>Нет (надо оборачивать вручную)</td>
+      </tr>
+      <tr>
+        <td>Отмена запросов</td>
+        <td><code>CancelToken</code> / <code>AbortController</code></td>
+        <td>Только <code>AbortController</code></td>
+      </tr>
+      <tr>
+        <td>Таймаут</td>
+        <td>Есть (<code>timeout</code>)</td>
+        <td>	Нет (только вручную через <code>Promise.race</code>)</td>
+      </tr>
+    </table>
   </article>
   <button id="scrollToTopButton">&#8593;</button>
 </body>
